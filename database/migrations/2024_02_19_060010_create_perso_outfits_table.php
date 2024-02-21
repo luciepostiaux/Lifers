@@ -10,8 +10,10 @@ class CreatePersoOutfitsTable extends Migration
     {
         Schema::create('perso_outfits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('inventories_outfits_bottoms_id')->constrained()->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('inventories_outfits_tops_id')->constrained()->onDelete('no action')->onUpdate('no action');
+
+            $table->unsignedBigInteger('inventories_outfits_bottoms_id')->nullable();
+            $table->unsignedBigInteger('inventories_outfits_tops_id')->nullable();
+
             $table->timestamps();
         });
     }

@@ -24,9 +24,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'pseudo',
         'email',
         'password',
+        'consentement_newsletter',
+        'date_consentement',
+        'consentement_rgpd',
     ];
 
     /**
@@ -58,4 +61,14 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'events_has_users', 'user_id', 'event_id')->withTimestamps();
+    }
+
+    public function rewinds()
+    {
+        return $this->belongsToMany(Rewind::class, 'rewinds_has_users', 'user_id', 'rewind_id')->withTimestamps();
+    }
 }
