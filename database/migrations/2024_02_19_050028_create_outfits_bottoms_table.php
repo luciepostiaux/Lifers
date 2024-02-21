@@ -12,7 +12,7 @@ class CreateOutfitsBottomsTable extends Migration
             $table->id();
             $table->string('name', 45);
             $table->string('description', 1500);
-            $table->float('price'); // Utilisez decimal pour une précision financière
+            $table->decimal('price', 10, 2); // Correction appliquée ici
             $table->timestamps();
         });
     }
