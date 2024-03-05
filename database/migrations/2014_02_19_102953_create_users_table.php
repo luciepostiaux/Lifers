@@ -15,12 +15,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('pseudo', 45);
-            $table->string('email')->unique(); // Ajoutez cette ligne pour le champ email
-            $table->string('password', 45); // Considérez l'utilisation de hash pour les mots de passe
-            $table->date('created_at');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
             $table->boolean('consentement_newsletter')->nullable();
             $table->dateTime('date_consentement')->nullable();
             $table->boolean('consentement_rgpd')->nullable();
+            $table->dateTime('last_login_at')->nullable();
+            $table->integer('consecutive_login_days')->default(1);
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
 
@@ -29,6 +33,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('last_login_at');
+            $table->dropColumn('consecutive_login_days');
+        });
     }
 };

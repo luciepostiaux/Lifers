@@ -30,6 +30,8 @@ class User extends Authenticatable
         'consentement_newsletter',
         'date_consentement',
         'consentement_rgpd',
+        'last_login_at',
+        'consecutive_login_days',
     ];
 
     /**
@@ -58,9 +60,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+
+    public function perso()
+    {
+        return $this->hasOne(Perso::class);
+    }
+
 
     public function events()
     {

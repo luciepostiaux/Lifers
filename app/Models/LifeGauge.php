@@ -48,4 +48,9 @@ class LifeGauge extends Model
         'happiness' => 'integer',
         'health' => 'integer',
     ];
+
+    public function perso()
+    {
+        return $this->belongsTo(Perso::class, 'perso_id');
+    }
 }

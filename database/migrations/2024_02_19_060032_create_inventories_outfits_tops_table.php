@@ -10,7 +10,9 @@ class CreateInventoriesOutfitsTopsTable extends Migration
     {
         Schema::create('inventories_outfits_tops', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('inventories_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('inventories_id')->constrained()->onDelete('cascade');
+            $table->foreignId('outfits_tops_id')->constrained()->onDelete('cascade');
+            $table->foreignId('colors_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -20,4 +22,3 @@ class CreateInventoriesOutfitsTopsTable extends Migration
         Schema::dropIfExists('inventories_outfits_tops');
     }
 }
-

@@ -1,5 +1,13 @@
 <?php
 
+use App\Http\Controllers\AtHomeController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\ProfilPersoController;
+use App\Http\Controllers\SocialController;
+use App\Http\Controllers\StudyController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,7 +37,18 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
+    Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
+
+    Route::get('/study', [StudyController::class, 'index'])->name('study');
+    Route::get('/study/current', [StudyController::class, 'currentStudy'])->name('study.current');
+
+
+    Route::get('/job', [JobController::class, 'index'])->name('job');
+
+    Route::get('/city', [CityController::class, 'index'])->name('city');
+
+    Route::get('/mail', [MailController::class, 'index'])->name('mail');
+    Route::get('/social', [SocialController::class, 'index'])->name('social');
 });

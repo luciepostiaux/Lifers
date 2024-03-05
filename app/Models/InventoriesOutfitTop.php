@@ -9,41 +9,22 @@ class InventoriesOutfitTop extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'inventories_outfits_tops';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'inventories_id',
-    ];
+    protected $fillable = ['inventory_id', 'outfit_top_id', 'color_id'];
 
-    /**
-     * Get the inventory that owns the InventoryOutfitBottom.
-     */
     public function inventory()
     {
-        return $this->belongsTo(Inventory::class, 'inventories_id');
+        return $this->belongsTo(Inventory::class);
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
+    public function outfitTop()
+    {
+        return $this->belongsTo(OutfitTop::class);
+    }
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [];
+    public function color()
+    {
+        return $this->belongsTo(Color::class)->withDefault();
+    }
 }

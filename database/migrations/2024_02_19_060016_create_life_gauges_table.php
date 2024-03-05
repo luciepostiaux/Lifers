@@ -10,12 +10,16 @@ class CreateLifeGaugesTable extends Migration
     {
         Schema::create('life_gauges', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('hunger')->unsigned(); // TINYINT UNSIGNED NOT NULL
+            $table->unsignedBigInteger('perso_id');
+            $table->tinyInteger('hunger')->unsigned();
             $table->tinyInteger('thirst')->unsigned();
             $table->tinyInteger('clean')->unsigned();
             $table->tinyInteger('happiness')->unsigned();
             $table->tinyInteger('health')->unsigned();
             $table->timestamps();
+
+
+            $table->foreign('perso_id')->references('id')->on('perso')->onDelete('cascade');
         });
     }
 

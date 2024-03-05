@@ -1,0 +1,23 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\LifeGauge;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class LifeGaugesSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $persoId = 1; // Assurez-vous que cet ID existe dans votre table `perso`
+        LifeGauge::create([
+            'perso_id' => $persoId,
+            'hunger' => 100,
+            'thirst' => 100,
+            'clean' => 100,
+            'happiness' => 100,
+            'health' => 100,
+        ]);
+    }
+}

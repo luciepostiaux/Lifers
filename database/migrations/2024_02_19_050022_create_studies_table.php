@@ -17,7 +17,7 @@ class CreateStudiesTable extends Migration
             $table->string('img_study', 255);
             $table->string('description_2', 1500);
             $table->foreignId('diplomas_id')->constrained()->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('diplomas_required_id')->constrained('diplomas')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('diplomas_required_id')->nullable()->constrained('diplomas')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('places_id')->constrained()->onDelete('no action')->onUpdate('no action');
             $table->timestamps();
         });
