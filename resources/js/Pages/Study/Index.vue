@@ -5,6 +5,8 @@ import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
     studies: Array,
+    currentStudy: Object,
+    studyDetails: Object,
 });
 </script>
 <template>
@@ -42,6 +44,46 @@ const props = defineProps({
                     alt="University Image"
                     class="size-64"
                 />
+            </div>
+            <!-- Section Études en cours -->
+            <div v-if="currentStudy" class="mb-8">
+                <h2 class="text-2xl font-bold mb-2">Étude en cours</h2>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold">
+                        {{ currentStudy.name }}
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                        {{ currentStudy.description }}
+                    </p>
+                    <Link
+                        :href="`/study/current/${currentStudy.id}`"
+                        class="mt-4 inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring focus:ring-blue-300 disabled:opacity-25 transition"
+                        >Etude en cours</Link
+                    >
+                </div>
+            </div>
+
+            <div v-if="studyDetails" class="flex flex-col space-y-4">
+                <p class="text-sm">{{ studyDetails.name }}</p>
+
+                <!-- <p
+                                class="text-sm"
+                                v-if="studyDetails && studyDetails.end_date"
+                            >
+                                Fin prévue : {{ studyDetails.end_date }}
+                                <span v-if="daysRemaining"
+                                    >{{ daysRemaining }} jours restants.</span
+                                >
+                            </p> -->
+                <p class="text-sm" v-if="studyDetails.end_date">
+                    Fin prévue : {{ studyDetails.end_date }}
+                </p>
+
+                <Link
+                    :href="route('study')"
+                    class="px-4 py-2 text-sm bg-[#9EE5F5] hover:text-white rounded hover:bg-[#71A4B0] transition-all"
+                    >Aller aux études</Link
+                >
             </div>
 
             <div class="divide-y divide-gray-200">

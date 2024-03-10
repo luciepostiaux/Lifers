@@ -42,10 +42,23 @@ Route::middleware([
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
 
     Route::get('/study', [StudyController::class, 'index'])->name('study');
-    Route::get('/study/current', [StudyController::class, 'currentStudy'])->name('study.current');
+    Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');
+
 
 
     Route::get('/job', [JobController::class, 'index'])->name('job');
+    Route::post('/job/apply/{jobId}', [JobController::class, 'apply'])->name('job.apply');
+    Route::get('/job/current/{id}', [JobController::class, 'showCurrentJob'])->name('job.current.show');
+    Route::post('/job/resign', [JobController::class, 'resign'])->name('job.resign');
+    Route::post('/job/change/{newJobId}', [JobController::class, 'changeJob'])->name('job.change');
+
+
+
+
+
+
+
+
 
     Route::get('/city', [CityController::class, 'index'])->name('city');
 

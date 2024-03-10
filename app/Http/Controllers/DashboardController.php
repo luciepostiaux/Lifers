@@ -26,16 +26,16 @@ class DashboardController extends Controller
             ];
         }
 
-        // $latestEnrollment = $perso->enrolledStudies->sortByDesc('created_at')->first();
-        // $studyDetails = null;
-        // if ($latestEnrollment && $latestEnrollment->study) {
-        //     $studyDetails = [
-        //         'name' => $latestEnrollment->study->name,
-        //         'description' => $latestEnrollment->study->description_1,
-        //         'created_at' => $latestEnrollment->start_date,
-        //         'end_date' => $latestEnrollment->end_date ? $latestEnrollment->end_date : null,
-        //     ];
-        // }
+        $latestEnrollment = $perso->enrolledStudies->sortByDesc('created_at')->first();
+        $studyDetails = null;
+        if ($latestEnrollment && $latestEnrollment->study) {
+            $studyDetails = [
+                'name' => $latestEnrollment->study->name,
+                'description' => $latestEnrollment->study->description_1,
+                'created_at' => $latestEnrollment->start_date,
+                'end_date' => $latestEnrollment->end_date ? $latestEnrollment->end_date : null,
+            ];
+        }
 
         $jobDetails = $perso && $perso->job ? [
             'name' => $perso->job->name,
@@ -50,7 +50,7 @@ class DashboardController extends Controller
             'money' => $money,
             'age' => $perso ? $perso->calculateAge() : null,
             'lifeGauges' => $lifeGauges,
-            // 'studyDetails' => $studyDetails,
+            'studyDetails' => $studyDetails,
             'jobDetails' => $jobDetails,
         ]);
     }
