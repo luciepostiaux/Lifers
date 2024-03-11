@@ -1,12 +1,19 @@
 <script setup>
-import { defineProps } from "vue";
+import { ref, defineProps } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link } from "@inertiajs/vue3";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
     studyDetails: Object,
     associatedStudies: Array,
 });
+const showModal = ref(false); // État pour contrôler la visibilité du modal
+
+const dropStudy = () => {
+    Inertia.post(route("study.drop"));
+};
 </script>
 
 <template>
@@ -32,6 +39,12 @@ const props = defineProps({
                     Fin prévue : {{ studyDetails.end_date }}
                 </p>
             </div>
+            <button
+                @click="showModal = true"
+                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+                Abandonner les études
+            </button>
 
             <div v-if="associatedStudies">
                 <h3 class="text-lg font-semibold mb-4">Études associées</h3>
@@ -58,5 +71,29 @@ const props = defineProps({
                 </div>
             </div>
         </div>
+        <ConfirmationModal
+            :show="showModal"
+            @close="showModal = false"
+            @confirm="dropStudy"
+        >
+            <template #title> Abandonner les études en cours </template>
+            <template #content>
+                Êtes-vous sûr de vouloir abandonner vos études actuelles ?
+            </template>
+            <template #footer>
+                <button
+                    @click="showModal = false"
+                    class="px-4 py-2 bg-gray-200 text-black rounded"
+                >
+                    Annuler
+                </button>
+                <button
+                    @click="dropStudy"
+                    class="px-4 py-2 bg-red-600 text-white rounded"
+                >
+                    Confirmer et abandonner
+                </button>
+            </template>
+        </ConfirmationModal>
     </AppLayout>
 </template>

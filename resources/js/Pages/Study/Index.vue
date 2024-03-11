@@ -1,13 +1,38 @@
 <script setup>
-import { defineProps } from "vue";
+import { ref, defineProps } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link } from "@inertiajs/vue3";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 
 const props = defineProps({
     studies: Array,
+    userDiplomas: Array,
     currentStudy: Object,
-    studyDetails: Object,
 });
+const selectedStudy = ref(null);
+const isConfirmationModalOpen = ref(false);
+const studyToEnroll = ref(null);
+
+const userCanEnroll = (study) => {
+    return (
+        props.userDiplomas &&
+        props.userDiplomas.some(
+            (diploma) => diploma.id === study.diplomas_required_id
+        )
+    );
+};
+
+const requestEnrollForStudy = (studyId) => {
+    studyToEnroll.value = studyId;
+    isConfirmationModalOpen.value = true;
+};
+
+const confirmAndEnrollForStudy = () => {
+    if (studyToEnroll.value) {
+        Inertia.post(route("study.enroll", { studyId: studyToEnroll.value }));
+        isConfirmationModalOpen.value = false;
+    }
+};
 </script>
 <template>
     <AppLayout title="Study">
@@ -66,15 +91,6 @@ const props = defineProps({
             <div v-if="studyDetails" class="flex flex-col space-y-4">
                 <p class="text-sm">{{ studyDetails.name }}</p>
 
-                <!-- <p
-                                class="text-sm"
-                                v-if="studyDetails && studyDetails.end_date"
-                            >
-                                Fin prévue : {{ studyDetails.end_date }}
-                                <span v-if="daysRemaining"
-                                    >{{ daysRemaining }} jours restants.</span
-                                >
-                            </p> -->
                 <p class="text-sm" v-if="studyDetails.end_date">
                     Fin prévue : {{ studyDetails.end_date }}
                 </p>
@@ -101,7 +117,6 @@ const props = defineProps({
                             class="w-full h-full object-contain"
                         />
                     </div>
-
                     <div class="flex-grow self-center">
                         <h3 class="text-lg font-semibold">{{ study.name }}</h3>
                         <p class="text-sm text-gray-600 mt-1">
@@ -112,17 +127,19 @@ const props = defineProps({
                             <p class="">Durée: {{ study.duration }} jours</p>
                         </div>
                     </div>
-
                     <div
                         class="flex-none self-center w-24 flex flex-col justify-start"
                     >
+                        <!-- Bouton pour voir plus d'informations sur l'étude -->
                         <Link
                             :href="`/study/${study.id}`"
                             class="text-sm bg-[#9EE5F5] hover:text-white rounded px-4 py-2 hover:bg-[#71A4B0] transition-all mb-2"
+                            >Voir plus</Link
                         >
-                            Voir plus
-                        </Link>
+                        <!-- Bouton Postuler ajouté ici -->
                         <button
+                            v-if="userCanEnroll(study)"
+                            @click="requestEnrollForStudy(study.id)"
                             class="text-sm bg-green-500 hover:text-white rounded px-4 py-2 hover:bg-green-700 transition-all"
                         >
                             Postuler
@@ -131,5 +148,30 @@ const props = defineProps({
                 </div>
             </div>
         </div>
+        <ConfirmationModal
+            :show="isConfirmationModalOpen"
+            @close="isConfirmationModalOpen = false"
+            @confirm="confirmAndEnrollForStudy"
+        >
+            <template #title>Confirmation d'inscription</template>
+            <template #content
+                >Êtes-vous sûr de vouloir vous inscrire à cette étude ? Cela
+                remplacera votre étude actuelle si vous en avez une.</template
+            >
+            <template #footer>
+                <button
+                    @click="isConfirmationModalOpen = false"
+                    class="px-4 py-2 bg-gray-200 text-black rounded"
+                >
+                    Annuler
+                </button>
+                <button
+                    @click="confirmAndEnrollForStudy"
+                    class="px-4 py-2 bg-red-600 text-white rounded"
+                >
+                    Confirmer et s'inscrire
+                </button>
+            </template>
+        </ConfirmationModal>
     </AppLayout>
 </template>

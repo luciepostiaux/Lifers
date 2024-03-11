@@ -43,6 +43,8 @@ Route::middleware([
 
     Route::get('/study', [StudyController::class, 'index'])->name('study');
     Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');
+    Route::post('/study/enroll/{studyId}', [StudyController::class, 'enroll'])->name('study.enroll');
+    Route::post('/study/drop', [StudyController::class, 'dropCurrentStudy'])->name('study.drop');
 
 
 

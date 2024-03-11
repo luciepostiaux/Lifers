@@ -10,6 +10,7 @@ const props = defineProps({
     jobs: Array,
     userDiplomas: Array,
     currentJob: Object,
+    isOpen: Boolean,
 });
 const selectedJob = ref(null);
 const isModalOpen = ref(false);
@@ -24,11 +25,10 @@ const applyForJob = (jobId) => {
     Inertia.post(route("job.apply", jobId));
 };
 const requestApplyForJob = (jobId) => {
-    // Sauvegardez l'ID du job pour lequel l'utilisateur souhaite postuler
-    jobToApplyFor.value = jobId;
-    // Ouvrez le modal de confirmation
-    isConfirmationModalOpen.value = true;
+    jobToApplyFor.value = jobId; // Stocker l'ID du job
+    isConfirmationModalOpen.value = true; // Ouvrir le modal de confirmation
 };
+
 const confirmAndApplyForJob = () => {
     if (jobToApplyFor.value) {
         applyForJob(jobToApplyFor.value);
@@ -117,7 +117,7 @@ const isCurrentJob = (job) => {
                         </button>
                         <button
                             v-else-if="userCanApply(job)"
-                            @click="confirmAndApplyForJob(job.id)"
+                            @click="requestApplyForJob(job.id)"
                             class="mt-2 text-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                         >
                             Postuler
@@ -149,7 +149,7 @@ const isCurrentJob = (job) => {
             @close="isModalOpen = false"
         />
         <ConfirmationModal
-            :isOpen="isConfirmationModalOpen"
+            :show="isConfirmationModalOpen"
             @close="isConfirmationModalOpen = false"
             @confirm="confirmAndApplyForJob"
         >
