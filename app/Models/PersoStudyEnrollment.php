@@ -21,4 +21,8 @@ class PersoStudyEnrollment extends Model
     {
         return $this->belongsTo(Study::class);
     }
+
+    protected $casts = [
+        'end_date' => 'datetime',
+    ];
 }

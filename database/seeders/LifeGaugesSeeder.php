@@ -10,7 +10,16 @@ class LifeGaugesSeeder extends Seeder
 {
     public function run(): void
     {
-        $persoId = 1; // Assurez-vous que cet ID existe dans votre table `perso`
+        $persoId = 1; 
+        LifeGauge::create([
+            'perso_id' => $persoId,
+            'hunger' => 100,
+            'thirst' => 100,
+            'clean' => 100,
+            'happiness' => 100,
+            'health' => 100,
+        ]);
+        $persoId = 2; 
         LifeGauge::create([
             'perso_id' => $persoId,
             'hunger' => 100,

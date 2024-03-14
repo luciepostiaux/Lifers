@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtHomeController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ProfilPersoController;
@@ -41,12 +43,11 @@ Route::middleware([
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
 
-    Route::get('/study', [StudyController::class, 'index'])->name('study');
+    Route::get('/study', [StudyController::class, 'index'])->name('study.index');
     Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');
+    Route::post('/study/resign', [StudyController::class, 'resign'])->name('study.resign');
     Route::post('/study/enroll/{studyId}', [StudyController::class, 'enroll'])->name('study.enroll');
     Route::post('/study/drop', [StudyController::class, 'dropCurrentStudy'])->name('study.drop');
-
-
 
     Route::get('/job', [JobController::class, 'index'])->name('job');
     Route::post('/job/apply/{jobId}', [JobController::class, 'apply'])->name('job.apply');
@@ -54,16 +55,20 @@ Route::middleware([
     Route::post('/job/resign', [JobController::class, 'resign'])->name('job.resign');
     Route::post('/job/change/{newJobId}', [JobController::class, 'changeJob'])->name('job.change');
 
-
-
-
-
-
-
-
-
     Route::get('/city', [CityController::class, 'index'])->name('city');
 
+
     Route::get('/mail', [MailController::class, 'index'])->name('mail');
+
+
     Route::get('/social', [SocialController::class, 'index'])->name('social');
+});
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return Inertia::render('Admin/Dashboard');
+    })->name('admin.dashboard');
+
+    Route::post('/admin/grant-diploma', [AdminController::class, 'grantDiploma'])->name('admin.grantDiploma');
+    Route::post('/admin/remove-diploma', [AdminController::class, 'removeDiploma'])->name('admin.removeDiploma');
 });

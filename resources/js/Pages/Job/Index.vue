@@ -113,7 +113,7 @@ const isCurrentJob = (job) => {
                             disabled
                             class="mt-2 text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
                         >
-                            Job Actuel
+                            Travail Actuel
                         </button>
                         <button
                             v-else-if="userCanApply(job)"

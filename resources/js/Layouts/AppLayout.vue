@@ -74,7 +74,7 @@ const logout = () => {
                                     Chez soi
                                 </NavLink>
                                 <NavLink
-                                    :href="route('study')"
+                                    :href="route('study.index')"
                                     :active="route().current('study')"
                                 >
                                     Étude

@@ -76,4 +76,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Rewind::class, 'rewinds_has_users', 'user_id', 'rewind_id')->withTimestamps();
     }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
 }

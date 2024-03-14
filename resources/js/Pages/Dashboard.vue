@@ -110,7 +110,7 @@ const gaugeColor = (value) => {
                             </p>
 
                             <Link
-                                :href="route('study')"
+                                :href="route('study.index')"
                                 class="px-4 py-2 text-sm bg-[#9EE5F5] hover:text-white rounded hover:bg-[#71A4B0] transition-all"
                                 >Aller aux études</Link
                             >

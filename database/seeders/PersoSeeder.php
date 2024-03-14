@@ -28,6 +28,22 @@ class PersoSeeder extends Seeder
             'genders_id' => 1,
             'perso_bodies_id' => 1,
         ]);
+        Perso::create([
+            'first_name' => 'Erik',
+            'last_name' => 'Dells',
+            'birth_date' => now(),
+            'money' => 100000.00,
+            'user_id' => 2,
+            'hairstyles_id' => 1,
+            'perso_outfits_id' => null,
+            'jobs_id' => null,
+            'salary' => null,
+            'mother_id' => null,
+            'father_id' => null,
+            'partner_id' => null,
+            'genders_id' => 2,
+            'perso_bodies_id' => 1,
+        ]);
 
         // Perso::create([
         //     'first_name' => 'Lyanna',

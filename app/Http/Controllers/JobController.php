@@ -77,6 +77,7 @@ class JobController extends Controller
             return redirect()->route('job')->withErrors(['msg' => 'Vous n\'avez pas de poste actuel duquel démissionner.']);
         }
     }
+    
     public function changeJob(Request $request, $newJobId)
     {
         $user = Auth::user();

@@ -8,14 +8,24 @@ import { Inertia } from "@inertiajs/inertia";
 const props = defineProps({
     studyDetails: Object,
     associatedStudies: Array,
+    enrollmentDetails: Object,
 });
 const showModal = ref(false); // État pour contrôler la visibilité du modal
 
-const dropStudy = () => {
-    Inertia.post(route("study.drop"));
+const resignFromStudy = () => {
+    Inertia.post(
+        route("study.resign"),
+        {},
+        {
+            onFinish: () => {
+                // Vous pouvez mettre ici le code que vous souhaitez exécuter après la fin de l'action
+                // Par exemple, fermer une modale ou rafraîchir une partie de l'interface
+                showModal.value = false;
+            },
+        }
+    );
 };
 </script>
-
 <template>
     <AppLayout title="Suivi des études">
         <div class="container mx-auto p-4">
@@ -24,20 +34,37 @@ const dropStudy = () => {
                     <h2 class="text-2xl font-bold mb-4">
                         Étude en cours : {{ studyDetails.name }}
                     </h2>
-                    <p>{{ studyDetails.description }}</p>
+                    <!-- Affichage de la première description -->
+                    <p>{{ studyDetails.description_1 }}</p>
+                    <!-- Ajouté pour afficher la description plus détaillée si elle existe -->
+                    <p
+                        class="text-sm"
+                        v-if="enrollmentDetails && enrollmentDetails.end_date"
+                    >
+                        Fin prévue :
+                        {{
+                            new Date(
+                                enrollmentDetails.end_date
+                            ).toLocaleDateString()
+                        }}
+                    </p>
                 </div>
                 <img
-                    :src="studyDetails.img_study"
-                    alt="Image de l'étude"
-                    class="md:w-1/4 h-64 object-cover md:object-contain md:ml-4"
+                    src="/images/places/university.webp"
+                    alt="University Image"
+                    class="size-64"
                 />
             </div>
 
             <div class="my-6">
                 <h3 class="text-lg font-semibold">Détails de l'étude</h3>
-                <p class="text-sm" v-if="studyDetails.end_date">
-                    Fin prévue : {{ studyDetails.end_date }}
+                <!-- Suivi de l'étude : Affichage de la date de fin prévue -->
+                <p class="text-sm" v-if="studyDetails && studyDetails.end_date">
+                    Fin prévue :
+                    {{ new Date(studyDetails.end_date).toLocaleDateString() }}
                 </p>
+
+                <!-- Ajouter d'autres informations utiles ici si nécessaire -->
             </div>
             <button
                 @click="showModal = true"
@@ -74,7 +101,7 @@ const dropStudy = () => {
         <ConfirmationModal
             :show="showModal"
             @close="showModal = false"
-            @confirm="dropStudy"
+            @confirm="resignFromStudy"
         >
             <template #title> Abandonner les études en cours </template>
             <template #content>
@@ -88,7 +115,7 @@ const dropStudy = () => {
                     Annuler
                 </button>
                 <button
-                    @click="dropStudy"
+                    @click="resignFromStudy"
                     class="px-4 py-2 bg-red-600 text-white rounded"
                 >
                     Confirmer et abandonner

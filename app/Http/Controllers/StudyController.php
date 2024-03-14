@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ApplyStudyRequest;
 use App\Models\PersoStudyEnrollment;
 use App\Models\Study;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -32,87 +32,120 @@ class StudyController extends Controller
         return Inertia::render('Study/Index', [
             'studies' => $studies,
             'currentStudy' => $currentStudyDetails,
+
         ]);
     }
     public function showCurrentStudy($id)
     {
-        $study = Study::findOrFail($id); // ou une autre logique pour obtenir l'étude
+        $study = Study::findOrFail($id);
+        $user = Auth::user();
+        $perso = $user->perso;
+
+        // Recherchez l'inscription du personnage à cette étude spécifique
+        $enrollment = null;
+        if ($perso) {
+            $enrollment = PersoStudyEnrollment::where('perso_id', $perso->id)
+                ->where('study_id', $study->id)
+                ->latest()
+                ->first();
+        }
         return Inertia::render('Study/Current', [
             'studyDetails' => $study,
+            'enrollmentDetails' => $enrollment,
         ]);
     }
 
-    // Assurez-vous d'avoir la méthode currentStudy si nécessaire pour d'autres routes ou logiques
-    public function currentStudy()
-    {
-        // Logique spécifique pour la page d'une étude en cours, si nécessaire
-    }
-
-    public function enroll(Request $request, $studyId)
+    public function enroll(ApplyStudyRequest $request, $studyId)
     {
         $user = Auth::user();
         $personnage = $user->perso;
 
+        // Vérifiez si le personnage est défini et a les droits nécessaires
         if (!$personnage) {
             return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
         }
 
-        $study = Study::findOrFail($studyId);
+        $study = Study::findOrFail($studyId); // Trouvez l'étude
 
-        // Assurez-vous que le personnage remplit les conditions pour s'inscrire (par exemple, a le diplôme requis).
-        if ($study->requiredDiploma && !$personnage->diplomas->contains('id', $study->requiredDiploma->id)) {
+        // Si le personnage n'a pas le diplôme requis (si un diplôme est requis pour l'étude)
+        if ($study->required_diploma_id && !$personnage->diplomas->contains('id', $study->required_diploma_id)) {
             return redirect()->back()->withErrors(['msg' => 'Vous devez avoir le diplôme requis pour vous inscrire à cette étude.']);
         }
 
-        // Enregistrer la nouvelle inscription.
+        // Vérifier si le personnage est déjà inscrit à cette étude et que les études ne sont pas encore terminées
+        $existingEnrollment = $personnage->enrolledStudies()->where('study_id', $studyId)->where('end_date', '>', now())->first();
+        if ($existingEnrollment) {
+            return redirect()->back()->withErrors(['msg' => 'Le personnage est déjà inscrit à cette étude et elle n\'est pas encore terminée.']);
+        }
+
+        // Créer une nouvelle inscription dans la base de données avec la durée de l'étude
         DB::beginTransaction();
         try {
-            // Vous pouvez vouloir ajouter une logique pour vérifier s'il est déjà inscrit.
+            // Calculer la date de fin en fonction de la durée de l'étude
+            $endDate = now()->addDays($study->duration);
+
             $enrollment = new PersoStudyEnrollment([
                 'perso_id' => $personnage->id,
                 'study_id' => $studyId,
-                // Définir d'autres propriétés d'inscription si nécessaire
+                'start_date' => now(),
+                'end_date' => $endDate,  // Ajoutez la date de fin basée sur la durée de l'étude
             ]);
             $enrollment->save();
 
             DB::commit();
-            return redirect()->route('study.current', ['id' => $studyId])->with('message', 'Inscription à l’étude réussie.');
+            return redirect()->route('study.index')->with('message', 'Inscription à l’étude réussie.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’inscription à l’étude.']);
         }
     }
 
-
-    public function dropCurrentStudy()
+    public function resign()
     {
         $user = Auth::user();
         $personnage = $user->perso;
 
         if (!$personnage) {
-            return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
+            return redirect()->route('study.index')->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
         }
 
-        // Récupérer l'inscription à l'étude actuelle
-        $latestEnrollment = $personnage->enrolledStudies()->latest()->first(); // Utiliser la relation définie pour obtenir la dernière inscription
+        // Utilisez la méthode que nous venons d'ajouter pour résigner de l'étude
+        $personnage->resignFromStudy();
 
-        if (!$latestEnrollment) {
-            return redirect()->back()->withErrors(['msg' => 'Aucune étude en cours associée à ce personnage.']);
-        }
-
-        // Commencer la transaction
-        DB::beginTransaction();
-        try {
-            // Supprimer l'inscription à l'étude actuelle
-            $latestEnrollment->delete(); // Cela supprime l'inscription mais ne change pas l'étude elle-même
-
-            // Valider la transaction
-            DB::commit();
-            return redirect()->route('study')->with('message', 'Vous avez abandonné vos études avec succès.');
-        } catch (\Exception $e) {
-            // Annuler la transaction en cas d'erreur
-            DB::rollBack();
-            return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’abandon des études.']);
-        }
+        return redirect()->route('study.index')->with('message', 'Vous avez quitté l\'étude avec succès.');
     }
+
+
+
+    // public function dropCurrentStudy()
+    // {
+    //     $user = Auth::user();
+    //     $personnage = $user->perso;
+
+    //     if (!$personnage) {
+    //         return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
+    //     }
+
+    //     // Récupérer l'inscription à l'étude actuelle
+    //     $latestEnrollment = $personnage->enrolledStudies()->latest()->first(); // Utiliser la relation définie pour obtenir la dernière inscription
+
+    //     if (!$latestEnrollment) {
+    //         return redirect()->back()->withErrors(['msg' => 'Aucune étude en cours associée à ce personnage.']);
+    //     }
+
+    //     // Commencer la transaction
+    //     DB::beginTransaction();
+    //     try {
+    //         // Supprimer l'inscription à l'étude actuelle
+    //         $latestEnrollment->delete(); // Cela supprime l'inscription mais ne change pas l'étude elle-même
+
+    //         // Valider la transaction
+    //         DB::commit();
+    //         return redirect()->route('study')->with('message', 'Vous avez abandonné vos études avec succès.');
+    //     } catch (\Exception $e) {
+    //         // Annuler la transaction en cas d'erreur
+    //         DB::rollBack();
+    //         return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’abandon des études.']);
+    //     }
+    // }
 }

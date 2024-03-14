@@ -97,6 +97,12 @@ class Perso extends Model
     {
         return $this->hasMany(PersoStudyEnrollment::class);
     }
+    public function resignFromStudy()
+    {
+        foreach ($this->enrolledStudies as $enrollment) {
+            $enrollment->delete();
+        }
+    }
 
 
     public function mother()
@@ -160,11 +166,10 @@ class Perso extends Model
     public function calculateAge()
     {
         $startingAge = 18;
-        $createdAt = $this->created_at;
+        $createdAt = $this->birth_date;
         $now = now();
         $daysDifference = $createdAt->diffInDays($now);
         $ageIncrement = intdiv($daysDifference, 3);
-
         return $startingAge + $ageIncrement;
     }
 

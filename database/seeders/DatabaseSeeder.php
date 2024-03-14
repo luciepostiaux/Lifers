@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             SuggestionsSeeder::class,
             ItemEffectsSeeder::class,
             PersoStudyEnrollmentsSeeder::class,
+            RoleSeeder::class,
 
         ]);
     }
