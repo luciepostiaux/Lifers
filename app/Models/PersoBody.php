@@ -11,4 +11,11 @@ class PersoBody extends Model
 
 
     protected $fillable = ['img_perso', 'description'];
+
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class, 'genders_id');
+    }
+
+
 }

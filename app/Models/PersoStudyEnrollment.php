@@ -9,7 +9,7 @@ class PersoStudyEnrollment extends Model
     protected $table = 'perso_study_enrollments';
 
     protected $fillable = [
-        'perso_id', 'study_id', 'start_date', 'end_date',
+        'perso_id', 'study_id', 'end_date',
     ];
 
     public function perso()

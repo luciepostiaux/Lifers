@@ -41,8 +41,11 @@ class JobController extends Controller
             return redirect()->back()->withErrors(['msg' => 'Tu dois avant tout réaliser les études liées.']);
         }
 
-        $personnage->jobs_id = $jobId;
-        $personnage->save();
+        $personnage->update([
+            'jobs_id' => $jobId,
+            'salary' => $job->salary,
+        ]);
+
         return redirect()->back()->with('message', 'Vous avez postulé avec succès pour ce métier.');
     }
 
@@ -77,7 +80,7 @@ class JobController extends Controller
             return redirect()->route('job')->withErrors(['msg' => 'Vous n\'avez pas de poste actuel duquel démissionner.']);
         }
     }
-    
+
     public function changeJob(Request $request, $newJobId)
     {
         $user = Auth::user();
@@ -106,6 +109,9 @@ class JobController extends Controller
 
             // Postuler pour le nouveau job
             $personnage->jobs_id = $newJobId;
+            $personnage->save();
+
+            $personnage->salary = $job->salary;
             $personnage->save();
 
             // Valider la transaction

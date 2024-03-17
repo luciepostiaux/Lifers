@@ -71,5 +71,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // autres middlewares...
         'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
+        'ensure-perso' => \App\Http\Middleware\EnsureUserHasPerso::class,
+
     ];
 }

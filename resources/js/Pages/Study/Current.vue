@@ -25,6 +25,25 @@ const resignFromStudy = () => {
         }
     );
 };
+
+const claimDiploma = () => {
+    if (props.studyDetails && props.studyDetails.id) {
+        Inertia.post(
+            route("study.claimDiploma", { study: props.studyDetails.id }),
+            {},
+            {
+                onSuccess: () => {
+                    // Votre logique de succès ici
+                },
+                onError: () => {
+                    // Votre logique d'erreur ici
+                },
+            }
+        );
+    } else {
+        console.error("studyDetails is not defined or missing ID");
+    }
+};
 </script>
 <template>
     <AppLayout title="Suivi des études">
@@ -97,6 +116,13 @@ const resignFromStudy = () => {
                     </div>
                 </div>
             </div>
+            <button
+                v-if="new Date(enrollmentDetails.end_date) < new Date()"
+                @click="claimDiploma"
+                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+                Récupérer le diplôme
+            </button>
         </div>
         <ConfirmationModal
             :show="showModal"

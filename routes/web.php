@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtHomeController;
+use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiplomaController;
@@ -33,19 +34,32 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    Route::get('/character/create', [CharacterController::class, 'create'])->name('character.create');
+    Route::post('/character/store', [CharacterController::class, 'store'])->name('character.store');
+});
+
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'ensure-perso',
+])->group(function () {
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
 
     Route::get('/study', [StudyController::class, 'index'])->name('study.index');
     Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');
     Route::post('/study/resign', [StudyController::class, 'resign'])->name('study.resign');
+    Route::post('/study/{study}/claimDiploma', [StudyController::class, 'claimDiploma'])->name('study.claimDiploma');
     Route::post('/study/enroll/{studyId}', [StudyController::class, 'enroll'])->name('study.enroll');
     Route::post('/study/drop', [StudyController::class, 'dropCurrentStudy'])->name('study.drop');
 
@@ -57,9 +71,7 @@ Route::middleware([
 
     Route::get('/city', [CityController::class, 'index'])->name('city');
 
-
     Route::get('/mail', [MailController::class, 'index'])->name('mail');
-
 
     Route::get('/social', [SocialController::class, 'index'])->name('social');
 });

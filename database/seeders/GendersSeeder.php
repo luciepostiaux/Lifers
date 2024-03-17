@@ -13,7 +13,6 @@ class GendersSeeder extends Seeder
         Gender::insert([
             ['name' => 'Physique 1'],
             ['name' => 'Physique 2'],
-            // ['name' => 'Non-Binaire'],
 
         ]);
     }

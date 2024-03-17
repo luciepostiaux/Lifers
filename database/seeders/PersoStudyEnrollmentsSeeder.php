@@ -15,19 +15,19 @@ class PersoStudyEnrollmentsSeeder extends Seeder
      */
     public function run(): void
     {
-        $studies = Study::all();
-        $personnages = Perso::all();
+        // $studies = Study::all();
+        // $personnages = Perso::all();
 
-        $personnages->each(function ($perso) use ($studies) {
-            $study = $studies->random();
+        // $personnages->each(function ($perso) use ($studies) {
+        //     $study = $studies->random();
 
-            $end_date = Carbon::now()->addDays($study->duration);
+        //     $end_date = Carbon::now()->addDays($study->duration);
 
-            PersoStudyEnrollment::create([
-                'perso_id' => $perso->id,
-                'study_id' => $study->id,
-                'end_date' => $end_date,
-            ]);
-        });
+        //     PersoStudyEnrollment::create([
+        //         'perso_id' => $perso->id,
+        //         'study_id' => $study->id,
+        //         'end_date' => $end_date,
+        //     ]);
+        // });
     }
 }

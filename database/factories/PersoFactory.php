@@ -29,7 +29,6 @@ class PersoFactory extends Factory
             'mother_id' => null,
             'father_id' => null,
             'partner_id' => null,
-            'genders_id' => $this->faker->randomElement([1, 2]),
             'perso_bodies_id' => $this->faker->randomElement([1, 2]), // Idem        
         ];
     }

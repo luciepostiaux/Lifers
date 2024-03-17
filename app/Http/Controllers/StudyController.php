@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ApplyStudyRequest;
 use App\Models\PersoStudyEnrollment;
 use App\Models\Study;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -15,8 +16,7 @@ class StudyController extends Controller
     {
         $studies = Study::all(); // Récupère toutes les études disponibles
         $user = Auth::user();
-        $perso = $user->perso()->with(['enrolledStudies.study'])->first();
-
+        $perso = $user->perso()->with(['enrolledStudies.study', 'diplomas'])->first();
         $latestEnrollment = $perso->enrolledStudies->sortByDesc('created_at')->first();
         $currentStudyDetails = null; // Initialise la variable
         if ($latestEnrollment && $latestEnrollment->study) {
@@ -28,10 +28,10 @@ class StudyController extends Controller
                 'end_date' => $latestEnrollment->end_date,
             ];
         }
-
         return Inertia::render('Study/Index', [
             'studies' => $studies,
             'currentStudy' => $currentStudyDetails,
+            'persoDiplomas' => $perso->diplomas,
 
         ]);
     }
@@ -59,46 +59,50 @@ class StudyController extends Controller
     {
         $user = Auth::user();
         $personnage = $user->perso;
-
-        // Vérifiez si le personnage est défini et a les droits nécessaires
         if (!$personnage) {
             return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
         }
 
-        $study = Study::findOrFail($studyId); // Trouvez l'étude
+        $study = Study::findOrFail($studyId);
 
-        // Si le personnage n'a pas le diplôme requis (si un diplôme est requis pour l'étude)
+        // Vérifiez si le personnage a suffisamment d'argent pour s'inscrire à l'étude
+        if ($personnage->money < $study->price) {
+            return redirect()->back()->withErrors(['msg' => 'Vous n’avez pas suffisamment d’argent pour vous inscrire à cette étude.']);
+        }
+
         if ($study->required_diploma_id && !$personnage->diplomas->contains('id', $study->required_diploma_id)) {
             return redirect()->back()->withErrors(['msg' => 'Vous devez avoir le diplôme requis pour vous inscrire à cette étude.']);
         }
 
-        // Vérifier si le personnage est déjà inscrit à cette étude et que les études ne sont pas encore terminées
-        $existingEnrollment = $personnage->enrolledStudies()->where('study_id', $studyId)->where('end_date', '>', now())->first();
-        if ($existingEnrollment) {
-            return redirect()->back()->withErrors(['msg' => 'Le personnage est déjà inscrit à cette étude et elle n\'est pas encore terminée.']);
-        }
-
-        // Créer une nouvelle inscription dans la base de données avec la durée de l'étude
         DB::beginTransaction();
         try {
-            // Calculer la date de fin en fonction de la durée de l'étude
-            $endDate = now()->addDays($study->duration);
+            // Supprimez toutes les inscriptions existantes avant d'en créer une nouvelle
+            $personnage->enrolledStudies()->delete();
 
-            $enrollment = new PersoStudyEnrollment([
-                'perso_id' => $personnage->id,
+            // Déduisez le coût de l'étude de l'argent du personnage
+            $personnage->money -= $study->price;
+            $personnage->save();
+
+            // Création d'une nouvelle inscription
+            $endDate = now()->addDays($study->duration)->format('Y-m-d');
+            $personnage->enrolledStudies()->create([
                 'study_id' => $studyId,
-                'start_date' => now(),
-                'end_date' => $endDate,  // Ajoutez la date de fin basée sur la durée de l'étude
+                'end_date' => $endDate,
             ]);
-            $enrollment->save();
 
+            // Validez la transaction
             DB::commit();
-            return redirect()->route('study.index')->with('message', 'Inscription à l’étude réussie.');
+            return redirect()->route('study.index')->with('message', 'Inscription à l’étude réussie et paiement effectué.');
         } catch (\Exception $e) {
+            // Si une erreur survient, annulez la transaction
             DB::rollBack();
             return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’inscription à l’étude.']);
         }
     }
+
+
+
+
 
     public function resign()
     {
@@ -115,37 +119,34 @@ class StudyController extends Controller
         return redirect()->route('study.index')->with('message', 'Vous avez quitté l\'étude avec succès.');
     }
 
+    public function claimDiploma(Request $request, $studyId)
+    {
+        $user = Auth::user();
+        $personnage = $user->perso;
 
+        if (!$personnage) {
+            return redirect()->route('study.index')->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
+        }
 
-    // public function dropCurrentStudy()
-    // {
-    //     $user = Auth::user();
-    //     $personnage = $user->perso;
+        $study = Study::findOrFail($studyId);
+        $diploma = $study->diploma;
+        if (!$diploma) {
+            return redirect()->route('study.index')->withErrors(['msg' => 'Cette étude ne propose aucun diplôme.']);
+        }
 
-    //     if (!$personnage) {
-    //         return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
-    //     }
+        if (!$personnage->diplomas->contains('id', $diploma->id)) {
+            $personnage->diplomas()->attach($diploma->id);
 
-    //     // Récupérer l'inscription à l'étude actuelle
-    //     $latestEnrollment = $personnage->enrolledStudies()->latest()->first(); // Utiliser la relation définie pour obtenir la dernière inscription
+            $enrollment = PersoStudyEnrollment::where('perso_id', $personnage->id)
+                ->where('study_id', $study->id)
+                ->first();
+            if ($enrollment) {
+                $enrollment->delete();
+            }
 
-    //     if (!$latestEnrollment) {
-    //         return redirect()->back()->withErrors(['msg' => 'Aucune étude en cours associée à ce personnage.']);
-    //     }
-
-    //     // Commencer la transaction
-    //     DB::beginTransaction();
-    //     try {
-    //         // Supprimer l'inscription à l'étude actuelle
-    //         $latestEnrollment->delete(); // Cela supprime l'inscription mais ne change pas l'étude elle-même
-
-    //         // Valider la transaction
-    //         DB::commit();
-    //         return redirect()->route('study')->with('message', 'Vous avez abandonné vos études avec succès.');
-    //     } catch (\Exception $e) {
-    //         // Annuler la transaction en cas d'erreur
-    //         DB::rollBack();
-    //         return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’abandon des études.']);
-    //     }
-    // }
+            return redirect()->route('study.index')->with('message', 'Diplôme récupéré avec succès. Inscription aux études terminée.');
+        } else {
+            return redirect()->route('study.index')->withErrors(['msg' => 'Le personnage possède déjà ce diplôme.']);
+        }
+    }
 }

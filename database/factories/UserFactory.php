@@ -22,7 +22,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'pseudo' => $this->faker->userName,
+            'name' => $this->faker->userName,
             'email' => $this->faker->unique()->safeEmail,
             'password' => Hash::make('password'),  // Utiliser Hash pour hasher le mot de passe
             'email_verified_at' => now(),

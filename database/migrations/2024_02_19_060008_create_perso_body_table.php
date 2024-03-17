@@ -10,8 +10,11 @@ class CreatePersoBodyTable extends Migration
     {
         Schema::create('perso_bodies', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('genders_id')->nullable(); 
             $table->string('img_perso');
             $table->text('description')->nullable();
+            $table->foreign('genders_id')->references('id')->on('genders')->onDelete('cascade'); 
+
             $table->timestamps();
         });
     }

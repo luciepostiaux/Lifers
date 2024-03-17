@@ -8,35 +8,38 @@ const props = defineProps({
     studies: Array,
     currentStudy: Object,
     studyDetails: Object,
-    userDiplomas: Array,
+    persoDiplomas: Array,
 });
 
 const enrollForStudy = (studyId) => {
-    // Vous pouvez ajouter ici la logique pour vérifier si le personnage a déjà ce diplôme ou si le diplôme requis est présent
     Inertia.post(route("study.enroll", { studyId }));
 };
-const userCanEnroll = (study) => {
-    // Assurez-vous que props.userDiplomas est défini et est un tableau.
-    const hasDiplomas = Array.isArray(props.userDiplomas);
 
-    // Si l'étude ne requiert pas de diplôme, alors l'utilisateur peut s'inscrire.
-    if (!study.diplomas_required_id) {
+const hasDiploma = (study) => {
+    // Assurez-vous que props.persoDiplomas est défini et est un tableau.
+    if (
+        props.persoDiplomas.some((diploma) => diploma.id === study.diplomas_id)
+    ) {
         return true;
     }
+};
 
-    // Si l'utilisateur a des diplômes, vérifier si l'un d'eux correspond au diplôme requis par l'étude.
-    const hasRequiredDiploma =
-        hasDiplomas &&
-        props.userDiplomas.some(
+const userCanEnroll = (study) => {
+    const hasDiplomas = Array.isArray(props.persoDiplomas);
+    if (
+        !hasDiplomas ||
+        props.persoDiplomas.some((diploma) => diploma.id === study.diplomas_id)
+    ) {
+        return false;
+    }
+    if (
+        !study.diplomas_required_id ||
+        props.persoDiplomas.some(
             (diploma) => diploma.id === study.diplomas_required_id
-        );
-
-    // Vérifie également si l'utilisateur est actuellement inscrit à cette étude.
-    const isCurrentlyEnrolled =
-        props.currentStudy && props.currentStudy.id === study.id;
-
-    // L'utilisateur peut s'inscrire s'il a le diplôme requis et n'est pas déjà inscrit.
-    return hasRequiredDiploma && !isCurrentlyEnrolled;
+        )
+    ) {
+        return true;
+    }
 };
 </script>
 <template>
@@ -95,16 +98,6 @@ const userCanEnroll = (study) => {
 
             <div v-if="studyDetails" class="flex flex-col space-y-4">
                 <p class="text-sm">{{ studyDetails.name }}</p>
-
-                <!-- <p
-                                class="text-sm"
-                                v-if="studyDetails && studyDetails.end_date"
-                            >
-                                Fin prévue : {{ studyDetails.end_date }}
-                                <span v-if="daysRemaining"
-                                    >{{ daysRemaining }} jours restants.</span
-                                >
-                            </p> -->
                 <p class="text-sm" v-if="studyDetails.end_date">
                     Fin prévue : {{ studyDetails.end_date }}
                 </p>
@@ -166,6 +159,13 @@ const userCanEnroll = (study) => {
                         >
                             Postuler
                         </button>
+
+                        <span
+                            v-else-if="hasDiploma(study)"
+                            class="text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                            >Diplôme déjà acquis</span
+                        >
+
                         <span
                             v-else
                             class="text-sm bg-red-500 text-white font-bold py-2 px-4 rounded"

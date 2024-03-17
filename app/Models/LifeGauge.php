@@ -22,6 +22,7 @@ class LifeGauge extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'perso_id',
         'hunger',
         'thirst',
         'clean',

@@ -43,7 +43,6 @@ class DashboardController extends Controller
         ] : null;
 
         $bodyImageUrl = $perso && $perso->body ? $perso->body->img_perso : null;
-        // dd($bodyImageUrl);
         return Inertia::render('Dashboard', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,

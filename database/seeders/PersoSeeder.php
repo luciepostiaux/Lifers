@@ -25,7 +25,6 @@ class PersoSeeder extends Seeder
             'mother_id' => null,
             'father_id' => null,
             'partner_id' => null,
-            'genders_id' => 1,
             'perso_bodies_id' => 1,
         ]);
         Perso::create([
@@ -41,7 +40,6 @@ class PersoSeeder extends Seeder
             'mother_id' => null,
             'father_id' => null,
             'partner_id' => null,
-            'genders_id' => 2,
             'perso_bodies_id' => 1,
         ]);
 
@@ -65,6 +63,6 @@ class PersoSeeder extends Seeder
         // ]);
 
 
-        Perso::factory()->count(25)->create();
+        // Perso::factory()->count(25)->create();
     }
 }

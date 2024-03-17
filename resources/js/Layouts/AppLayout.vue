@@ -53,6 +53,7 @@ const logout = () => {
 
                             <!-- Navigation Links -->
                             <div
+                                v-if="!route().current('character.create')"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -542,7 +543,7 @@ const logout = () => {
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <!-- <slot name="header" /> -->
 
-                    <div class="">
+                    <div v-if="$page.props.perso">
                         <h1 class="text-lg font-bold">
                             {{ $page.props.perso.first_name }}
                             {{ $page.props.perso.last_name }}

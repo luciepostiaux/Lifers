@@ -23,7 +23,6 @@ class CreatePersoTable extends Migration
             $table->foreignId('mother_id')->nullable()->constrained('perso')->onDelete('set null');
             $table->foreignId('father_id')->nullable()->constrained('perso')->onDelete('set null');
             $table->foreignId('partner_id')->nullable()->constrained('perso')->onDelete('set null');
-            $table->foreignId('genders_id')->constrained()->onDelete('no action');
             $table->foreignId('perso_bodies_id')->nullable()->constrained('perso_bodies')->onDelete('set null');
 
             $table->timestamps();
