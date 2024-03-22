@@ -15,6 +15,8 @@ class CreateLifeGaugesTable extends Migration
             $table->tinyInteger('thirst')->unsigned();
             $table->tinyInteger('clean')->unsigned();
             $table->tinyInteger('happiness')->unsigned();
+            $table->tinyInteger('entertainment')->unsigned();
+            $table->tinyInteger('physical_condition')->unsigned();
             $table->tinyInteger('health')->unsigned();
             $table->timestamps();
 

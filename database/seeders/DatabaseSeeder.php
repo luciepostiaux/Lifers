@@ -50,6 +50,9 @@ class DatabaseSeeder extends Seeder
             ItemEffectsSeeder::class,
             PersoStudyEnrollmentsSeeder::class,
             RoleSeeder::class,
+            ActivitiesTableSeeder::class,
+            ActivityEffectsTableSeeder::class,
+            SportSessionTableSeeder::class,
 
         ]);
     }

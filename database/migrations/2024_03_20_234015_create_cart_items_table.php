@@ -9,23 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('inventories_has_items', function (Blueprint $table) {
+        Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('inventories_id')->constrained()->onDelete('cascade');
-            $table->foreignId('items_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('quantity')->nullable();
+            $table->foreignId('perso_id')->constrained('perso')->onDelete('cascade');
+            $table->foreignId('item_id')->constrained()->onDelete('cascade');
+            $table->integer('quantity')->default(1);
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventories_has_items');
+        Schema::dropIfExists('cart_items');
     }
 };

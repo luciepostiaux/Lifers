@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtHomeController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\LifeGaugesController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ProfilPersoController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StudyController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -55,6 +58,7 @@ Route::middleware([
 
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
+    Route::post('/consume-item', [AtHomeController::class, 'consumeItem'])->name('consume-item');
 
     Route::get('/study', [StudyController::class, 'index'])->name('study.index');
     Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');
@@ -70,10 +74,24 @@ Route::middleware([
     Route::post('/job/change/{newJobId}', [JobController::class, 'changeJob'])->name('job.change');
 
     Route::get('/city', [CityController::class, 'index'])->name('city');
+    Route::get('/city/lifemarket', [CityController::class, 'lifeMarket'])->name('city.entertainment');
+    Route::get('/city/entertainment', [CityController::class, 'entertainment'])->name('city.entertainment');
+    Route::get('/city/sport', [CityController::class, 'sport'])->name('city.sport');
+    Route::post('/city/buy-single-sport-session', [CityController::class, 'buySingleSportSession'])->name('city.buySingleSportSession');
+    Route::post('/city/subscribe-to-gym', [SubscriptionController::class, 'subscribeToGym'])->name('city.subscribeToGym');
+    Route::post('/city/participate', [CityController::class, 'participateInActivity'])->name('city.participate');
+    Route::post('/city/cancel-gym-subscription', [SubscriptionController::class, 'cancelGymSubscription'])->name('city.cancelGymSubscription');
+
+    Route::post('/purchase', [CartController::class, 'purchase'])->name('purchase');
+
+
+
 
     Route::get('/mail', [MailController::class, 'index'])->name('mail');
 
     Route::get('/social', [SocialController::class, 'index'])->name('social');
+    Route::get('/life-gauges', [LifeGaugesController::class, 'index'])->name('life-gauges.index');
+    // Route::put('/life-gauges/{perso}', [LifeGaugesController::class, 'update'])->name('life-gauges.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {

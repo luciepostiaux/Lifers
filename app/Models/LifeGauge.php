@@ -27,6 +27,8 @@ class LifeGauge extends Model
         'thirst',
         'clean',
         'happiness',
+        'entertainment',
+        'physical_condition',
         'health',
     ];
 
@@ -47,6 +49,8 @@ class LifeGauge extends Model
         'thirst' => 'integer',
         'clean' => 'integer',
         'happiness' => 'integer',
+        'entertainment' => 'integer',
+        'physical_condition' => 'integer',
         'health' => 'integer',
     ];
 

@@ -22,6 +22,8 @@ class DashboardController extends Controller
                 'Soif' => $lifeGauge->thirst,
                 'Propreté' => $lifeGauge->clean,
                 'Bonheur' => $lifeGauge->happiness,
+                'Divertissement' => $lifeGauge->entertainment,
+                'Condition physique' => $lifeGauge->physical_condition,
                 'Santé' => $lifeGauge->health,
             ];
         }

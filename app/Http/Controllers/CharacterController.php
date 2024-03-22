@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\LifeGauge;
 use App\Models\Perso;
 use App\Models\PersoBody;
@@ -49,6 +50,8 @@ class CharacterController extends Controller
 
         $perso->save();
 
+        $inventory = new Inventory(['perso_id' => $perso->id]);
+        $inventory->save();
 
         $lifeGauges = new LifeGauge([
             'perso_id' => $perso->id,
@@ -56,6 +59,7 @@ class CharacterController extends Controller
             'thirst' => 100,
             'clean' => 100,
             'happiness' => 100,
+            'entertainment' => 100,
             'health' => 100,
         ]);
 

@@ -21,12 +21,12 @@ class ItemFactory extends Factory
      */
     public function definition()
     {
-        return [
-            'name' => $this->faker->word,
-            'price' => $this->faker->randomFloat(2, 0.99, 100.00),
-            'description' => $this->faker->sentence,
-            'img_item' => 'images/items/foods/' . $this->faker->numberBetween(1, 100) . '.jpg',
-            'category' => $this->faker->randomElement(['Nourriture', 'Boisson', 'Décoration']),
-        ];
+        // return [
+        //     'name' => $this->faker->word,
+        //     'price' => $this->faker->randomFloat(2, 0.99, 100.00),
+        //     'description' => $this->faker->sentence,
+        //     'img_item' => 'images/items/foods/' . $this->faker->numberBetween(1, 100) . '.jpg',
+        //     'category' => $this->faker->randomElement(['Nourriture', 'Boisson', 'Décoration']),
+        // ];
     }
 }

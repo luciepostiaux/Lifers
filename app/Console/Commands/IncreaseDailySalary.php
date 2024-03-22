@@ -15,7 +15,10 @@ class IncreaseDailySalary extends Command
     {
         $personnages = Perso::all();
         foreach ($personnages as $personnage) {
-            $personnage->increment('money', $personnage->salary);
+            if (is_numeric($personnage->salary)) {
+                // Assurez-vous que salary est un nombre avant de l'incrémenter
+                $personnage->increment('money', $personnage->salary);
+            }
         }
 
         $this->info('Les salaires quotidiens ont été distribués.');

@@ -10,11 +10,10 @@ class InventoriesSeeder extends Seeder
 {
     public function run()
     {
-        // Récupère tous les personnages
-        $personnages = Perso::all();
+        // Assurez-vous que les personnages existent
+        $persos = Perso::all();
 
-        // Crée un inventaire pour chaque personnage
-        foreach ($personnages as $perso) {
+        foreach ($persos as $perso) {
             Inventory::create([
                 'perso_id' => $perso->id,
             ]);

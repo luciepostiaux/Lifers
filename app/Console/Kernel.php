@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,13 +14,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Ajouter cette ligne dans la fonction schedule
-        $schedule->call(function () {
-            DB::table('perso')
-                ->whereNotNull('jobs_id')
-                ->increment('money', DB::raw('salary'));
-        })->dailyAt('14:56');
+        $schedule->command('increase:daily-salary')->daily();
+        $schedule->command('decrease:life-gauges')->daily();
     }
+
 
     /**
      * Register the commands for the application.

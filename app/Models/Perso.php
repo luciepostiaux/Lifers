@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -65,7 +66,10 @@ class Perso extends Model
     //         ]);
     //     });
     // }
-
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class, 'perso_id');
+    }
 
     public function user()
     {
@@ -182,5 +186,20 @@ class Perso extends Model
         $currentStudyDiplomaId = $this->currentStudy()->diploma->id;
 
         return Study::where('diplomas_required_id', $currentStudyDiplomaId)->get();
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+    public function cancelCurrentSubscription()
+    {
+        $this->subscriptions()->where('type')
+            ->where('end_date', '>', Carbon::now())
+            ->update(['status' => 'cancelled']);
     }
 }
