@@ -12,10 +12,11 @@ class AtHomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $perso = $user->perso()->with(['lifeGauge', 'inventory.items.effects'])->first();
+        $perso = $user->perso()->with(['lifeGauge', 'inventory.items.effects', 'sicknesses'])->first();
 
         $lifeGauges = null;
         $inventoryItemsByCategory = [];
+        $currentSicknesses = [];
 
         if ($perso && $perso->lifeGauge) {
             $lifeGauge = $perso->lifeGauge;
@@ -41,11 +42,22 @@ class AtHomeController extends Controller
                 ];
             }
         }
-
+        if ($perso && $perso->sicknesses) {
+            foreach ($perso->sicknesses as $sickness) {
+                $currentSicknesses[] = [
+                    'id' => $sickness->id,
+                    'name' => $sickness->name,
+                    'description' => $sickness->description,
+                    'contracted_at' => $sickness->pivot->created_at, // Assurez-vous que cette date est formatée si nécessaire
+                ];
+            }
+        }
 
         return Inertia::render('AtHome/Index', [
             'lifeGauges' => $lifeGauges,
             'inventoryItemsByCategory' => $inventoryItemsByCategory,
+            'currentSicknesses' => $currentSicknesses, 
+
         ]);
     }
 

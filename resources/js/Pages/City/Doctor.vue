@@ -2,17 +2,16 @@
 import { toRefs } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Inertia } from "@inertiajs/inertia";
-import { defineProps } from "vue";
 
-const { currentSicknesses, allSicknesses } = toRefs(
-    defineProps({
-        currentSicknesses: Array,
-        allSicknesses: Array,
-    })
-);
+const props = defineProps({
+    currentSicknesses: Array,
+    allSicknesses: Array,
+});
+
+const { currentSicknesses, allSicknesses } = toRefs(props);
 
 const treatSickness = (sicknessId) => {
-    Inertia.post("/path/to/treat/sickness", { sicknessId });
+    Inertia.post("/treat-sickness", { sicknessId });
 };
 
 const formatDate = (dateString) => {
@@ -20,6 +19,7 @@ const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("fr-FR", options);
 };
 </script>
+
 <template>
     <AppLayout title="Soin des maladies">
         <div class="container mx-auto p-4">

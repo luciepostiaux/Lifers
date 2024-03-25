@@ -79,7 +79,8 @@ Route::middleware([
     Route::get('/city/lifemarket', [CityController::class, 'lifeMarket'])->name('city.entertainment');
     Route::get('/city/entertainment', [CityController::class, 'entertainment'])->name('city.entertainment');
     Route::get('/city/doctor', [CityController::class, 'doctor'])->name('doctor.index');
-    Route::post('/doctor/treat', [SicknessController::class, 'treatSickness'])->name('doctor.treat');
+    Route::post('/treat-sickness', [SicknessController::class, 'treatSickness'])->name('treat-sickness');
+
 
 
     Route::get('/city/sport', [CityController::class, 'sport'])->name('city.sport');

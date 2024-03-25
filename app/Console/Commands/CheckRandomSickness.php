@@ -20,13 +20,17 @@ class CheckRandomSickness extends Command
         foreach ($personnages as $perso) {
             foreach ($randomSicknesses as $sickness) {
                 $age = $perso->calculateAge();
-                // Vérifiez si 'chance' est déjà un tableau, sinon décodez-le
                 $chance = is_array($sickness->chance) ? $sickness->chance : json_decode($sickness->chance, true);
                 $ageRange = $this->getAgeRange($age);
                 $sicknessChance = $chance[$ageRange] ?? 0;
 
-                if (rand(1, 100) <= $sicknessChance && $perso->lifeGauge) {
+                // Vérifiez si la maladie est déjà active pour ce personnage
+                $existingSickness = DB::table('perso_has_sickness')
+                    ->where('perso_id', $perso->id)
+                    ->where('sickness_id', $sickness->id)
+                    ->first();
 
+                if (!$existingSickness && rand(1, 100) <= $sicknessChance && $perso->lifeGauge) {
                     // Insérer la maladie pour le personnage
                     DB::table('perso_has_sickness')->insert([
                         'perso_id' => $perso->id,
@@ -36,12 +40,11 @@ class CheckRandomSickness extends Command
                     ]);
                     $this->info("Perso {$perso->first_name} has contracted {$sickness->name}");
 
-                    // Récupérer les effets de la maladie
+                    // Récupérer et appliquer les effets de la maladie
                     $effects = DB::table('sickness_effects')
                         ->where('sickness_id', $sickness->id)
                         ->get();
 
-                    // Appliquer les effets au personnage
                     foreach ($effects as $effect) {
                         $currentValue = $perso->lifeGauge->{$effect->gauge};
                         $newValue = max(0, $currentValue + $effect->effect); // Assurez-vous que les jauges ne descendent pas en dessous de 0.

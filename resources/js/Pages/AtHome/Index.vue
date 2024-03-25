@@ -7,6 +7,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 const props = defineProps({
     lifeGauges: Object,
     inventoryItemsByCategory: Object,
+    currentSicknesses: Array,
 });
 const gaugeColor = (value) => {
     if (value <= 20) return "bg-red-500";
@@ -25,6 +26,10 @@ const consumeItem = (item) => {
             preserveState: false, // Cela rafraîchira les données après la requête
         }
     );
+};
+const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("fr-FR", options);
 };
 </script>
 
@@ -48,6 +53,28 @@ const consumeItem = (item) => {
                     ></div>
                 </div>
             </div>
+            <h2 class="text-xl font-bold mb-4">Maladies Actuelles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div
+                    v-for="sickness in currentSicknesses"
+                    :key="sickness.id"
+                    class="bg-white p-4 rounded-lg shadow-md flex flex-col"
+                >
+                    <div class="flex-grow">
+                        <h4 class="text-md font-semibold">
+                            {{ sickness.name }}
+                        </h4>
+                        <p class="text-gray-600 mt-1">
+                            {{ sickness.description }}
+                        </p>
+                        <p class="text-gray-600">
+                            Contracté le:
+                            {{ formatDate(sickness.contracted_at) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <h2 class="text-2xl font-semibold mb-4">Inventaire</h2>
             <div
                 v-for="(items, category) in inventoryItemsByCategory"
