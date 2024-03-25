@@ -18,6 +18,9 @@ const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("fr-FR", options);
 };
+const visitDoctor = () => {
+    Inertia.post("/visit-doctor");
+};
 </script>
 
 <template>
@@ -31,7 +34,14 @@ const formatDate = (dateString) => {
                 Sélectionnez une maladie et payez le traitement nécessaire pour
                 améliorer sa santé.
             </p>
-
+            <div class="mb-8">
+                <button
+                    @click="visitDoctor"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Visiter le Médecin (150€)
+                </button>
+            </div>
             <h2 class="text-xl font-bold mb-4">Maladies Actuelles</h2>
             <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"

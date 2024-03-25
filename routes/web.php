@@ -80,6 +80,7 @@ Route::middleware([
     Route::get('/city/entertainment', [CityController::class, 'entertainment'])->name('city.entertainment');
     Route::get('/city/doctor', [CityController::class, 'doctor'])->name('doctor.index');
     Route::post('/treat-sickness', [SicknessController::class, 'treatSickness'])->name('treat-sickness');
+    Route::post('/visit-doctor', [SicknessController::class, 'visitDoctor'])->name('visit-doctor');
 
 
 
