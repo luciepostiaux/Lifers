@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\Item;
+use App\Models\Sickness;
 use App\Models\SportSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,11 +41,7 @@ class CityController extends Controller
     {
         $user = Auth::user();
         $perso = $user->perso;
-
-        // Récupérer toutes les sessions de sport disponibles
         $sportSessions = SportSession::all();
-
-        // Vérifier s'il existe un abonnement actif pour l'utilisateur
         $activeSubscription = null;
 
         if ($perso) {
@@ -53,7 +50,7 @@ class CityController extends Controller
                 ->where('end_date', '>', now())
                 ->first();
         }
-        // Renvoyer les données à la vue avec les séances de sport et l'abonnement actif
+
         return Inertia::render('City/Sport', [
             'sportSessions' => $sportSessions,
             'activeSubscription' => $activeSubscription,
@@ -66,24 +63,17 @@ class CityController extends Controller
     {
         $user = Auth::user();
         $perso = $user->perso;
-
         $sessionPrice = 40;
         $sessionEffect = 15;
 
-        // Vérifier si le personnage a suffisamment d'argent pour la séance
         if ($perso->money < $sessionPrice) {
             return redirect()->back()->withErrors('Vous n\'avez pas assez d\'argent pour cette séance.');
         }
 
-        // Déduire le prix de la séance de l'argent du personnage
         $perso->decrement('money', $sessionPrice);
-
-        // Mettre à jour la jauge de condition physique du personnage
         $currentPhysicalCondition = $perso->lifeGauge->physical_condition;
-        $newPhysicalCondition = max(0, min(100, $currentPhysicalCondition + $sessionEffect)); // Garde la valeur entre 0 et 100
+        $newPhysicalCondition = max(0, min(100, $currentPhysicalCondition + $sessionEffect));
         $perso->lifeGauge->update(['physical_condition' => $newPhysicalCondition]);
-
-        // Sauvegarder les changements de la jauge de vie
         $perso->lifeGauge->save();
 
         return redirect()->back()->with('success', 'Séance de sport achetée avec succès.');
@@ -106,30 +96,43 @@ class CityController extends Controller
         $perso = $user->perso;
         $activity = Activity::findOrFail($request->activityId);
 
-        // Vérifier si l'utilisateur a suffisamment d'argent pour participer à l'activité
+
         if ($perso->money < $activity->price) {
             return redirect()->back()->withErrors('Vous n\'avez pas assez d\'argent pour cette activité.');
         }
 
-        // Déduire le prix de l'activité de l'argent du personnage
         $perso->decrement('money', $activity->price);
-
-        // Accéder aux effets de l'activité et les appliquer à la jauge correspondante du personnage
-        $effects = $activity->effects; // Assurez-vous que votre modèle Activity est bien configuré pour retourner les effets
+        $effects = $activity->effects;
         foreach ($effects as $effect) {
             $gauge = $effect->effect_type;
             $value = $effect->effect_value;
 
-            // Appliquer l'effet à la jauge correspondante, en vous assurant de ne pas dépasser les limites
+
             if (in_array($gauge, ['hunger', 'thirst', 'clean', 'happiness', 'health', 'entertainment'])) {
                 $currentValue = $perso->lifeGauge->{$gauge};
-                $newValue = max(0, min(100, $currentValue + $value)); // Garde la valeur entre 0 et 100
+                $newValue = max(0, min(100, $currentValue + $value));
                 $perso->lifeGauge->{$gauge} = $newValue;
             }
         }
 
-        $perso->lifeGauge->save(); // Sauvegarder les changements de la jauge de vie
+        $perso->lifeGauge->save();
 
         return redirect()->back()->with('success', 'Vous avez participé à l\'activité avec succès.');
     }
+
+    public function doctor()
+    {
+        $user = Auth::user();
+        $perso = $user->perso;
+        $allSicknesses = Sickness::all(); // Récupère toutes les maladies
+
+        $currentSicknesses = $perso->sicknesses()->withPivot('created_at')->get();
+        // dd($currentSicknesses);
+        return Inertia::render('City/Doctor', [
+            'currentSicknesses' => $currentSicknesses,
+            'allSicknesses' => $allSicknesses,
+
+        ]);
+    }
+   
 }

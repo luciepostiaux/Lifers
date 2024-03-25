@@ -11,6 +11,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\LifeGaugesController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ProfilPersoController;
+use App\Http\Controllers\SicknessController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StudyController;
 use App\Http\Controllers\SubscriptionController;
@@ -74,17 +75,18 @@ Route::middleware([
     Route::post('/job/change/{newJobId}', [JobController::class, 'changeJob'])->name('job.change');
 
     Route::get('/city', [CityController::class, 'index'])->name('city');
+
     Route::get('/city/lifemarket', [CityController::class, 'lifeMarket'])->name('city.entertainment');
     Route::get('/city/entertainment', [CityController::class, 'entertainment'])->name('city.entertainment');
+    Route::get('/city/doctor', [CityController::class, 'doctor'])->name('doctor.index');
+    Route::post('/doctor/treat', [SicknessController::class, 'treatSickness'])->name('doctor.treat');
+
+
     Route::get('/city/sport', [CityController::class, 'sport'])->name('city.sport');
     Route::post('/city/buy-single-sport-session', [CityController::class, 'buySingleSportSession'])->name('city.buySingleSportSession');
-
     Route::post('/city/subscribe-to-gym', [SubscriptionController::class, 'subscribeToGym'])->name('city.subscribeToGym');
-
     Route::post('/city/cancel-gym-subscription', [SubscriptionController::class, 'cancelGymSubscription'])->name('city.cancelGymSubscription');
-
     Route::post('/city/participate', [CityController::class, 'participateInActivity'])->name('city.participate');
-
 
     Route::post('/purchase', [CartController::class, 'purchase'])->name('purchase');
 

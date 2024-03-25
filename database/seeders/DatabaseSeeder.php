@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             InventoriesOutfitsBottomsSeeder::class,
             InventoriesOutfitsShoesSeeder::class,
             InventoryItemSeeder::class,
-            SicknessSicknessGaugesSeeder::class,
+            SicknessEffectsSeeder::class,
             PersoSicknessSeeder::class,
             FriendshipsSeeder::class,
             EventsUsersSeeder::class,

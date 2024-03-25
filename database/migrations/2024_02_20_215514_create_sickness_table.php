@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->integer('duration')->nullable();
-            $table->integer('chance')->nullable();
+            $table->json('chance')->nullable();
+            $table->string('type')->default('aléatoire');
+            $table->boolean('needs_doctor')->default(false); 
+            $table->boolean('self_resolving')->default(true);
+            $table->decimal('treatment_cost', 8, 2)->nullable();
             $table->timestamps();
         });
-
     }
 
     /**

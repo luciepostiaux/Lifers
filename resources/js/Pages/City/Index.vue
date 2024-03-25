@@ -18,7 +18,7 @@ defineProps({});
                     Aller au LifeMarket
                 </Link>
                 <Link
-                    href="/doctor"
+                    href="/city/doctor"
                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Aller au Médecin
