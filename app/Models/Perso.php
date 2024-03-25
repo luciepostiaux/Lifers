@@ -194,8 +194,9 @@ class Perso extends Model
     }
     public function subscriptions()
     {
-        return $this->hasMany(Subscription::class);
+        return $this->hasMany(Subscription::class, 'perso_id');
     }
+
     public function cancelCurrentSubscription()
     {
         $this->subscriptions()->where('type')

@@ -55,7 +55,7 @@ const consumeItem = (item) => {
             >
                 <h3 class="text-lg font-semibold mb-2">{{ category }}</h3>
                 <div
-                    class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4"
+                    class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
                 >
                     <div
                         v-for="item in items"

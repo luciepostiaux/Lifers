@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\Item;
 use App\Models\SportSession;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -41,14 +40,26 @@ class CityController extends Controller
     {
         $user = Auth::user();
         $perso = $user->perso;
-        $activeSubscription = $perso->subscriptions()->where('type')->where('end_date', '>', Carbon::now())->first();
-        $sportSessions = SportSession::all(); // Assurez-vous que ceci existe déjà
 
+        // Récupérer toutes les sessions de sport disponibles
+        $sportSessions = SportSession::all();
+
+        // Vérifier s'il existe un abonnement actif pour l'utilisateur
+        $activeSubscription = null;
+
+        if ($perso) {
+            $activeSubscription = $perso->subscriptions()
+                ->where('type', 'gym')
+                ->where('end_date', '>', now())
+                ->first();
+        }
+        // Renvoyer les données à la vue avec les séances de sport et l'abonnement actif
         return Inertia::render('City/Sport', [
             'sportSessions' => $sportSessions,
-            'activeSubscription' => $activeSubscription, // Ajoutez ceci
+            'activeSubscription' => $activeSubscription,
         ]);
     }
+
 
 
     public function buySingleSportSession(Request $request)

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('perso_id')->constrained('perso')->onDelete('cascade');
             $table->string('type');
+            $table->string('name');
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->enum('status', ['active', 'cancelled', 'expired'])->default('active');

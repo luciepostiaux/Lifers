@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('sport_sessions', function (Blueprint $table) {
             $table->id();
-            $table->string('type'); 
+            $table->string('name');
+            $table->string('type')->default('gym');
             $table->integer('price');
-            $table->integer('duration'); 
-            $table->integer('effect'); 
+            $table->integer('duration');
+            $table->integer('effect');
             $table->timestamps();
         });
     }

@@ -13,8 +13,8 @@ class SportSessionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        SportSession::create(['type' => 'premium', 'price' => 100, 'duration' => 1, 'effect' => 20]);
-        SportSession::create(['type' => 'standard', 'price' => 130, 'duration' => 3, 'effect' => 40]);
-        SportSession::create(['type' => 'basic', 'price' => 200, 'duration' => 7, 'effect' => 60]);
+        SportSession::create(['name' => 'premium', 'type' => 'gym', 'price' => 100, 'duration' => 1, 'effect' => 20]);
+        SportSession::create(['name' => 'standard', 'type' => 'gym', 'price' => 130, 'duration' => 3, 'effect' => 40]);
+        SportSession::create(['name' => 'basic', 'type' => 'gym', 'price' => 200, 'duration' => 7, 'effect' => 60]);
     }
 }

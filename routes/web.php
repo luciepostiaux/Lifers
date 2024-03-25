@@ -78,9 +78,13 @@ Route::middleware([
     Route::get('/city/entertainment', [CityController::class, 'entertainment'])->name('city.entertainment');
     Route::get('/city/sport', [CityController::class, 'sport'])->name('city.sport');
     Route::post('/city/buy-single-sport-session', [CityController::class, 'buySingleSportSession'])->name('city.buySingleSportSession');
+
     Route::post('/city/subscribe-to-gym', [SubscriptionController::class, 'subscribeToGym'])->name('city.subscribeToGym');
-    Route::post('/city/participate', [CityController::class, 'participateInActivity'])->name('city.participate');
+
     Route::post('/city/cancel-gym-subscription', [SubscriptionController::class, 'cancelGymSubscription'])->name('city.cancelGymSubscription');
+
+    Route::post('/city/participate', [CityController::class, 'participateInActivity'])->name('city.participate');
+
 
     Route::post('/purchase', [CartController::class, 'purchase'])->name('purchase');
 

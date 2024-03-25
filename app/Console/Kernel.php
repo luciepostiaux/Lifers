@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('increase:daily-salary')->daily();
         $schedule->command('decrease:life-gauges')->daily();
+        $schedule->command('update:life-gauges-from-subscriptions')->daily();
     }
 
 

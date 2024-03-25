@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Inertia } from "@inertiajs/inertia";
 
@@ -8,13 +8,37 @@ const props = defineProps({
     activeSubscription: Object,
 });
 
-const subscribeToGym = (sessionType) => {
-    Inertia.post("/city/subscribe-to-gym", { subscriptionType: sessionType });
+// Fonction pour acheter une séance de sport à l'unité
+const buySingleSession = () => {
+    Inertia.post("/city/buy-single-sport-session", { sessionId: "single" });
 };
 
+// Souscrire à un abonnement à la salle de sport
+const subscribeToGym = (sessionName) => {
+    Inertia.post("/city/subscribe-to-gym", { subscriptionName: sessionName });
+};
+
+// Annuler l'abonnement actif
 const cancelGymSubscription = () => {
+    // Assurez-vous que cette route est correctement définie dans votre contrôleur Laravel
     Inertia.post("/city/cancel-gym-subscription");
 };
+
+const isActiveSubscription = (name) => {
+    const isActive =
+        props.activeSubscription &&
+        props.activeSubscription.name === name &&
+        props.activeSubscription.status === "active";
+    console.log(`IsActive for ${name}: ${isActive}`);
+    return isActive;
+};
+const hasActiveSubscription = computed(() => {
+    return (
+        props.activeSubscription && props.activeSubscription.status === "active"
+    );
+});
+
+console.log(props.activeSubscription);
 </script>
 
 <template>
@@ -42,7 +66,7 @@ const cancelGymSubscription = () => {
                     class="bg-white p-6 rounded-lg shadow"
                 >
                     <h3 class="text-lg font-semibold mb-2">
-                        {{ session.type }}
+                        {{ session.name }}
                     </h3>
                     <p class="mb-4">Prix: {{ session.price }} Lifers' coins</p>
                     <p class="mb-4">
@@ -52,22 +76,30 @@ const cancelGymSubscription = () => {
                         Effet: +{{ session.effect }} condition physique
                     </p>
                     <button
-                        v-if="
-                            activeSubscription &&
-                            activeSubscription.type === session.type &&
-                            activeSubscription.status === 'active'
+                        :disabled="
+                            hasActiveSubscription &&
+                            !isActiveSubscription(session.name)
                         "
-                        @click="cancelGymSubscription"
-                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        :class="[
+                            'font-bold py-2 px-4 rounded text-white',
+                            hasActiveSubscription &&
+                            !isActiveSubscription(session.name)
+                                ? 'bg-gray-500 hover:bg-gray-500 cursor-not-allowed'
+                                : isActiveSubscription(session.name)
+                                ? 'bg-red-500 hover:bg-red-700'
+                                : 'bg-blue-500 hover:bg-blue-700',
+                        ]"
+                        @click="
+                            hasActiveSubscription &&
+                            isActiveSubscription(session.name)
+                                ? cancelGymSubscription()
+                                : subscribeToGym(session.name)
+                        "
                     >
-                        Abonnement Actif - Annuler
-                    </button>
-                    <button
-                        v-else
-                        @click="subscribeToGym(session.type)"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Souscrire
+                        <span v-if="isActiveSubscription(session.name)"
+                            >Annuler abonnement actif</span
+                        >
+                        <span v-else>Souscrire</span>
                     </button>
                 </div>
             </div>

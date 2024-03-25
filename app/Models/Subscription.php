@@ -10,11 +10,19 @@ class Subscription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'perso_id', 'type', 'start_date', 'end_date', 'status'
+        'perso_id', 'type', 'name', 'start_date', 'end_date', 'status'
+    ];
+    protected $casts = [
+        'end_date' => 'datetime',
+        // incluez ici d'autres champs si nécessaire
     ];
 
+    public function sportSession()
+    {
+        return $this->belongsTo(SportSession::class, 'name', 'name');
+    }
     public function perso()
     {
-        return $this->belongsTo(Perso::class);
+        return $this->belongsTo(Perso::class, 'perso_id');
     }
 }
