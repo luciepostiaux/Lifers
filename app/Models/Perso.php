@@ -25,6 +25,7 @@ class Perso extends Model
     protected $fillable = [
         'first_name',
         'last_name',
+        'perso_bodies_id',
         'birth_date',
         'money',
         'user_id',
@@ -202,5 +203,20 @@ class Perso extends Model
         $this->subscriptions()->where('type')
             ->where('end_date', '>', Carbon::now())
             ->update(['status' => 'cancelled']);
+    }
+
+    public function commentsReceived()
+    {
+        return $this->hasMany(ProfileComment::class, 'receiver_perso_id');
+    }
+
+    public function commentsMade()
+    {
+        return $this->hasMany(ProfileComment::class, 'author_perso_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(PersoImage::class, 'perso_id');
     }
 }

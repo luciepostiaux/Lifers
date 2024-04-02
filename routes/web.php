@@ -5,6 +5,7 @@ use App\Http\Controllers\AtHomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\JobController;
@@ -97,7 +98,20 @@ Route::middleware([
 
     Route::get('/mail', [MailController::class, 'index'])->name('mail');
 
-    Route::get('/social', [SocialController::class, 'index'])->name('social');
+    Route::get('/social/{id?}', [SocialController::class, 'index'])->name('social');
+
+
+    Route::get('/conversations', [ConversationController::class, 'index']);
+
+    Route::post('/conversations', [ConversationController::class, 'store']);
+
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+
+    Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'fetchMessages']);
+    Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage']);
+
+
+
     Route::get('/life-gauges', [LifeGaugesController::class, 'index'])->name('life-gauges.index');
     // Route::put('/life-gauges/{perso}', [LifeGaugesController::class, 'update'])->name('life-gauges.update');
 });

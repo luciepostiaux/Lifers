@@ -92,12 +92,7 @@ const logout = () => {
                                 >
                                     Ville
                                 </NavLink>
-                                <NavLink
-                                    :href="route('mail')"
-                                    :active="route().current('mail')"
-                                >
-                                    Messagerie
-                                </NavLink>
+
                                 <NavLink
                                     :href="route('social')"
                                     :active="route().current('social')"

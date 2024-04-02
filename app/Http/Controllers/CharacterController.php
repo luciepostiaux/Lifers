@@ -9,6 +9,7 @@ use App\Models\PersoBody;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CharacterController extends Controller
@@ -35,35 +36,31 @@ class CharacterController extends Controller
         if ($existingPerso) {
             return redirect()->back()->with('error', 'Vous avez déjà un personnage actif.');
         }
+        DB::transaction(
+            function () use ($request) {
+                $perso = Perso::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'perso_bodies_id' => $request->perso_bodies_id,
+                    'user_id' => Auth::id(),
+                    'birth_date' => Carbon::today()->toDateString(),
+                    'money' => 900,
 
-        $perso = new Perso();
-        $perso->first_name = $request->first_name;
-        $perso->last_name = $request->last_name;
-        $perso->perso_bodies_id = $request->perso_bodies_id;
-        $perso->user_id = Auth::id();
-        $perso->birth_date = Carbon::today()->toDateString();
-        $perso->money = 900;
-        $perso->hairstyles_id = null;
-        $perso->jobs_id = null;
-        $perso->mother_id = null;
-        $perso->father_id = null;
+                ]);
+                Inventory::create(['perso_id' => $perso->id]);
 
-        $perso->save();
-
-        $inventory = new Inventory(['perso_id' => $perso->id]);
-        $inventory->save();
-
-        $lifeGauges = new LifeGauge([
-            'perso_id' => $perso->id,
-            'hunger' => 100,
-            'thirst' => 100,
-            'clean' => 100,
-            'happiness' => 100,
-            'entertainment' => 100,
-            'health' => 100,
-        ]);
-
-        $lifeGauges->save();
+                LifeGauge::create([
+                    'perso_id' => $perso->id,
+                    'hunger' => 100,
+                    'thirst' => 100,
+                    'clean' => 100,
+                    'happiness' => 100,
+                    'entertainment' => 100,
+                    'health' => 100,
+                    'physical_condition' => 100,
+                ]);
+            }
+        );
 
         return redirect()->route('dashboard')->with('success', 'Personnage créé avec succès.');
     }

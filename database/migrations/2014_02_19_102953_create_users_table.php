@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('consentement_rgpd')->nullable();
             $table->dateTime('last_login_at')->nullable();
             $table->integer('consecutive_login_days')->default(1);
+            $table->boolean('is_online')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

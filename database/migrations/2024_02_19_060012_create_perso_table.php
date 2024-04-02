@@ -16,6 +16,7 @@ class CreatePersoTable extends Migration
             $table->decimal('money', 10, 2);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->text('description')->nullable();
             $table->foreignId('hairstyles_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('perso_outfits_id')->nullable()->constrained()->onDelete('no action');
             $table->foreignId('jobs_id')->nullable()->constrained()->onDelete('set null');

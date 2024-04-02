@@ -54,6 +54,7 @@ class DatabaseSeeder extends Seeder
             ActivityEffectsTableSeeder::class,
             SportSessionTableSeeder::class,
 
+
         ]);
     }
 }

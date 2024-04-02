@@ -86,4 +86,30 @@ class User extends Authenticatable
     {
         return $this->roles()->where('name', $role)->exists();
     }
+
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class)->withTimestamps();
+    }
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Envoie un message à une conversation.
+     *
+     * @param  \App\Models\Conversation $conversation
+     * @param  string $content
+     * @return \App\Models\Message
+     */
+    public function sendMessageToConversation(Conversation $conversation, $content)
+    {
+        $message = new Message(['content' => $content]);
+        $message->conversation()->associate($conversation);
+        $message->sender()->associate($this);
+        $message->save();
+
+        return $message;
+    }
 }
