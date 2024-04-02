@@ -39,6 +39,7 @@ class Perso extends Model
         'father_id',
         'partner_id',
         'genders_id',
+        'description',
     ];
 
     /**

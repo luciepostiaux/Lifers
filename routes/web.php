@@ -48,6 +48,8 @@ Route::middleware([
     Route::post('/character/store', [CharacterController::class, 'store'])->name('character.store');
 });
 
+Route::get('/utilisateur/{perso}', [ProfilPersoController::class, 'public'])->name('profil.public');
+
 
 Route::middleware([
     'auth:sanctum',
@@ -59,6 +61,9 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
+    Route::post('/profil/description', [ProfilPersoController::class, 'saveDescription'])->name('profil.description');
+
+
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
     Route::post('/consume-item', [AtHomeController::class, 'consumeItem'])->name('consume-item');
 
