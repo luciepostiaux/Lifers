@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('friendships', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('perso_id')->constrained('perso')->onDelete('cascade'); // Assurez-vous que 'perso' est correct
-            $table->foreignId('friend_id')->constrained('perso', 'id')->onDelete('cascade'); // Ici aussi
+            $table->foreignId('perso_id')->constrained('perso')->onDelete('cascade'); 
+            $table->foreignId('friend_id')->constrained('perso', 'id')->onDelete('cascade'); 
+            $table->boolean('is_accepted')->default(false);
             $table->timestamps();
         });
     }

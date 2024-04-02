@@ -23,6 +23,7 @@ class Inventory extends Model
      */
     protected $fillable = [
         'perso_id',
+
     ];
 
     /**
@@ -57,6 +58,7 @@ class Inventory extends Model
     }
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'inventories_has_items', 'inventories_id', 'items_id');
+        return $this->belongsToMany(Item::class, 'inventories_has_items', 'inventories_id', 'items_id')
+            ->withPivot('quantity');
     }
 }

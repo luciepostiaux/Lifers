@@ -13,7 +13,7 @@ class CreateJobsTable extends Migration
             $table->string('name', 45);
             $table->string('description_1', 1500);
             $table->string('description_2', 1500);
-            $table->unsignedDecimal('salary'); // DECIMAL UNSIGNED NOT NULL
+            $table->unsignedDecimal('salary');
             $table->string('img_job', 255);
             $table->foreignId('diplomas_id')->constrained()->onDelete('no action')->onUpdate('no action');
             $table->foreignId('places_id')->nullable()->constrained()->onDelete('set null')->onUpdate('cascade');

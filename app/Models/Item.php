@@ -50,4 +50,8 @@ class Item extends Model
     {
         return $this->belongsToMany(Inventory::class, 'inventories_has_items', 'items_id', 'inventories_id');
     }
+    public function effects()
+    {
+        return $this->hasMany(ItemEffect::class);
+    }
 }

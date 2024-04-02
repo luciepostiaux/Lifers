@@ -24,12 +24,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'pseudo',
+        'name',
         'email',
         'password',
         'consentement_newsletter',
         'date_consentement',
         'consentement_rgpd',
+        'last_login_at',
+        'consecutive_login_days',
     ];
 
     /**
@@ -58,9 +60,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+
+    public function perso()
+    {
+        return $this->hasOne(Perso::class);
+    }
+
 
     public function events()
     {
@@ -70,5 +75,41 @@ class User extends Authenticatable
     public function rewinds()
     {
         return $this->belongsToMany(Rewind::class, 'rewinds_has_users', 'user_id', 'rewind_id')->withTimestamps();
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class)->withTimestamps();
+    }
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Envoie un message à une conversation.
+     *
+     * @param  \App\Models\Conversation $conversation
+     * @param  string $content
+     * @return \App\Models\Message
+     */
+    public function sendMessageToConversation(Conversation $conversation, $content)
+    {
+        $message = new Message(['content' => $content]);
+        $message->conversation()->associate($conversation);
+        $message->sender()->associate($this);
+        $message->save();
+
+        return $message;
     }
 }

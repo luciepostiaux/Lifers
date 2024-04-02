@@ -15,12 +15,9 @@ class Suggestion extends Model
         'user_id',
         'content',
         'status',
-        'timestamp',
     ];
 
-    protected $casts = [
-        'timestamp' => 'datetime',
-    ];
+    protected $casts = [];
 
     public function user()
     {

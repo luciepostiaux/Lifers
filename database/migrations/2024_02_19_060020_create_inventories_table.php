@@ -10,7 +10,7 @@ class CreateInventoriesTable extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('perso_id')->constrained('perso')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('perso_id')->constrained('perso')->onDelete('cascade');
             $table->timestamps();
         });
     }

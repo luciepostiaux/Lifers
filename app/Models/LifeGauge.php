@@ -22,10 +22,13 @@ class LifeGauge extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'perso_id',
         'hunger',
         'thirst',
         'clean',
         'happiness',
+        'entertainment',
+        'physical_condition',
         'health',
     ];
 
@@ -46,6 +49,13 @@ class LifeGauge extends Model
         'thirst' => 'integer',
         'clean' => 'integer',
         'happiness' => 'integer',
+        'entertainment' => 'integer',
+        'physical_condition' => 'integer',
         'health' => 'integer',
     ];
+
+    public function perso()
+    {
+        return $this->belongsTo(Perso::class, 'perso_id');
+    }
 }

@@ -16,12 +16,16 @@ class Sickness extends Model
         'description',
         'duration',
         'chance',
+        'type',
+        'needs_doctor',
+        'self_resolving',
     ];
 
     protected $casts = [
         'duration' => 'integer',
-        'chance' => 'integer',
+        'chance' => 'array',
     ];
+
 
     /**
      * Les personnages affectés par cette maladie.
@@ -36,5 +40,9 @@ class Sickness extends Model
         return $this->belongsToMany(SicknessGauge::class, 'sickness_has_sickness_gauges', 'sickness_id', 'sickness_gauges_id')
             ->withPivot('effect_value')
             ->withTimestamps();
+    }
+    public function conditions()
+    {
+        return $this->hasMany(SicknessCondition::class);
     }
 }

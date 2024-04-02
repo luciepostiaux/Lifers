@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,7 @@ class Perso extends Model
     protected $fillable = [
         'first_name',
         'last_name',
+        'perso_bodies_id',
         'birth_date',
         'money',
         'user_id',
@@ -50,6 +52,25 @@ class Perso extends Model
         'salary' => 'decimal:2',
     ];
 
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::created(function ($perso) {
+    //         LifeGauge::create([
+    //             'perso_id' => $perso->id,
+    //             'hunger' => 100,
+    //             'thirst' => 100,
+    //             'clean' => 100,
+    //             'happiness' => 100,
+    //             'health' => 100,
+    //         ]);
+    //     });
+    // }
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class, 'perso_id');
+    }
 
     public function user()
     {
@@ -63,8 +84,9 @@ class Perso extends Model
 
     public function lifeGauge()
     {
-        return $this->belongsTo(LifeGauge::class, 'life_gauges_id');
+        return $this->hasOne(LifeGauge::class, 'perso_id');
     }
+
 
     public function persoOutfit()
     {
@@ -76,10 +98,17 @@ class Perso extends Model
         return $this->belongsTo(Job::class, 'jobs_id');
     }
 
-    public function study()
+    public function enrolledStudies()
     {
-        return $this->belongsTo(Study::class, 'studies_id');
+        return $this->hasMany(PersoStudyEnrollment::class);
     }
+    public function resignFromStudy()
+    {
+        foreach ($this->enrolledStudies as $enrollment) {
+            $enrollment->delete();
+        }
+    }
+
 
     public function mother()
     {
@@ -104,13 +133,90 @@ class Perso extends Model
     {
         return $this->belongsToMany(Diploma::class, 'perso_has_diplomas', 'perso_id', 'diplomas_id');
     }
-    public function friends()
-    {
-        return $this->belongsToMany(Perso::class, 'friendships', 'perso_id', 'friend_id');
-    }
+
     public function sicknesses()
     {
         return $this->belongsToMany(Sickness::class, 'perso_has_sickness', 'perso_id', 'sickness_id')
             ->withTimestamps();
+    }
+
+    // Méthode pour envoyer une demande d'amitié
+    public function sendFriendRequestTo($friendId)
+    {
+        $this->friends()->attach($friendId, ['is_accepted' => false]);
+    }
+
+    // Méthode pour accepter une demande d'amitié
+    public function acceptFriendRequestFrom($friendId)
+    {
+        $this->friends()->updateExistingPivot($friendId, ['is_accepted' => true]);
+    }
+
+    // Méthode pour vérifier si deux persos sont amis
+    public function isFriendWith($friendId)
+    {
+        return $this->friends()->where('id', $friendId)->wherePivot('is_accepted', true)->exists();
+    }
+
+    // Modifier la relation 'friends' pour inclure le pivot 'is_accepted'
+    public function friends()
+    {
+        return $this->belongsToMany(Perso::class, 'friendships', 'perso_id', 'friend_id')->withPivot('is_accepted')->withTimestamps();
+    }
+    public function body()
+    {
+        return $this->belongsTo(PersoBody::class, 'perso_bodies_id');
+    }
+
+    public function calculateAge()
+    {
+        $startingAge = 18;
+        $createdAt = $this->birth_date;
+        $now = now();
+        $daysDifference = $createdAt->diffInDays($now);
+        $ageIncrement = intdiv($daysDifference, 3);
+        return $startingAge + $ageIncrement;
+    }
+
+    public function currentStudy()
+    {
+        return $this->enrolledStudies()->latest('start_date')->first();
+    }
+    public function associatedStudies()
+    {
+        $currentStudyDiplomaId = $this->currentStudy()->diploma->id;
+
+        return Study::where('diplomas_required_id', $currentStudyDiplomaId)->get();
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class, 'perso_id');
+    }
+
+    public function cancelCurrentSubscription()
+    {
+        $this->subscriptions()->where('type')
+            ->where('end_date', '>', Carbon::now())
+            ->update(['status' => 'cancelled']);
+    }
+
+    public function commentsReceived()
+    {
+        return $this->hasMany(ProfileComment::class, 'receiver_perso_id');
+    }
+
+    public function commentsMade()
+    {
+        return $this->hasMany(ProfileComment::class, 'author_perso_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(PersoImage::class, 'perso_id');
     }
 }
