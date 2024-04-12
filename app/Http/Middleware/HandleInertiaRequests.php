@@ -43,6 +43,9 @@ class HandleInertiaRequests extends Middleware
                 'warning' => fn () => $request->session()->get('warning'),
 
             ],
+            'hasNotification' => fn () => $request->user()
+                ? $request->user()->notifications()->where('read', false)->get()->isNotEmpty()
+                : null,
         ]);
     }
 }

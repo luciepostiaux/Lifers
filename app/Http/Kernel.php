@@ -38,6 +38,9 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\InjectNotifications::class,
+            \App\Http\Middleware\ShareInertiaData::class,
+
         ],
 
         'api' => [
@@ -72,6 +75,7 @@ class Kernel extends HttpKernel
         // autres middlewares...
         'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
         'ensure-perso' => \App\Http\Middleware\EnsureUserHasPerso::class,
+
 
     ];
 }

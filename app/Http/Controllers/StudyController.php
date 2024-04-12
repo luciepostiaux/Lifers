@@ -24,6 +24,7 @@ class StudyController extends Controller
                 'id' => $latestEnrollment->study->id,
                 'name' => $latestEnrollment->study->name,
                 'description' => $latestEnrollment->study->description_1,
+                'img' => $latestEnrollment->study->img_study,
                 'start_date' => $latestEnrollment->start_date,
                 'end_date' => $latestEnrollment->end_date,
             ];

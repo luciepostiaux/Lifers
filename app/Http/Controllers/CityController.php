@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\Item;
 use App\Models\Sickness;
 use App\Models\SportSession;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,8 +14,23 @@ use Inertia\Inertia;
 class CityController extends Controller
 {
     public function index()
+
     {
-        return Inertia::render('City/Index');
+        $usersWithPerso = User::with(['perso' => function ($query) {
+            $query->select(['id', 'first_name', 'last_name', 'birth_date', 'user_id']);
+        }])
+            ->orderBy('is_online', 'desc')
+            ->get()
+            ->map(function ($user) {
+                if ($user->perso) {
+                    $user->perso->age = $user->perso->calculateAge(); 
+                }
+                return $user;
+            });
+
+        return Inertia::render('City/Index', [
+            'usersWithPerso' => $usersWithPerso,
+        ]);
     }
     public function lifeMarket()
     {
@@ -134,5 +150,4 @@ class CityController extends Controller
 
         ]);
     }
-   
 }

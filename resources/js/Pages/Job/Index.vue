@@ -42,37 +42,42 @@ const isCurrentJob = (job) => {
 
 <template>
     <AppLayout title="Jobs">
-        <div class="container mx-auto p-4">
-            <section class="space-y-2">
-                <h2 class="text-2xl font-bold mb-4">Métiers disponibles</h2>
-                <p>
-                    Le choix de ton métier est plus qu'une décision, c'est le
-                    début d'une aventure. Que tu te vois cultiver la terre en
-                    tant qu'Agriculteur ou analyser des données en tant que
-                    Juriste, chaque voie t'ouvre des portes uniques. Fais de ta
-                    passion ton quotidien et trouve l'équilibre parfait entre
-                    satisfaction personnelle et réussite professionnelle.
-                </p>
-                <p>
-                    Chaque métier dans notre monde est une chance de montrer ce
-                    dont tu es capable. Tu peux choisir de créer avec style et
-                    audace en tant que Styliste, ou d'innover et de construire
-                    en tant qu'Ingénieur. Prends les rênes de ton destin, plonge
-                    dans le métier qui te fait vibrer et écris ton propre récit
-                    de succès.
-                </p>
-            </section>
-            <img
-                src="/images/places/poleemploi.webp"
-                alt="Workplace Image"
-                class="size-64"
-            />
-            <div v-if="currentJob" class="mb-8">
-                <h2 class="text-2xl font-bold mb-2">Job Actuel</h2>
+        <div class="container flex flex-col p-4 gap-4 mx-auto md:pt-24">
+            <div class="flex bg-white p-4 rounded-lg shadow-md">
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Lif'Emploi</h2>
+                    <p>
+                        Le choix de ton métier est plus qu'une décision, c'est
+                        le début d'une aventure. Que tu te vois cultiver la
+                        terre en tant qu'Agriculteur ou analyser des données en
+                        tant que Juriste, chaque voie t'ouvre des portes
+                        uniques. Fais de ta passion ton quotidien et trouve
+                        l'équilibre parfait entre satisfaction personnelle et
+                        réussite professionnelle.
+                    </p>
+                    <p>
+                        Chaque métier dans notre monde est une chance de montrer
+                        ce dont tu es capable. Tu peux choisir de créer avec
+                        style et audace en tant que Styliste, ou d'innover et de
+                        construire en tant qu'Ingénieur. Prends les rênes de ton
+                        destin, plonge dans le métier qui te fait vibrer et
+                        écris ton propre récit de succès.
+                    </p>
+                </div>
+                <img
+                    src="/images/places/poleemploi.webp"
+                    alt="Workplace Image"
+                    class="size-64"
+                />
+            </div>
+            <div v-if="currentJob" class="">
                 <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold">{{ currentJob.name }}</h3>
+                    <h2 class="text-xl font-bold mb-2">Métier actif</h2>
+                    <h3 class="text-lg font-semibold">
+                        {{ currentJob.name }}
+                    </h3>
                     <p class="text-sm text-gray-600">
-                        {{ currentJob.description }}
+                        {{ currentJob.description_1 }}
                     </p>
                     <Link
                         :href="`/job/current/${currentJob.id}`"
@@ -81,7 +86,7 @@ const isCurrentJob = (job) => {
                     >
                 </div>
             </div>
-            <div class="divide-y divide-gray-200">
+            <div class="bg-white p-4 rounded-lg shadow-md">
                 <div
                     v-for="job in jobs"
                     :key="job.id"
@@ -97,7 +102,9 @@ const isCurrentJob = (job) => {
                         />
                     </div>
                     <div class="flex-grow self-center">
-                        <h3 class="text-lg font-semibold">{{ job.name }}</h3>
+                        <h3 class="text-lg font-semibold">
+                            {{ job.name }}
+                        </h3>
                         <p class="text-sm text-gray-600 mt-1">
                             {{ job.description_1 }}
                         </p>

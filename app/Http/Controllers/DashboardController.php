@@ -12,6 +12,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $perso = $user->perso()->with(['lifeGauge', 'job', 'enrolledStudies.study'])->first();
+        $currentSicknesses = [];
 
         $money = $perso ? $perso->money : 0;
         $lifeGauges = null;
@@ -45,6 +46,16 @@ class DashboardController extends Controller
         ] : null;
 
         $bodyImageUrl = $perso && $perso->body ? $perso->body->img_perso : null;
+        if ($perso && $perso->sicknesses) {
+            foreach ($perso->sicknesses as $sickness) {
+                $currentSicknesses[] = [
+                    'id' => $sickness->id,
+                    'name' => $sickness->name,
+
+                ];
+            }
+        }
+
         return Inertia::render('Dashboard', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,
@@ -53,6 +64,8 @@ class DashboardController extends Controller
             'lifeGauges' => $lifeGauges,
             'studyDetails' => $studyDetails,
             'jobDetails' => $jobDetails,
+            'currentSicknesses' => $currentSicknesses,
+
         ]);
     }
 }

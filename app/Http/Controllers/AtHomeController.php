@@ -17,6 +17,7 @@ class AtHomeController extends Controller
         $lifeGauges = null;
         $inventoryItemsByCategory = [];
         $currentSicknesses = [];
+        $money = $perso ? $perso->money : 0;
 
         if ($perso && $perso->lifeGauge) {
             $lifeGauge = $perso->lifeGauge;
@@ -52,11 +53,16 @@ class AtHomeController extends Controller
                 ];
             }
         }
+        $bodyImageUrl = $perso && $perso->body ? $perso->body->img_perso : null;
 
         return Inertia::render('AtHome/Index', [
+            'perso' => $perso ? $perso->toArray() : null,
+            'bodyImageUrl' => $bodyImageUrl,
+            'money' => $money,
+            'age' => $perso ? $perso->calculateAge() : null,
             'lifeGauges' => $lifeGauges,
             'inventoryItemsByCategory' => $inventoryItemsByCategory,
-            'currentSicknesses' => $currentSicknesses, 
+            'currentSicknesses' => $currentSicknesses,
 
         ]);
     }

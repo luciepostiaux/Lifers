@@ -13,6 +13,27 @@ const props = defineProps({
     bodyImageUrl: String,
     studyDetails: Object,
 });
+
+const isFriend = ref(false);
+
+// Supposant que vous avez accès à l'ID du perso actuellement connecté
+const currentPersoId = ref(/* ID du perso actuel */);
+
+// Vérifie si les deux personnages sont déjà amis
+const checkFriendship = async () => {
+    // Utilisez votre API pour vérifier si currentPersoId et props.perso.id sont amis
+    // Mettez à jour isFriend en conséquence
+};
+
+const sendFriendRequest = (friendId) => {
+    // Utilisez Inertia pour envoyer une demande d'amitié
+    Inertia.post("/send-friend-request", { friendId });
+    // Gérez la réponse pour mettre à jour l'interface utilisateur
+};
+
+onMounted(async () => {
+    await checkFriendship();
+});
 </script>
 
 <template>
@@ -49,6 +70,13 @@ const props = defineProps({
                     <div class="text-center mt-4">
                         <p>Barre d'actions</p>
                         <p>Liste d'amis</p>
+                        <button
+                            v-if="!isFriend"
+                            class="btn-add-friend"
+                            @click="sendFriendRequest(perso.id)"
+                        >
+                            Ajouter comme ami
+                        </button>
                         <p>Famille + btn arbre</p>
                         <p>Animaux</p>
                     </div>

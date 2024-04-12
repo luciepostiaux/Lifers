@@ -164,6 +164,12 @@ class Perso extends Model
     {
         return $this->belongsToMany(Perso::class, 'friendships', 'perso_id', 'friend_id')->withPivot('is_accepted')->withTimestamps();
     }
+
+    public function pendingFriendRequests()
+    {
+        return $this->friends()->wherePivot('is_accepted', false)->get();
+    }
+
     public function body()
     {
         return $this->belongsTo(PersoBody::class, 'perso_bodies_id');

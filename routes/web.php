@@ -8,9 +8,12 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiplomaController;
+use App\Http\Controllers\FamilyController;
+use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\LifeGaugesController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfilPersoController;
 use App\Http\Controllers\SicknessController;
 use App\Http\Controllers\SocialController;
@@ -48,7 +51,7 @@ Route::middleware([
     Route::post('/character/store', [CharacterController::class, 'store'])->name('character.store');
 });
 
-Route::get('/utilisateur/{perso}', [ProfilPersoController::class, 'public'])->name('profil.public');
+Route::get('/perso/{perso}', [ProfilPersoController::class, 'public'])->name('profil.public');
 
 
 Route::middleware([
@@ -62,10 +65,14 @@ Route::middleware([
 
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
     Route::post('/profil/description', [ProfilPersoController::class, 'saveDescription'])->name('profil.description');
+    Route::post('/send-friend-request', [FriendshipController::class, 'sendRequest']);
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
 
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
     Route::post('/consume-item', [AtHomeController::class, 'consumeItem'])->name('consume-item');
+
+    Route::get('/family', [FamilyController::class, 'index'])->name('family');
 
     Route::get('/study', [StudyController::class, 'index'])->name('study.index');
     Route::get('/study/current/{id}', [StudyController::class, 'showCurrentStudy'])->name('study.current.show');

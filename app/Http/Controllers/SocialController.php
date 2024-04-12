@@ -22,7 +22,7 @@ class SocialController extends Controller
 
         if ($id === null) {
             $currentConversation = Conversation::firstOrCreate([
-                'name' => 'Test',
+                'name' => 'Général',
 
                 // Ajoutez ici d'autres critères si nécessaire
             ]);

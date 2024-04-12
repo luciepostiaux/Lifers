@@ -16,7 +16,6 @@ class JobController extends Controller
         $jobs = Job::with('diploma')->get();
         $user = Auth::user();
         $perso = $user->perso()->with(['job.diploma'])->first();
-
         return Inertia::render('Job/Index', [
             'jobs' => $jobs,
             'userDiplomas' => $perso ? $perso->diplomas : collect(),
