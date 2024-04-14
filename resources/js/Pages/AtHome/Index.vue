@@ -1,9 +1,8 @@
 <script setup>
 import { defineProps, ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
-// Définir les props ici
 const props = defineProps({
     perso: Object,
     bodyImageUrl: String,
@@ -15,22 +14,42 @@ const props = defineProps({
 });
 
 const selectedCategory = ref("");
+const searchTerm = ref("");
 
 const filteredItems = computed(() => {
-    // Si un filtre est sélectionné, retourne les items de cette catégorie.
+    let filtered = props.inventoryItemsByCategory;
+
+    if (searchTerm.value) {
+        const lowerSearchTerm = searchTerm.value.toLowerCase();
+        filtered = Object.fromEntries(
+            Object.entries(filtered).map(([category, items]) => [
+                category,
+                items.filter((item) =>
+                    item.name.toLowerCase().includes(lowerSearchTerm)
+                ),
+            ])
+        );
+    }
+
     if (selectedCategory.value) {
-        return props.inventoryItemsByCategory[selectedCategory.value] || [];
+        filtered = filtered[selectedCategory.value] || [];
+    } else {
+        let allItems = [];
+        for (let categoryItems of Object.values(filtered)) {
+            allItems = allItems.concat(categoryItems);
+        }
+        filtered = allItems;
     }
-    // Si aucun filtre n'est sélectionné, aplatit tous les items dans un seul tableau.
-    let allItems = [];
-    for (let categoryItems of Object.values(props.inventoryItemsByCategory)) {
-        allItems = allItems.concat(categoryItems);
-    }
-    return allItems; // Retourne un tableau d'items aplati
+
+    return filtered;
 });
 
 const filterByCategory = (category) => {
-    selectedCategory.value = category;
+    if (selectedCategory.value === category) {
+        selectedCategory.value = "";
+    } else {
+        selectedCategory.value = category;
+    }
 };
 
 const gaugeColor = (value) => {
@@ -40,21 +59,22 @@ const gaugeColor = (value) => {
 };
 
 const consumeItem = (item) => {
-    Inertia.post(
+    router.post(
         "/consume-item",
+        { itemId: item.id },
         {
-            itemId: item.id,
-        },
-        {
-            preserveState: false,
+            preserveState: true,
+            preserveScroll: true,
         }
     );
 };
+
 const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("fr-FR", options);
 };
 </script>
+
 <template>
     <AppLayout title="AtHome">
         <div class="flex justify-center">
@@ -101,54 +121,88 @@ const formatDate = (dateString) => {
                     </div>
                     <!-- Maladies Actuelles -->
                     <div class="bg-white p-8 rounded-lg shadow-md mb-4 md:mb-0">
-                        <h2 class="text-xl font-bold mb-4">Maladies actives</h2>
-                        <div
-                            v-for="sickness in currentSicknesses"
-                            :key="sickness.id"
-                            class="mb-4"
-                        >
-                            <h4 class="text-md font-semibold">
-                                {{ sickness.name }}
-                            </h4>
-                            <p class="text-sm text-gray-600 mt-1">
-                                {{ sickness.description }}
-                            </p>
-                            <p
-                                class="text-xs italic font-semibold text-right pt-2 text-gray-600"
+                        <h2 class="text-xl font-bold mb-4">
+                            <!-- Gestion du singulier/pluriel pour le titre -->
+                            {{
+                                currentSicknesses.length <= 1
+                                    ? "Maladie active"
+                                    : "Maladies actives"
+                            }}
+                        </h2>
+                        <div v-if="currentSicknesses.length > 0">
+                            <div
+                                v-for="sickness in currentSicknesses"
+                                :key="sickness.id"
+                                class="mb-4"
                             >
-                                Contracté le:
-                                {{ formatDate(sickness.contracted_at) }}
-                            </p>
+                                <h4 class="text-md font-semibold">
+                                    {{ sickness.name }}
+                                </h4>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    {{ sickness.description }}
+                                </p>
+                                <p
+                                    class="text-xs italic font-semibold text-right pt-2 text-gray-600"
+                                >
+                                    Contracté le:
+                                    {{ formatDate(sickness.contracted_at) }}
+                                </p>
+                            </div>
                         </div>
+                        <p v-else class="text-center text-sm text-gray-600">
+                            Aucune maladie pour le moment!
+                        </p>
                     </div>
                 </div>
                 <!-- Inventaire -->
                 <div class="bg-white p-8 rounded-lg shadow-md mt-4">
                     <h2 class="text-2xl font-semibold mb-4">Inventaire</h2>
-                    <div class="flex gap-4">
-                        <p>Filtre :</p>
-                        <button @click="filterByCategory('')">All</button>
-                        <button @click="filterByCategory('Nourriture')">
-                            Nourriture
+                    <div class="flex gap-4 mb-4">
+                        <input
+                            type="text"
+                            v-model="searchTerm"
+                            placeholder="Rechercher des articles..."
+                            class="p-2 border border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 rounded shadow-sm"
+                        />
+                        <button
+                            class="py-2 px-4 text-gray-100 bg-gray-500 text-sm font-semibold rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-gray-700"
+                            @click="filterByCategory('')"
+                        >
+                            Tout
                         </button>
-                        <button @click="filterByCategory('Boisson')">
-                            Boisson
-                        </button>
-                        <button @click="filterByCategory('Propreté')">
-                            Propreté
+                        <button
+                            v-for="category in Object.keys(
+                                props.inventoryItemsByCategory
+                            )"
+                            :key="category"
+                            :class="[
+                                'py-2 px-4 rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg',
+                                selectedCategory.valueOf() === category
+                                    ? 'bg-gray-400 text-gray-100'
+                                    : 'border-2 bg-white border-gray-400 text-gray-700 hover:text-gray-100 hover:bg-gray-700 hover:border-gray-700',
+                            ]"
+                            @click="filterByCategory(category)"
+                        >
+                            {{ category }}
                         </button>
                     </div>
-                    <!-- Utilisation directe de filteredItems puisqu'il s'agit désormais toujours d'un tableau -->
                     <div
-                        class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 pb-4"
+                        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 pb-4"
                     >
                         <div
                             v-for="item in filteredItems"
                             :key="item.id"
-                            class="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col"
+                            class="bg-white p-4 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg"
                         >
-                            <div class="flex-grow py-2">
-                                <h4 class="text-md font-semibold">
+                            <div class="size-36">
+                                <img
+                                    :src="item.img_item"
+                                    :alt="item.name"
+                                    class="mb-3"
+                                />
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="text-md font-bold">
                                     {{ item.name }}
                                 </h4>
                                 <div class="flex items-center space-x-1 pt-1">
@@ -160,10 +214,11 @@ const formatDate = (dateString) => {
                                     </p>
                                 </div>
                             </div>
-                            <div
-                                class="text-center text-sm font-semibold text-[#F5BC81]"
-                            >
-                                <button @click="consumeItem(item)" class="py-1">
+                            <div class="text-center mt-3">
+                                <button
+                                    @click="consumeItem(item)"
+                                    class="bg-gray-500 hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 active:bg-gray-800 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
+                                >
                                     Consommer
                                 </button>
                             </div>

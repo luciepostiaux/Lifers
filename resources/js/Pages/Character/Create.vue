@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     persoBodies: Array,
@@ -14,13 +14,14 @@ const form = ref({
 });
 
 const selectedBodyId = ref(null);
+
 const selectBody = (bodyId) => {
     selectedBodyId.value = bodyId;
-    form.value.perso_bodies_id = bodyId; 
+    form.value.perso_bodies_id = bodyId;
 };
 
 const submitForm = () => {
-    Inertia.post(route("character.store"), form.value);
+    router.post(route("character.store"), form.value);
 };
 </script>
 

@@ -1,27 +1,23 @@
 <script setup>
 import { defineProps, computed } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     sportSessions: Array,
     activeSubscription: Object,
 });
 
-// Fonction pour acheter une séance de sport à l'unité
 const buySingleSession = () => {
-    Inertia.post("/city/buy-single-sport-session", { sessionId: "single" });
+    router.post("/city/buy-single-sport-session", { sessionId: "single" });
 };
 
-// Souscrire à un abonnement à la salle de sport
 const subscribeToGym = (sessionName) => {
-    Inertia.post("/city/subscribe-to-gym", { subscriptionName: sessionName });
+    router.post("/city/subscribe-to-gym", { subscriptionName: sessionName });
 };
 
-// Annuler l'abonnement actif
 const cancelGymSubscription = () => {
-    // Assurez-vous que cette route est correctement définie dans votre contrôleur Laravel
-    Inertia.post("/city/cancel-gym-subscription");
+    router.post("/city/cancel-gym-subscription");
 };
 
 const isActiveSubscription = (name) => {
@@ -32,13 +28,12 @@ const isActiveSubscription = (name) => {
     console.log(`IsActive for ${name}: ${isActive}`);
     return isActive;
 };
+
 const hasActiveSubscription = computed(() => {
     return (
         props.activeSubscription && props.activeSubscription.status === "active"
     );
 });
-
-console.log(props.activeSubscription);
 </script>
 
 <template>

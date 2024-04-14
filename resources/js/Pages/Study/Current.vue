@@ -1,25 +1,26 @@
 <script setup>
 import { ref, defineProps } from "vue";
-import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
+import AppLayout from "@/Layouts/AppLayout.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
-import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
     studyDetails: Object,
     associatedStudies: Array,
     enrollmentDetails: Object,
 });
+
 const showModal = ref(false); // État pour contrôler la visibilité du modal
 
 const resignFromStudy = () => {
-    Inertia.post(
+    router.post(
+        // Utilisation de router.post
         route("study.resign"),
         {},
         {
             onFinish: () => {
-                // Vous pouvez mettre ici le code que vous souhaitez exécuter après la fin de l'action
-                // Par exemple, fermer une modale ou rafraîchir une partie de l'interface
+                // Code à exécuter après la fin de l'action
                 showModal.value = false;
             },
         }
@@ -28,15 +29,16 @@ const resignFromStudy = () => {
 
 const claimDiploma = () => {
     if (props.studyDetails && props.studyDetails.id) {
-        Inertia.post(
+        router.post(
+            // Utilisation de router.post
             route("study.claimDiploma", { study: props.studyDetails.id }),
             {},
             {
                 onSuccess: () => {
-                    // Votre logique de succès ici
+                    // Logique de succès ici
                 },
                 onError: () => {
-                    // Votre logique d'erreur ici
+                    // Logique d'erreur ici
                 },
             }
         );
@@ -45,6 +47,7 @@ const claimDiploma = () => {
     }
 };
 </script>
+
 <template>
     <AppLayout title="Suivi des études">
         <div class="container mx-auto p-4">

@@ -1,19 +1,26 @@
 <script setup>
 import { ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 const userIdForAssign = ref("");
 const diplomaIdForAssign = ref("");
-
-const assignDiploma = () => {
-    Inertia.post("/admin/grant-diploma", {
-        userId: userIdForAssign.value,
-        diplomaId: diplomaIdForAssign.value,
-    });
-};
-
 const userIdForRemove = ref("");
 const diplomaIdForRemove = ref("");
+
+const assignDiploma = () => {
+    router.post(
+        "/admin/grant-diploma",
+        {
+            userId: userIdForAssign.value,
+            diplomaId: diplomaIdForAssign.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
 
 const removeDiploma = () => {
     if (!userIdForRemove.value || !diplomaIdForRemove.value) {
@@ -21,10 +28,17 @@ const removeDiploma = () => {
         return;
     }
 
-    Inertia.post("/admin/remove-diploma", {
-        userId: userIdForRemove.value,
-        diplomaId: diplomaIdForRemove.value,
-    });
+    router.post(
+        "/admin/remove-diploma",
+        {
+            userId: userIdForRemove.value,
+            diplomaId: diplomaIdForRemove.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
 };
 </script>
 
@@ -37,7 +51,9 @@ const removeDiploma = () => {
                 role="alert"
             >
                 <p class="font-bold">Succès</p>
-                <p>{{ $page.props.flash.success }}</p>
+                <div v-if="$page.props.flash.success" class="alert-success">
+                    {{ $page.props.flash.success }}
+                </div>
             </div>
             <div
                 v-if="$page.props.flash.error"
@@ -60,7 +76,7 @@ const removeDiploma = () => {
                 Tableau de bord administrateur
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex gap-4">
                 <!-- Actions administratives -->
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-semibold pb-2">Gestion des diplômes</h3>
@@ -106,39 +122,35 @@ const removeDiploma = () => {
                     </div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Actions administratives -->
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="font-semibold pb-2">Gestion de l'argent</h3>
 
-                    <button
-                        class="px-4 py-2 text-sm bg-green-500 hover:bg-green-700 text-white rounded transition-all mb-2"
-                    >
-                        Ajouter des Lif'coins
-                    </button>
-                    <button
-                        class="px-4 py-2 text-sm bg-red-500 hover:bg-red-700 text-white rounded transition-all mb-2"
-                    >
-                        Retirer des Lif'coins
-                    </button>
-                </div>
+            <!-- Actions administratives -->
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h3 class="font-semibold pb-2">Gestion de l'argent</h3>
+
+                <button
+                    class="px-4 py-2 text-sm bg-green-500 hover:bg-green-700 text-white rounded transition-all mb-2"
+                >
+                    Ajouter des Lif'coins
+                </button>
+                <button
+                    class="px-4 py-2 text-sm bg-red-500 hover:bg-red-700 text-white rounded transition-all mb-2"
+                >
+                    Retirer des Lif'coins
+                </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Actions administratives -->
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="font-semibold pb-2">
-                        Gestion des jauges de vies
-                    </h3>
 
-                    <button
-                        class="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-700 text-white rounded transition-all"
-                    >
-                        Définir les jauges de vie
-                    </button>
-                </div>
+            <!-- Actions administratives -->
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h3 class="font-semibold pb-2">Gestion des jauges de vies</h3>
 
-                <!-- D'autres sections administratives peuvent être ajoutées ici -->
+                <button
+                    class="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-700 text-white rounded transition-all"
+                >
+                    Définir les jauges de vie
+                </button>
             </div>
+
+            <!-- D'autres sections administratives peuvent être ajoutées ici -->
         </div>
     </AppLayout>
 </template>

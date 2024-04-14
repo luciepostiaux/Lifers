@@ -2,7 +2,7 @@
 import { ref, defineProps, computed } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import JobDetailsModal from "@/Components/JobDetailsModal.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3"; // Renommé de Inertia
 import { Link } from "@inertiajs/vue3";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 
@@ -22,7 +22,7 @@ const userCanApply = (job) => {
 };
 
 const applyForJob = (jobId) => {
-    Inertia.post(route("job.apply", jobId));
+    router.post(route("job.apply", jobId)); // Utilisation de router.post
 };
 const requestApplyForJob = (jobId) => {
     jobToApplyFor.value = jobId; // Stocker l'ID du job

@@ -23,7 +23,7 @@ class CityController extends Controller
             ->get()
             ->map(function ($user) {
                 if ($user->perso) {
-                    $user->perso->age = $user->perso->calculateAge(); 
+                    $user->perso->age = $user->perso->calculateAge();
                 }
                 return $user;
             });
@@ -44,6 +44,7 @@ class CityController extends Controller
                 $inventoryQuantity = $inventoryItem ? $inventoryItem->pivot->quantity : 0;
             }
             $item->inventoryQuantity = $inventoryQuantity;
+            $item->img_item = asset($item->img_item);
             return $item;
         });
 

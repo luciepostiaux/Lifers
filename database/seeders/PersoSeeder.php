@@ -25,7 +25,7 @@ class PersoSeeder extends Seeder
             'mother_id' => null,
             'father_id' => null,
             'partner_id' => null,
-            'perso_bodies_id' => 1,
+            'perso_bodies_id' => 4,
         ]);
         Perso::create([
             'first_name' => 'Erik',
@@ -40,7 +40,7 @@ class PersoSeeder extends Seeder
             'mother_id' => null,
             'father_id' => null,
             'partner_id' => null,
-            'perso_bodies_id' => 1,
+            'perso_bodies_id' => 7,
         ]);
 
 

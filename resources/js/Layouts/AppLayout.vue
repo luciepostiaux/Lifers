@@ -294,7 +294,7 @@ const isSidebarOpen = ref(false);
                 <div class="flex-grow"></div>
 
                 <ul class="text-gray-500">
-                    <li
+                    <!-- <li
                         class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
                     >
                         <button
@@ -325,7 +325,7 @@ const isSidebarOpen = ref(false);
                                 >Notifications</span
                             >
                         </button>
-                    </li>
+                    </li> -->
 
                     <li
                         class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"

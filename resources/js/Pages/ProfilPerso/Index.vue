@@ -2,14 +2,13 @@
 import { ref, onMounted } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3"; 
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
     perso: Object,
     age: Number,
     money: String,
-
     bodyImageUrl: String,
     studyDetails: Object,
 });

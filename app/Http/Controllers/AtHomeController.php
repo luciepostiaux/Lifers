@@ -38,8 +38,11 @@ class AtHomeController extends Controller
                 $inventoryItemsByCategory[$item->category][] = [
                     'id' => $item->id,
                     'name' => $item->name,
+                    'description' => $item->description,
+
                     'quantity' => $item->pivot->quantity,
-                    'category' => $item->category, // Assurez-vous que vos articles ont une catégorie
+                    'category' => $item->category,
+                    'img_item' => asset("{$item->img_item}"),
                 ];
             }
         }
@@ -49,7 +52,7 @@ class AtHomeController extends Controller
                     'id' => $sickness->id,
                     'name' => $sickness->name,
                     'description' => $sickness->description,
-                    'contracted_at' => $sickness->pivot->created_at, // Assurez-vous que cette date est formatée si nécessaire
+                    'contracted_at' => $sickness->pivot->created_at,
                 ];
             }
         }

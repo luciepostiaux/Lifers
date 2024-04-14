@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, ref, computed } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 // Définir les props ici

@@ -1,7 +1,7 @@
 <script setup>
 import { toRefs } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3"; 
 
 const props = defineProps({
     currentSicknesses: Array,
@@ -11,15 +11,16 @@ const props = defineProps({
 const { currentSicknesses, allSicknesses } = toRefs(props);
 
 const treatSickness = (sicknessId) => {
-    Inertia.post("/treat-sickness", { sicknessId });
+    router.post("/treat-sickness", { sicknessId });
 };
 
 const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("fr-FR", options);
 };
+
 const visitDoctor = () => {
-    Inertia.post("/visit-doctor");
+    router.post("/visit-doctor");
 };
 </script>
 

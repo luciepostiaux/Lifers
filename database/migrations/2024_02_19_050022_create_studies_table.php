@@ -11,6 +11,8 @@ class CreateStudiesTable extends Migration
         Schema::create('studies', function (Blueprint $table) {
             $table->id();
             $table->string('name', 45);
+            $table->string('category', 45);
+
             $table->string('description_1', 1500);
             $table->unsignedDecimal('price', 10, 2);
             $table->integer('duration');

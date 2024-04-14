@@ -35,15 +35,13 @@ function sendMessage() {
                     headers: {
                         "Content-Type": "application/json",
                         Accept: "application/json",
-                        // 'Authorization': 'Bearer votre_token_jwt_ici', // Si authentification nécessaire
                     },
                 }
             )
             .then((response) => {
-                newMessage.value = ""; // Réinitialiser le champ de texte après l'envoi
-                // Ajouter le message envoyé à la liste des messages
+                newMessage.value = "";
                 messages.value.push(response.data);
-                scrollToBottom(); // Faire défiler vers le bas
+                scrollToBottom();
             })
             .catch((error) => {
                 console.error(
@@ -58,21 +56,17 @@ Echo.join(`conversation.${props.currentConversationId}`)
     .here((users) => {
         console.log("Utilisateurs déjà présents:", users);
         onlineUsers.value = users;
-        // Mettre à jour l'état avec les utilisateurs déjà présents
     })
     .joining((user) => {
         console.log("Un utilisateur a rejoint:", user);
-        // Ajouter cet utilisateur à l'état local
     })
     .leaving((user) => {
         console.log("Un utilisateur a quitté:", user);
-        // Retirer cet utilisateur de l'état local
     })
     .listen("MessageSent", (e) => {
         console.log("Nouveau message:", e.message);
-        // Ajouter ce nouveau message à l'état des messages
         messages.value.push(e.message);
-        scrollToBottom(); // Faire défiler vers le bas
+        scrollToBottom();
     });
 
 console.log("Echo instance:", window.Echo);

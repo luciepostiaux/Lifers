@@ -2,32 +2,27 @@
 import { ref, onMounted } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3"; // Renommé de Inertia
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
     perso: Object,
     age: Number,
     money: String,
-
     bodyImageUrl: String,
     studyDetails: Object,
 });
 
 const isFriend = ref(false);
-
-// Supposant que vous avez accès à l'ID du perso actuellement connecté
 const currentPersoId = ref(/* ID du perso actuel */);
 
-// Vérifie si les deux personnages sont déjà amis
 const checkFriendship = async () => {
-    // Utilisez votre API pour vérifier si currentPersoId et props.perso.id sont amis
-    // Mettez à jour isFriend en conséquence
+    // Ici, vous pouvez appeler une API ou similaire pour vérifier l'amitié
+    // Mettre à jour isFriend en conséquence
 };
 
 const sendFriendRequest = (friendId) => {
-    // Utilisez Inertia pour envoyer une demande d'amitié
-    Inertia.post("/send-friend-request", { friendId });
+    router.post("/send-friend-request", { friendId }); // Utilisation de router.post
     // Gérez la réponse pour mettre à jour l'interface utilisateur
 };
 

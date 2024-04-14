@@ -1,14 +1,15 @@
 <script setup>
 import { defineProps } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3"; 
 
 const props = defineProps({
     activitiesByCategory: Object,
 });
+
 const buyActivity = (activityId) => {
-    Inertia.post("/city/participate", {
-        activityId: activityId,
+    router.post("/city/participate", {
+        activityId,
     });
 };
 </script>

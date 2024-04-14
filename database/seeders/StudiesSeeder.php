@@ -10,7 +10,9 @@ class StudiesSeeder extends Seeder
     public function run()
     {
         Study::create([
-            'name' => 'Année Générale en Sciences de la Santé',
+            'name' =>
+            'Année Générale Sciences de la Santé',
+            'category' => 'Science',
             'description_1' => 'Plonge dans le monde fascinant de la santé, où chaque découverte et chaque soin compte. Ces premiers pas te préparent à comprendre le corps humain, ses mystères et les innombrables façons de le guérir et de le chérir.',
             'price' => 500.00,
             'duration' => 4,
@@ -21,7 +23,8 @@ class StudiesSeeder extends Seeder
             'places_id' => 1,
         ]);
         Study::create([
-            'name' => 'Spécialisation en Médecine Générale',
+            'name' => 'Spécialisation Médecine Générale',
+            'category' => 'Science',
             'description_1' => 'Deviens le premier rempart contre la maladie, le confident et le guide de tes patients. En médecine générale, chaque jour est un nouveau défi, une nouvelle chance de faire la différence dans la vie des gens.',
             'price' => 1200.00,
             'duration' => 12,
@@ -32,7 +35,8 @@ class StudiesSeeder extends Seeder
             'places_id' => 1,
         ]);
         Study::create([
-            'name' => 'Spécialisation en Chirurgie',
+            'name' => 'Spécialisation Chirurgie',
+            'category' => 'Science',
             'description_1' => "Entre dans le monde de précision de la chirurgie, où chaque geste peut sauver une vie. Ta habileté et ton calme sous pression font de toi le héros dans l'ombre, redonnant espoir et santé à ceux qui en ont besoin.",
             'price' => 1500.00,
             'duration' => 15,
@@ -43,7 +47,8 @@ class StudiesSeeder extends Seeder
             'places_id' => 1,
         ]);
         Study::create([
-            'name' => 'Spécialisation en Psychiatrie',
+            'name' => 'Spécialisation Psychiatrie',
+            'category' => 'Science',
             'description_1' => "Explore les profondeurs de l'esprit humain et deviens un pilier de soutien pour ceux qui luttent contre des adversaires invisibles. En psychiatrie, tu apportes la lumière là où il y a des ombres, changeant des vies une conversation à la fois.",
             'price' => 1300.00,
             'duration' => 12,
@@ -54,7 +59,8 @@ class StudiesSeeder extends Seeder
             'places_id' => 1,
         ]);
         Study::create([
-            'name' => 'Spécialisation en Soins Infirmiers',
+            'name' => 'Spécialisation Soins Infirmiers',
+            'category' => 'Science',
             'description_1' => "Sois le cœur battant du secteur de la santé, veillant sur tes patients jour et nuit. En soins infirmiers, ta compassion et ton dévouement font toute la différence, apportant confort et guérison à chaque étape.",
             'price' => 900.00,
             'duration' => 8,
@@ -65,7 +71,8 @@ class StudiesSeeder extends Seeder
             'places_id' => 1,
         ]);
         Study::create([
-            'name' => 'Spécialisation en Pharmacologie',
+            'name' => 'Spécialisation Pharmacologie',
+            'category' => 'Science',
             'description_1' => "Plonge dans l'univers complexe des médicaments, où chaque molécule a le pouvoir de guérir ou de protéger. La pharmacologie est ta chance de combattre la maladie au niveau le plus fondamental, avec sagesse et innovation.",
             'price' => 1100.00,
             'duration' => 10,

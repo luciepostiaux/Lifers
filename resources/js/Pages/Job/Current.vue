@@ -1,8 +1,8 @@
 <script setup>
 import { ref, defineProps } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import ConfirmationModal from "@/Components/ConfirmationModal.vue"; // Assurez-vous d'avoir ce composant ou créez-le
-import { Inertia } from "@inertiajs/inertia";
+import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import { router } from "@inertiajs/vue3";
 import { Link } from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -12,7 +12,7 @@ const props = defineProps({
 const showModal = ref(false); // État pour contrôler la visibilité du modal
 
 const resign = () => {
-    Inertia.post(
+    router.post(
         route("job.resign"),
         {},
         {

@@ -15,7 +15,7 @@ class FamilyController extends Controller
 
         $bodyImageUrl = $perso && $perso->body ? $perso->body->img_perso : null;
 
-        return Inertia::render('AtHome/Index', [
+        return Inertia::render('Family/Index', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,
 
