@@ -11,37 +11,44 @@ defineProps({
 <template>
     <AppLayout title="City">
         <template #header></template>
-        <div class="container flex flex-col gap-4 mx-auto p-4 md:p-2 md:pt-24">
-            <div class="flex bg-white p-4 rounded-lg shadow-md">
-                <div class="space-y-2">
-                    <h2 class="text-xl font-bold">Bienvenue à Lif'City</h2>
+        <div class="flex flex-col gap-4 mx-auto mb-4">
+            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+                <div class="flex bg-white p-4 rounded-lg shadow-md">
+                    <div class="space-y-2">
+                        <h2 class="text-xl font-bold">Bienvenue à Lif'City</h2>
 
-                    <p>
-                        Plonge au cœur de notre ville dynamique, où chaque rue
-                        est une invitation à l'aventure et chaque quartier un
-                        monde à découvrir. Que tu sois attiré par l'animation du
-                        marché, la quiétude d'une visite médicale, la vitalité
-                        d'une séance de sport, ou la diversité des
-                        divertissements, chaque lieu est une porte ouverte sur
-                        une expérience unique.
-                    </p>
-                    <p>
-                        Explore les rues animées qui vibrent au rythme de la vie
-                        citadine, où chaque coin de rue révèle une nouvelle
-                        surprise. Embrasse l'énergie de la ville et engage-toi
-                        dans un parcours qui résonne avec tes intérêts et tes
-                        aspirations. Que tu cherches à te divertir, à te former
-                        ou à trouver de nouvelles opportunités professionnelles,
-                        notre ville regorge d'opportunités et d'expériences à
-                        vivre.
-                    </p>
+                        <p>
+                            Plonge au cœur de notre ville dynamique, où chaque
+                            rue est une invitation à l'aventure et chaque
+                            quartier un monde à découvrir. Que tu sois attiré
+                            par l'animation du marché, la quiétude d'une visite
+                            médicale, la vitalité d'une séance de sport, ou la
+                            diversité des divertissements, chaque lieu est une
+                            porte ouverte sur une expérience unique.
+                        </p>
+                        <p>
+                            Explore les rues animées qui vibrent au rythme de la
+                            vie citadine, où chaque coin de rue révèle une
+                            nouvelle surprise. Embrasse l'énergie de la ville et
+                            engage-toi dans un parcours qui résonne avec tes
+                            intérêts et tes aspirations. Que tu cherches à te
+                            divertir, à te former ou à trouver de nouvelles
+                            opportunités professionnelles, notre ville regorge
+                            d'opportunités et d'expériences à vivre.
+                        </p>
+                    </div>
                 </div>
-                <img
-                    src="/images/places/ville.webp"
-                    alt="Workplace Image"
-                    class="size-64 object-cover"
-                />
+                <div
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                >
+                    <img
+                        src="/images/places/ville.webp"
+                        alt="Ville"
+                        class="object-cover h-full rounded-lg shadow-lg"
+                    />
+                </div>
             </div>
+
             <div class="bg-white p-4 rounded-lg shadow-md">
                 <div class="grid grid-cols-2 gap-4">
                     <Link

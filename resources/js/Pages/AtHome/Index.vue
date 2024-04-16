@@ -79,8 +79,8 @@ const formatDate = (dateString) => {
     <AppLayout title="AtHome">
         <template #header></template>
 
-        <div class="flex justify-center">
-            <div class="flex flex-col gap-4 mx-auto md:pt-24">
+        <div class="flex justify-center ">
+            <div class="flex flex-col gap-4 mx-auto">
                 <!-- Jauges de vie et Image du perso sur une ligne -->
                 <div
                     class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full"
@@ -93,7 +93,7 @@ const formatDate = (dateString) => {
                             <h2 class="text-3xl font-bold">Lif'Home</h2>
                             <h2
                                 v-if="perso"
-                                class="text-xl font-semibold text-gray-500 italic"
+                                class="text-xl font-semibold text-gray-500"
                             >
                                 {{ perso.first_name }}
                                 {{ perso.last_name }}

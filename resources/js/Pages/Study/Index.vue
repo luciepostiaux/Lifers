@@ -39,7 +39,7 @@ const userCanEnroll = (study) => {
 <template>
     <AppLayout title="Study">
         <template #header></template>
-        <div class="md:pt-24">
+        <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
                 <div
                     class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
