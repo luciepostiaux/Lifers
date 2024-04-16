@@ -11,8 +11,8 @@ class CreateJobsTable extends Migration
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('name', 45);
-            $table->string('description_1', 1500);
-            $table->string('description_2', 1500);
+            $table->string('description_1', 300);
+            $table->string('description_2', 750)->nullable();
             $table->unsignedDecimal('salary');
             $table->string('img_job', 255);
             $table->foreignId('diplomas_id')->constrained()->onDelete('no action')->onUpdate('no action');

@@ -24,30 +24,45 @@ const resign = () => {
 
 <template>
     <AppLayout title="Suivi du métier">
-        <div class="container mx-auto p-4">
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-3/4 space-y-2">
-                    <h2 class="text-2xl font-bold mb-4">
-                        Métier actuel : {{ jobDetails.name }}
-                    </h2>
-                    <p>{{ jobDetails.description_1 }}</p>
-                    <!-- Supposant que votre job a des descriptions similaires aux études -->
+        <div class="md:pt-24">
+            <div class="flex flex-col md:flex-row mb-4 w-full h-full">
+                <div
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 mr-4 rounded-lg shadow-md"
+                >
+                    <div class="flex flex-col">
+                        <h2 class="text-3xl font-bold mb-4">
+                            Métier actuel : {{ jobDetails.name }}
+                        </h2>
+                        <p>{{ jobDetails.description_1 }}</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <h3 class="text-lg font-semibold">
+                                Détails du métier
+                            </h3>
+                            <p class="text-sm">
+                                Salaire : {{ jobDetails.salary }}€
+                            </p>
+                        </div>
+                        <!-- Bouton de démission -->
+                        <button
+                            @click="showModal = true"
+                            class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all"
+                        >
+                            Démissionner
+                        </button>
+                    </div>
+                </div>
+                <div
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                >
+                    <img
+                        src="/images/places/poleemploi_4-6.webp"
+                        alt="University Image"
+                        class="object-cover h-full rounded-lg shadow-lg"
+                    />
                 </div>
             </div>
-
-            <div class="my-6">
-                <h3 class="text-lg font-semibold">Détails du métier</h3>
-                <p class="text-sm">Salaire : {{ jobDetails.salary }}€</p>
-                <!-- Ajout d'un détail sur le salaire -->
-            </div>
-            <!-- Bouton de démission -->
-            <button
-                @click="showModal = true"
-                class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all"
-            >
-                Démissionner
-            </button>
-
             <!-- Modal de confirmation -->
             <ConfirmationModal
                 :show="showModal"

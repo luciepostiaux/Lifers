@@ -13,7 +13,9 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->decimal('price', 8, 2);
-            $table->string('category'); // 'Spa', 'Parc d'attractions', etc.
+            $table->string('category');
+            $table->string('image')->nullable();
+            $table->string('plan_type');
             $table->timestamps();
         });
     }

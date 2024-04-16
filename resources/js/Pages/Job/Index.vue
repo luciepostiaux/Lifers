@@ -1,9 +1,7 @@
 <script setup>
-import { ref, defineProps, computed } from "vue";
+import { ref, defineProps, computed, reactive } from "vue";
+import { router, Link } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import JobDetailsModal from "@/Components/JobDetailsModal.vue";
-import { router } from "@inertiajs/vue3"; // Renommé de Inertia
-import { Link } from "@inertiajs/vue3";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 
 const props = defineProps({
@@ -16,6 +14,11 @@ const selectedJob = ref(null);
 const isModalOpen = ref(false);
 const isConfirmationModalOpen = ref(false);
 const jobToApplyFor = ref(null);
+const showDescription = reactive({});
+
+const toggleDescription = (jobId) => {
+    showDescription[jobId] = !showDescription[jobId];
+};
 
 const userCanApply = (job) => {
     return props.userDiplomas.some((diploma) => diploma.id === job.diplomas_id);
@@ -42,79 +45,105 @@ const isCurrentJob = (job) => {
 
 <template>
     <AppLayout title="Jobs">
-        <div class="container flex flex-col p-4 gap-4 mx-auto md:pt-24">
-            <div class="flex bg-white p-4 rounded-lg shadow-md">
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Lif'Emploi</h2>
-                    <p>
-                        Le choix de ton métier est plus qu'une décision, c'est
-                        le début d'une aventure. Que tu te vois cultiver la
-                        terre en tant qu'Agriculteur ou analyser des données en
-                        tant que Juriste, chaque voie t'ouvre des portes
-                        uniques. Fais de ta passion ton quotidien et trouve
-                        l'équilibre parfait entre satisfaction personnelle et
-                        réussite professionnelle.
-                    </p>
-                    <p>
-                        Chaque métier dans notre monde est une chance de montrer
-                        ce dont tu es capable. Tu peux choisir de créer avec
-                        style et audace en tant que Styliste, ou d'innover et de
-                        construire en tant qu'Ingénieur. Prends les rênes de ton
-                        destin, plonge dans le métier qui te fait vibrer et
-                        écris ton propre récit de succès.
-                    </p>
-                </div>
-                <img
-                    src="/images/places/poleemploi.webp"
-                    alt="Workplace Image"
-                    class="size-64"
-                />
-            </div>
-            <div v-if="currentJob" class="">
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold mb-2">Métier actif</h2>
-                    <h3 class="text-lg font-semibold">
-                        {{ currentJob.name }}
-                    </h3>
-                    <p class="text-sm text-gray-600">
-                        {{ currentJob.description_1 }}
-                    </p>
-                    <Link
-                        :href="`/job/current/${currentJob.id}`"
-                        class="mt-4 inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring focus:ring-blue-300 disabled:opacity-25 transition"
-                        >Voir le job actuel</Link
+        <template #header></template>
+
+        <div class="md:pt-24">
+            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+                <div
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                >
+                    <div class="flex flex-col">
+                        <h2 class="text-3xl font-bold mb-4">Lif'Emploi</h2>
+                        <p>
+                            Le choix de ton métier est plus qu'une décision,
+                            c'est le début d'une aventure. Que tu te vois
+                            cultiver la terre en tant qu'Agriculteur ou analyser
+                            des données en tant que Juriste, chaque voie t'ouvre
+                            des portes uniques. Fais de ta passion ton quotidien
+                            et trouve l'équilibre parfait entre satisfaction
+                            personnelle et réussite professionnelle.
+                        </p>
+                    </div>
+                    <div
+                        v-if="currentJob"
+                        class="bg-gray-500 p-4 rounded-lg shadow-lg text-white"
                     >
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full"
+                        >
+                            <div
+                                class="flex flex-col col-span-1 rounded-lg place-self-center"
+                            >
+                                <img
+                                    :src="currentJob.img_job"
+                                    alt="Image du job"
+                                    class="w-full max-h-24 object-contain"
+                                />
+                            </div>
+                            <div class="flex flex-col col-span-4">
+                                <div
+                                    class="flex flex-col md:flex-row justify-between gap-2 mb-2"
+                                >
+                                    <h2 class="font-bold">
+                                        {{ currentJob.name }}
+                                    </h2>
+                                    <Link
+                                        :href="`/study/current/${currentJob.id}`"
+                                        class="inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition"
+                                        >Aller</Link
+                                    >
+                                </div>
+
+                                <p class="text-xs font-semibold pt-2">
+                                    {{ currentJob.description_1 }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image institutionnelle sur le côté droit -->
+                <div
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                >
+                    <img
+                        src="/images/places/poleemploi_4-6.webp"
+                        alt="Workplace Image"
+                        class="object-cover h-full rounded-lg shadow-lg"
+                    />
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-md">
+
+            <!-- Section job choix -->
+
+            <div
+                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            >
                 <div
                     v-for="job in jobs"
                     :key="job.id"
-                    class="flex items-stretch py-4"
+                    class="relative flex flex-col bg-white hover:bg-gray-300 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 h-72"
                 >
                     <div
-                        class="flex-none w-24 h-24 mr-4 bg-gray-100 rounded-lg overflow-hidden self-center"
+                        @click="toggleDescription(job.id)"
+                        class="flex flex-col justify-between p-4 flex-grow"
                     >
-                        <img
-                            :src="job.img_job"
-                            alt="Image du métier"
-                            class="w-full h-full object-contain"
-                        />
-                    </div>
-                    <div class="flex-grow self-center">
-                        <h3 class="text-lg font-semibold">
-                            {{ job.name }}
-                        </h3>
-                        <p class="text-sm text-gray-600 mt-1">
-                            {{ job.description_1 }}
-                        </p>
-                        <div class="flex space-x-4 mt-2">
-                            <p class="font-bold">Salaire: {{ job.salary }}€</p>
+                        <div>
+                            <div class="size-28 mx-auto mb-4">
+                                <img
+                                    :src="job.img_job"
+                                    alt="Image du métier"
+                                    class="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div class="flex-grow text-center">
+                                <h3 class="font-semibold text-sm">
+                                    {{ job.name }}
+                                </h3>
+                            </div>
                         </div>
                     </div>
-                    <div
-                        class="flex-none self-center w-24 flex flex-col justify-start"
-                    >
+                    <div class="mt-2 flex flex-col items-center text-sm">
                         <button
                             v-if="isCurrentJob(job)"
                             disabled
@@ -136,49 +165,102 @@ const isCurrentJob = (job) => {
                         >
                             Diplôme requis
                         </span>
-                        <button
-                            v-if="!isCurrentJob(job)"
-                            @click="
-                                selectedJob = job;
-                                isModalOpen = true;
-                            "
-                            class="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
+                    </div>
+                    <div class="flex justify-center gap-2 mt-2 italic">
+                        <div class="text-sm flex justify-center gap-1">
+                            <p class="font-semibold">
+                                Salaire: {{ job.salary }}
+                            </p>
+                            <p class="">LC</p>
+                        </div>
+                    </div>
+
+                    <div
+                        v-if="showDescription[job.id]"
+                        @click.stop="toggleDescription(job.id)"
+                        class="absolute justify-between inset-0 bg-white py-4 rounded-lg shadow-md flex flex-col transition-transform duration-300 ease-in-out cursor-pointer"
+                    >
+                        <div
+                            class="flex flex-col justify-between p-4 flex-grow"
                         >
-                            Voir plus
-                        </button>
+                            <h3 class="font-semibold text-center">
+                                {{ job.name }}
+                            </h3>
+                            <p class="text-gray-600 text-xs font-semibold">
+                                {{ job.description_1 }}
+                            </p>
+                        </div>
+                        <div class="mt-2 flex flex-col items-center text-sm">
+                            <button
+                                v-if="isCurrentJob(job)"
+                                disabled
+                                class="mt-2 text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Travail Actuel
+                            </button>
+                            <button
+                                v-else-if="userCanApply(job)"
+                                @click="requestApplyForJob(job.id)"
+                                class="mt-2 text-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Postuler
+                            </button>
+
+                            <span
+                                v-else
+                                class="mt-2 text-sm bg-red-500 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Diplôme requis
+                            </span>
+                        </div>
+                        <div class="flex justify-center gap-2 mt-2 italic">
+                            <div class="text-sm flex justify-center gap-1">
+                                <p class="font-semibold">
+                                    Salaire: {{ job.salary }}
+                                </p>
+                                <p class="">LC</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <JobDetailsModal
-            :job="selectedJob"
-            :isOpen="isModalOpen"
-            @close="isModalOpen = false"
-        />
-        <ConfirmationModal
-            :show="isConfirmationModalOpen"
-            @close="isConfirmationModalOpen = false"
-            @confirm="confirmAndApplyForJob"
-        >
-            <template #title> Confirmation de postulation </template>
-            <template #content>
-                Êtes-vous sûr de vouloir postuler à ce job ? Cela remplacera
-                votre job actuel si vous en avez un.
-            </template>
-            <template #footer>
-                <button
-                    @click="isConfirmationModalOpen = false"
-                    class="px-4 py-2 bg-gray-200 text-black rounded"
-                >
-                    Annuler
-                </button>
-                <button
-                    @click="confirmAndApplyForJob"
-                    class="px-4 py-2 bg-red-600 text-white rounded"
-                >
-                    Confirmer et postuler
-                </button>
-            </template>
-        </ConfirmationModal>
     </AppLayout>
+    <ConfirmationModal
+        :show="isConfirmationModalOpen"
+        @close="isConfirmationModalOpen = false"
+        @confirm="confirmAndApplyForJob"
+    >
+        <template #title> Confirmation de postulation </template>
+        <template #content>
+            Êtes-vous sûr de vouloir postuler à ce job ? Cela remplacera votre
+            job actuel si vous en avez un.
+        </template>
+        <template #footer>
+            <button
+                @click="isConfirmationModalOpen = false"
+                class="px-4 py-2 bg-gray-200 text-black rounded"
+            >
+                Annuler
+            </button>
+            <button
+                @click="confirmAndApplyForJob"
+                class="px-4 py-2 bg-red-600 text-white rounded"
+            >
+                Confirmer et postuler
+            </button>
+        </template>
+    </ConfirmationModal>
 </template>
+<style scoped>
+.relative {
+    position: relative;
+}
+.absolute {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+</style>

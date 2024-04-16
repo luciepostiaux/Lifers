@@ -12,8 +12,8 @@ defineProps({
 <template>
     <Head title="Welcome" />
 
-    <div class="min-h-screen flex items-center justify-center">
-        <div class="flex flex-col border-4 max-w-1800px" style="height: 50vh">
+    <div class="min-h-screen flex items-center justify-center bg-emerald-950">
+        <div class="flex flex-col max-w-1800px bg-slate-100 p-4 rounded-xl">
             <div class="w-full p-6 text-right">
                 <template v-if="$page.props.auth.user">
                     <Link
@@ -37,10 +37,10 @@ defineProps({
                 </template>
             </div>
             <div
-                class="flex flex-col md:flex-row items-center justify-center w-full max-w-screen-lg px-4 py-10 gap-10 border-2 border-blue-900"
+                class="flex flex-col md:flex-row items-center justify-around w-full max-w-screen-lg px-4 py-10 gap-10"
             >
                 <div
-                    class="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left p-8 border-2 border-orange-500"
+                    class="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left p-8"
                 >
                     <h1 class="font-bangers text-9xl mb-6">Lifers</h1>
 
@@ -58,18 +58,16 @@ defineProps({
                     >
                 </div>
 
-                <div
-                    class="md:flex md:items-end md:gap-10 border-2 border-lime-500"
-                >
+                <div class="md:flex md:items-end md:gap-10">
                     <img
-                        src="images/perso/perso.png"
+                        src="images/perso/A-1.webp"
                         alt="Personnage 1"
-                        class="h-60"
+                        class="h-80"
                     />
                     <img
-                        src="images/perso/perso2.png"
+                        src="images/perso/B-1.webp"
                         alt="Personnage 2"
-                        class="h-64"
+                        class="h-80"
                     />
                 </div>
             </div>

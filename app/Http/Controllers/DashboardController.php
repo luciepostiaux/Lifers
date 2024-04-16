@@ -35,6 +35,8 @@ class DashboardController extends Controller
             $studyDetails = [
                 'name' => $latestEnrollment->study->name,
                 'description' => $latestEnrollment->study->description_1,
+                'img' => $latestEnrollment->study->img_study,
+
                 'created_at' => $latestEnrollment->start_date,
                 'end_date' => $latestEnrollment->end_date ? $latestEnrollment->end_date : null,
             ];

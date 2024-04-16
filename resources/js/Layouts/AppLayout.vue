@@ -14,9 +14,7 @@ defineProps({
 });
 
 const isNavHovered = ref(false);
-
 const contentTooLarge = ref(false);
-
 const sidebarWidth = ref("4rem"); // 16px par défaut, ajustez selon les besoins
 
 watch(
@@ -873,7 +871,7 @@ const isSidebarOpen = ref(false);
 
             <!-- Page Content -->
             <main
-                class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl ml-16 text-gray-600"
+                class="container w-full mx-auto px-4 sm:px-6 lg:px-8 ml-16 mb-8 text-gray-600"
             >
                 <slot />
             </main>

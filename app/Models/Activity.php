@@ -15,6 +15,8 @@ class Activity extends Model
         'description',
         'price',
         'category',
+        'category',
+        'image',
     ];
 
     public function effects()

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('activity_effects', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('activity_id');
-            $table->string('effect_type'); // Par exemple, 'happiness', 'entertainment'
+            $table->string('effect_type');
             $table->integer('effect_value');
             $table->timestamps();
 

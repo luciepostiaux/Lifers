@@ -34,12 +34,12 @@ class SicknessController extends Controller
         $perso = $user->perso;
 
         // Vérifier si le personnage a suffisamment d'argent
-        if ($perso->money < 150) {
+        if ($perso->money < 200) {
             return back()->withErrors('Vous n\'avez pas assez d\'argent pour cette visite.');
         }
 
         // Payer pour la visite et restaurer la santé
-        $perso->decrement('money', 150);
+        $perso->decrement('money', 200);
         $perso->lifeGauge->update(['health' => 100]);
 
         return back()->with('success', 'Visite réussie, votre santé est maintenant à 100%.');

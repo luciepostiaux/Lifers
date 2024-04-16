@@ -50,52 +50,70 @@ const claimDiploma = () => {
 
 <template>
     <AppLayout title="Suivi des études">
-        <div class="container mx-auto p-4">
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-3/4 space-y-2">
-                    <h2 class="text-2xl font-bold mb-4">
-                        Étude en cours : {{ studyDetails.name }}
-                    </h2>
-                    <!-- Affichage de la première description -->
-                    <p>{{ studyDetails.description_1 }}</p>
-                    <!-- Ajouté pour afficher la description plus détaillée si elle existe -->
-                    <p
-                        class="text-sm"
-                        v-if="enrollmentDetails && enrollmentDetails.end_date"
-                    >
-                        Fin prévue :
-                        {{
-                            new Date(
-                                enrollmentDetails.end_date
-                            ).toLocaleDateString()
-                        }}
-                    </p>
+        <template #header></template>
+
+        <div class="md:pt-24">
+            <!-- Card principale pour l'étude en cours -->
+
+            <div class="flex flex-col md:flex-row mb-4 w-full h-full">
+                <div
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 mr-4 rounded-lg shadow-md"
+                >
+                    <div class="flex flex-col">
+                        <h2 class="text-3xl font-bold mb-4">
+                            {{ studyDetails.name }}
+                        </h2>
+                        <p>{{ studyDetails.description_1 }}</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p
+                            v-if="
+                                enrollmentDetails && enrollmentDetails.end_date
+                            "
+                            class="text-sm"
+                        >
+                            Fin de l'étude :
+                            {{
+                                new Date(
+                                    enrollmentDetails.end_date
+                                ).toLocaleDateString()
+                            }}
+                        </p>
+                        <button
+                            @click="showModal = true"
+                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                        >
+                            Abandonner les études
+                        </button>
+                        <button
+                            v-if="
+                                new Date(enrollmentDetails.end_date) <
+                                new Date()
+                            "
+                            @click="claimDiploma"
+                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        >
+                            Récupérer le diplôme
+                        </button>
+                    </div>
                 </div>
-                <img
-                    src="/images/places/university.webp"
-                    alt="University Image"
-                    class="size-64"
-                />
+
+                <div
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                >
+                    <img
+                        src="/images/places/university_4-6.webp"
+                        alt="University Image"
+                        class="object-cover h-full rounded-lg shadow-lg"
+                    />
+                </div>
             </div>
 
-            <div class="my-6">
-                <h3 class="text-lg font-semibold">Détails de l'étude</h3>
-                <!-- Suivi de l'étude : Affichage de la date de fin prévue -->
-                <p class="text-sm" v-if="studyDetails && studyDetails.end_date">
-                    Fin prévue :
-                    {{ new Date(studyDetails.end_date).toLocaleDateString() }}
-                </p>
-
-                <!-- Ajouter d'autres informations utiles ici si nécessaire -->
-            </div>
-            <button
-                @click="showModal = true"
-                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            <!-- Études associées -->
+            <!-- <div
+                v-if="associatedStudies > 0"
+                class="bg-white p-6 rounded-lg shadow-lg mt-4"
             >
-                Abandonner les études
-            </button>
-
-            <div v-if="associatedStudies">
                 <h3 class="text-lg font-semibold mb-4">Études associées</h3>
                 <div class="divide-y divide-gray-200">
                     <div
@@ -103,13 +121,13 @@ const claimDiploma = () => {
                         :key="study.id"
                         class="py-4"
                     >
-                        <div class="flex items-center justify-between">
+                        <div class="flex justify-between items-center">
                             <h4 class="text-md font-semibold">
                                 {{ study.name }}
                             </h4>
                             <Link
                                 :href="`/study/${study.id}`"
-                                class="text-sm bg-[#9EE5F5] hover:text-white rounded px-4 py-2 hover:bg-[#71A4B0] transition-all"
+                                class="bg-blue-500 hover:bg-blue-700 text-white rounded px-4 py-2 transition-colors"
                                 >Explorer</Link
                             >
                         </div>
@@ -118,38 +136,34 @@ const claimDiploma = () => {
                         </p>
                     </div>
                 </div>
-            </div>
-            <button
-                v-if="new Date(enrollmentDetails.end_date) < new Date()"
-                @click="claimDiploma"
-                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            </div> -->
+
+            <!-- Modal de confirmation pour l'abandon des études -->
+            <ConfirmationModal
+                :show="showModal"
+                @close="showModal = false"
+                @confirm="resignFromStudy"
             >
-                Récupérer le diplôme
-            </button>
+                <template #title>Abandonner les études en cours</template>
+                <template #content
+                    >Êtes-vous sûr de vouloir abandonner vos études actuelles
+                    ?</template
+                >
+                <template #footer>
+                    <button
+                        @click="showModal = false"
+                        class="px-4 py-2 bg-gray-200 text-black rounded"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                        @click="resignFromStudy"
+                        class="px-4 py-2 bg-red-600 text-white rounded"
+                    >
+                        Confirmer et abandonner
+                    </button>
+                </template>
+            </ConfirmationModal>
         </div>
-        <ConfirmationModal
-            :show="showModal"
-            @close="showModal = false"
-            @confirm="resignFromStudy"
-        >
-            <template #title> Abandonner les études en cours </template>
-            <template #content>
-                Êtes-vous sûr de vouloir abandonner vos études actuelles ?
-            </template>
-            <template #footer>
-                <button
-                    @click="showModal = false"
-                    class="px-4 py-2 bg-gray-200 text-black rounded"
-                >
-                    Annuler
-                </button>
-                <button
-                    @click="resignFromStudy"
-                    class="px-4 py-2 bg-red-600 text-white rounded"
-                >
-                    Confirmer et abandonner
-                </button>
-            </template>
-        </ConfirmationModal>
     </AppLayout>
 </template>

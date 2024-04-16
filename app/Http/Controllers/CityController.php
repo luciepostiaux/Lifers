@@ -99,13 +99,17 @@ class CityController extends Controller
 
     public function entertainment()
     {
-        $activities = Activity::all();
+        $activities = Activity::all()->map(function ($activity) {
+            $activity->image = asset($activity->image);
+            return $activity;
+        });
         $activitiesByCategory = $activities->groupBy('category');
 
         return Inertia::render('City/Entertainment', [
             'activitiesByCategory' => $activitiesByCategory,
         ]);
     }
+
 
     public function participateInActivity(Request $request)
     {
@@ -142,12 +146,28 @@ class CityController extends Controller
         $user = Auth::user();
         $perso = $user->perso;
         $allSicknesses = Sickness::all(); // Récupère toutes les maladies
+        $lifeGauges = null;
+        if ($perso && $perso->lifeGauge) {
+            $lifeGauge = $perso->lifeGauge;
+            $lifeGauges = [
+                'Faim' => $lifeGauge->hunger,
+                'Soif' => $lifeGauge->thirst,
+                'Propreté' => $lifeGauge->clean,
+                'Bonheur' => $lifeGauge->happiness,
+                'Divertissement' => $lifeGauge->entertainment,
+                'Condition physique' => $lifeGauge->physical_condition,
+                'Santé' => $lifeGauge->health,
+            ];
+        }
 
         $currentSicknesses = $perso->sicknesses()->withPivot('created_at')->get();
         // dd($currentSicknesses);
         return Inertia::render('City/Doctor', [
+            'perso' => $perso ? $perso->toArray() : null,
             'currentSicknesses' => $currentSicknesses,
             'allSicknesses' => $allSicknesses,
+            'lifeGauges' => $lifeGauges,
+
 
         ]);
     }
