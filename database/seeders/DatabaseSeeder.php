@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
             ActivitiesTableSeeder::class,
             ActivityEffectsTableSeeder::class,
             SportSessionTableSeeder::class,
+            ResidencesTableSeeder::class,
 
 
         ]);

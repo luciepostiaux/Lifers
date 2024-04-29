@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('decrease:life-gauges')->daily();
         $schedule->command('update:life-gauges-from-subscriptions')->daily();
         $schedule->command('check:random-sickness')->daily();
-
+        // $schedule->command('process:installment-payments')->daily();
     }
 
 

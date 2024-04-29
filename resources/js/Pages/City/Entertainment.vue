@@ -28,33 +28,49 @@ const cardClass = (planType) => {
 <template>
     <AppLayout title="Entertainment">
         <template #header></template>
-        <div class="md:pt-24">
+        <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
                 >
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-3xl font-bold">Lif'Activités</h2>
-                        <p class="mb-4">
-                            Plongez dans le monde des divertissements et
-                            enrichissez la vie de votre Lifer. Sélectionnez une
-                            activité parmi une multitude de lieux pour augmenter
-                            le bonheur et l'entertainment.
+                    <div
+                        class="flex flex-col tracking-wide leading-relaxed gap-2"
+                    >
+                        <h1 class="text-xl font-bold mb-4">Lif'Activités</h1>
+                        <p class="">
+                            Explorez un monde d'opportunités de divertissement
+                            et ajoutez de la joie et de l'excitation à la vie de
+                            votre Lifer. Choisissez parmi une multitude
+                            d'activités dans des lieux variés pour augmenter le
+                            bonheur et l'expérience de divertissement de votre
+                            personnage.
+                        </p>
+                        <p class="">
+                            Plongez dans l'univers des loisirs et découvrez une
+                            gamme d'options passionnantes pour divertir votre
+                            Lifer. Que ce soit pour une soirée cinéma
+                            palpitante, une journée pleine d'action dans un parc
+                            d'attractions, ou une expérience culturelle
+                            enrichissante dans un musée, nous avons tout ce
+                            qu'il vous faut pour créer des souvenirs
+                            inoubliables.
                         </p>
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
                 >
                     <img
                         src="/images/places/entertainment_4-6.webp"
                         alt="Lif'Activités Image"
-                        class="object-cover h-full rounded-lg shadow-lg"
+                        class="object-cover h-full"
                     />
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg shadow-md">
+            <div
+                class="bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+            >
                 <h2 class="text-xl font-bold mb-4">Découvrez Nos Activités</h2>
                 <div
                     v-for="(activities, category) in activitiesByCategory"

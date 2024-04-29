@@ -11,8 +11,20 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $perso = $user->perso()->with(['lifeGauge', 'job', 'enrolledStudies.study'])->first();
+        $perso = $user->perso()->with(['lifeGauge', 'job', 'enrolledStudies.study', 'residences' => function ($query) {
+            $query->withPivot('active');
+        }])->first();
         $currentSicknesses = [];
+        $residences = $perso->residences->map(function ($residence) {
+            return [
+                'id' => $residence->id,
+                'type' => $residence->type,
+                'image_path' => $residence->image_path,
+                'active' => $residence->pivot->active,
+
+            ];
+        });
+        $activeResidence = $residences->where('active', true)->first();
 
         $money = $perso ? $perso->money : 0;
         $lifeGauges = null;
@@ -67,6 +79,7 @@ class DashboardController extends Controller
             'studyDetails' => $studyDetails,
             'jobDetails' => $jobDetails,
             'currentSicknesses' => $currentSicknesses,
+            'activeResidence' => $activeResidence,
 
         ]);
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtHomeController;
+use App\Http\Controllers\BugIdeaController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\CityController;
@@ -15,7 +16,9 @@ use App\Http\Controllers\LifeGaugesController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfilPersoController;
+use App\Http\Controllers\ResidencePaymentController;
 use App\Http\Controllers\SicknessController;
+use App\Http\Controllers\SmsMessageController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StudyController;
 use App\Http\Controllers\SubscriptionController;
@@ -71,6 +74,8 @@ Route::middleware([
 
     Route::get('/athome', [AtHomeController::class, 'index'])->name('athome');
     Route::post('/consume-item', [AtHomeController::class, 'consumeItem'])->name('consume-item');
+    Route::post('/residences/{id}/sell', [AtHomeController::class, 'sellResidence'])->name('residences.sell');
+    Route::put('/residences/set-active/{id}', [AtHomeController::class, 'setActive'])->name('residences.update');
 
     Route::get('/family', [FamilyController::class, 'index'])->name('family');
 
@@ -95,6 +100,8 @@ Route::middleware([
     Route::post('/treat-sickness', [SicknessController::class, 'treatSickness'])->name('treat-sickness');
     Route::post('/visit-doctor', [SicknessController::class, 'visitDoctor'])->name('visit-doctor');
 
+    Route::get('/city/housing', [CityController::class, 'residence'])->name('housing.index');
+    Route::post('/buy/residence', [ResidencePaymentController::class, 'buy'])->name('buy.residence');
 
 
     Route::get('/city/sport', [CityController::class, 'sport'])->name('city.sport');
@@ -108,7 +115,8 @@ Route::middleware([
 
 
 
-    Route::get('/mail', [MailController::class, 'index'])->name('mail');
+    Route::get('/gsm', [SmsMessageController::class, 'index'])->name('gsm.index');
+    Route::get('/gsm/new', [SmsMessageController::class, 'create'])->name('gsm.create');
 
     Route::get('/social/{id?}', [SocialController::class, 'index'])->name('social');
 
@@ -122,6 +130,7 @@ Route::middleware([
     Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'fetchMessages']);
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage']);
 
+    Route::get('/bugidea', [BugIdeaController::class, 'index'])->name('bugidea.index');
 
 
     Route::get('/life-gauges', [LifeGaugesController::class, 'index'])->name('life-gauges.index');

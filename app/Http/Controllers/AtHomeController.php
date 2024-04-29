@@ -12,7 +12,14 @@ class AtHomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $perso = $user->perso()->with(['lifeGauge', 'inventory.items.effects', 'sicknesses'])->first();
+        $perso = $user->perso()->with([
+            'lifeGauge',
+            'inventory.items.effects',
+            'sicknesses',
+            'residences' => function ($query) {
+                $query->withPivot('active');
+            }
+        ])->first();
 
         $lifeGauges = null;
         $inventoryItemsByCategory = [];
@@ -58,6 +65,18 @@ class AtHomeController extends Controller
         }
         $bodyImageUrl = $perso && $perso->body ? $perso->body->img_perso : null;
 
+        $residences = $perso->residences->map(function ($residence) {
+            return [
+                'id' => $residence->id,
+                'type' => $residence->type,
+                'image_path' => $residence->image_path,
+                'active' => $residence->pivot->active,
+
+            ];
+        });
+
+        $activeResidence = $residences->where('active', true)->first();
+
         return Inertia::render('AtHome/Index', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,
@@ -66,9 +85,44 @@ class AtHomeController extends Controller
             'lifeGauges' => $lifeGauges,
             'inventoryItemsByCategory' => $inventoryItemsByCategory,
             'currentSicknesses' => $currentSicknesses,
+            'residences' => $residences,
+            'activeResidence' => $activeResidence,
 
         ]);
     }
+
+
+    public function setActive($id)
+    {
+        $user = Auth::user();
+        $perso = $user->perso;
+
+        // Désactivez d'abord toutes les résidences actives
+        $perso->residences()->update(['active' => false]);
+
+        // Activez la nouvelle résidence
+        $perso->residences()->updateExistingPivot($id, ['active' => true]);
+
+        return redirect()->back()->with('success', 'La résidence a été activée avec succès.');
+    }
+
+
+    public function sellResidence(Request $request, $residenceId)
+    {
+        $user = Auth::user();
+        $perso = $user->perso;
+        $residence = $perso->residences()->findOrFail($residenceId);
+        $salePrice = round($residence->prix_achat * 0.7);
+
+        $perso->money += $salePrice;
+        $perso->save();
+
+        $perso->residences()->detach($residenceId);
+
+        return redirect()->back()->with('message', 'Résidence vendue pour ' . $salePrice . ' LC.');
+    }
+
+
 
     public function consumeItem(Request $request)
     {

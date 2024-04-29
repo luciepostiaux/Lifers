@@ -83,81 +83,86 @@ function scrollToBottom() {
 
 <template>
     <AppLayout title="Chat">
-        <div class="container flex h-screen mx-auto">
-            <div class="w-screen">
-                <div class="flex bg-white p-4 rounded-lg h-screen shadow-md">
-                    <!-- Liste des conversations -->
-                    <div class="border-r-2 border-gray-300 w-1/5">
-                        <div class="overflow-auto h-full">
-                            <ul>
-                                <li
-                                    v-for="conversation in conversations"
-                                    :key="conversation.id"
-                                >
-                                    <Link
-                                        :href="
-                                            route('social', {
-                                                id: conversation.id,
-                                            })
-                                        "
-                                    >
-                                        {{
-                                            conversation.name ||
-                                            "Conversation sans nom"
-                                        }}
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Fenêtre de chat -->
-                    <div class="w-full">
-                        <div
-                            class="messages overflow-auto h-5/6 border-b-2 border-gray-300 p-2"
-                            ref="messagesContainer"
+        <div
+            class="flex flex-grow bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md justify-center h-[75vh]"
+        >
+            <!-- Votre contenu ici -->
+            <!-- Liste des conversations -->
+            <div class="border-r-2 border-gray-300 w-1/5">
+                <div class="overflow-auto">
+                    <ul>
+                        <h2 class="font-semibold mb-2">Salons</h2>
+                        <li
+                            v-for="conversation in conversations"
+                            :key="conversation.id"
+                            class="text-sm mb-1"
                         >
-                            <!-- Affichez ici les messages de la conversation sélectionnée -->
-                            <div
-                                v-for="message in messages"
-                                :key="message.id"
-                                class="p-2"
+                            <Link
+                                :href="
+                                    route('social', {
+                                        id: conversation.id,
+                                    })
+                                "
                             >
-                                <p class="text-cyan-500 font-semibold">
-                                    {{ allPerso[message.sender.id].persoName }}
-                                </p>
-                                <p class=" ">
-                                    {{ message.content }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="message-input p-2">
-                            <form @submit.prevent="sendMessage">
-                                <input
-                                    v-model="newMessage"
-                                    type="text"
-                                    placeholder="Tapez votre message ici..."
-                                    class="border-2 border-gray-300 w-full p-2"
-                                />
-                                <button type="submit">Envoyer</button>
-                            </form>
-                        </div>
+                                {{
+                                    conversation.name || "Conversation sans nom"
+                                }}
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fenêtre de chat -->
+            <div class="w-full h-full">
+                <div
+                    class="messages overflow-auto h-5/6 border-b-2 border-gray-300 p-2"
+                    ref="messagesContainer"
+                >
+                    <!-- Affichez ici les messages de la conversation sélectionnée -->
+                    <div
+                        v-for="message in messages"
+                        :key="message.id"
+                        class="p-2"
+                    >
+                        <p class="text-cyan-500 font-semibold">
+                            {{ allPerso[message.sender.id].persoName }}
+                        </p>
+                        <p class=" ">
+                            {{ message.content }}
+                        </p>
                     </div>
-                    <!-- Liste des utilisateurs en ligne -->
-                    <div class="border-l-2 border-gray-300 w-1/5">
-                        <div class="overflow-auto h-full">
-                            <ul>
-                                <p class="font-bold">En ligne</p>
-                                <li v-for="user in onlineUsers" :key="user.id">
-                                    <p
-                                        class="text-cyan-500 text-sm font-semibold"
-                                    >
-                                        {{ allPerso[user.id].persoName }}
-                                    </p>
-                                </li>
-                            </ul>
+                </div>
+                <div class="message-input p-2">
+                    <form @submit.prevent="sendMessage" class="flex flex-col">
+                        <input
+                            v-model="newMessage"
+                            type="text"
+                            placeholder="Tapez votre message ici..."
+                            class="border-2 border-gray-300 w-full p-2 text-slate-800 focus:border-gray-500"
+                        />
+                        <div class="flex items-end justify-end mt-4">
+                            <button
+                                type="submit"
+                                class="px-4 py-2 bg-gray-300/50 hover:bg-emerald-950 border border-transparent rounded-md font-semibold text-xs percase tracking-widest transition-all duration-300 ease-in-out"
+                            >
+                                Envoyer
+                            </button>
                         </div>
-                    </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Liste des utilisateurs en ligne -->
+            <div class="border-l-2 border-gray-300 w-1/5">
+                <div class="overflow-auto h-full">
+                    <ul>
+                        <p class="font-bold">En ligne</p>
+                        <li v-for="user in onlineUsers" :key="user.id">
+                            <p class="text-cyan-500 text-sm font-semibold">
+                                {{ allPerso[user.id].persoName }}
+                            </p>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

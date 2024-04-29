@@ -226,4 +226,23 @@ class Perso extends Model
     {
         return $this->hasMany(PersoImage::class, 'perso_id');
     }
+
+    public function residences()
+    {
+        return $this->belongsToMany(Residence::class, 'perso_residences')
+            ->withPivot('id', 'active',)
+            ->withTimestamps();
+    }
+
+
+    public function activeResidence()
+    {
+        return $this->residences()->wherePivot('active', true)->first();
+    }
+
+    public function setActiveResidence($residenceId)
+    {
+        $this->residences()->update(['active' => false]);
+        $this->residences()->updateExistingPivot($residenceId, ['active' => true]);
+    }
 }

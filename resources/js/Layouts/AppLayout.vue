@@ -15,7 +15,7 @@ defineProps({
 
 const isNavHovered = ref(false);
 const contentTooLarge = ref(false);
-const sidebarWidth = ref("4rem"); // 16px par défaut, ajustez selon les besoins
+const sidebarWidth = ref("4rem");
 
 watch(
     isNavHovered,
@@ -26,14 +26,12 @@ watch(
 );
 
 onMounted(() => {
-    // Ajoutez la largeur de la sidebar comme variable CSS à la racine pour une utilisation dans le style
     document.documentElement.style.setProperty(
         "--sidebar-width",
         sidebarWidth.value
     );
 });
 
-// Assurez-vous de réagir aux changements de sidebarWidth pour mettre à jour la variable CSS
 watch(sidebarWidth, (newVal) => {
     document.documentElement.style.setProperty("--sidebar-width", newVal);
 });
@@ -68,17 +66,16 @@ const isSidebarOpen = ref(false);
             <nav
                 @mouseenter="isNavHovered = true"
                 @mouseleave="isNavHovered = false"
-                class="fixed top-1/2 left-0 -translate-y-1/2 bg-gray-200/50 z-20 transition-width duration-300 ease-in-out w-16 hover:backdrop-blur-sm hover:bg-gray-300/50 hover:w-44 flex flex-col justify-between h-3/4 rounded-r-xl py-12"
+                class="fixed top-1/2 left-0 -translate-y-1/2 bg-emerald-700/50 z-50 transition-width duration-300 ease-in-out w-16 hover:backdrop-blur-sm hover:bg-emerald-900/80 hover:w-44 flex flex-col justify-between h-3/4 rounded-r-xl py-12"
             >
                 <ul class="flex flex-col gap-2">
                     <li
-                        class="group hover:bg-gray-200 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('dashboard')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
-                            <!-- SVG Icon -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -93,19 +90,18 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Accueil</span
                             >
                         </NavLink>
                     </li>
-                    <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                    <!-- <li
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('profil')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center  px-4 relative"
                         >
-                            <!-- SVG Icon -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -120,17 +116,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Profil</span
                             >
                         </NavLink>
-                    </li>
+                    </li> -->
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('athome')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
                             <!-- SVG Icon -->
                             <svg
@@ -147,19 +143,45 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Chez soi</span
                             >
                         </NavLink>
                     </li>
-                    <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                    <!-- <li
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
+                    >
+                        <NavLink
+                            :href="route('gsm.index')"
+                            class="flex items-center  px-4 relative"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                class="h-6 w-6 fill-slate-300 transition-opacity duration-300 ease-in-out"
+                            >
+                                <path
+                                    d="M7 4V20H17V4H7ZM6 2H18C18.5523 2 19 2.44772 19 3V21C19 21.5523 18.5523 22 18 22H6C5.44772 22 5 21.5523 5 21V3C5 2.44772 5.44772 2 6 2ZM12 17C12.5523 17 13 17.4477 13 18C13 18.5523 12.5523 19 12 19C11.4477 19 11 18.5523 11 18C11 17.4477 11.4477 17 12 17Z"
+                                ></path>
+                            </svg>
+
+                            <span
+                                :class="
+                                    isNavHovered ? 'opacity-100' : 'opacity-0'
+                                "
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
+                                >GSM</span
+                            >
+                        </NavLink>
+                    </li> -->
+                    <!-- <li
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('family')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center  px-4 relative"
                         >
-                            <!-- SVG Icon -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -175,17 +197,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Famille</span
                             >
                         </NavLink>
-                    </li>
+                    </li> -->
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('study.index')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
                             <!-- SVG Icon -->
                             <svg
@@ -202,17 +224,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Etude</span
                             >
                         </NavLink>
                     </li>
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('job')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
                             <!-- SVG Icon -->
                             <svg
@@ -229,17 +251,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Métier</span
                             >
                         </NavLink>
                     </li>
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('city')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
                             <!-- SVG Icon -->
                             <svg
@@ -256,17 +278,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Ville</span
                             >
                         </NavLink>
                     </li>
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('social')"
-                            class="flex items-center py-2.5 px-4 relative"
+                            class="flex items-center px-4 relative"
                         >
                             <!-- SVG Icon -->
                             <svg
@@ -283,7 +305,7 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Social</span
                             >
                         </NavLink>
@@ -291,9 +313,9 @@ const isSidebarOpen = ref(false);
                 </ul>
                 <div class="flex-grow"></div>
 
-                <ul class="text-gray-500">
+                <ul class="">
                     <!-- <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <button
                             @click="
@@ -319,18 +341,43 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Notifications</span
                             >
                         </button>
                     </li> -->
-
+                    <!-- <li
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
+                    >
+                        <NavLink
+                            :href="route('bugidea.index')"
+                            class="flex items-center space-x-2 px-4"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                class="h-6 w-6 text-slate-300 transition-opacity duration-300 ease-in-out"
+                            >
+                                <path
+                                    d="M13 19.9C15.2822 19.4367 17 17.419 17 15V12C17 11.299 16.8564 10.6219 16.5846 10H7.41538C7.14358 10.6219 7 11.299 7 12V15C7 17.419 8.71776 19.4367 11 19.9V14H13V19.9ZM5.5358 17.6907C5.19061 16.8623 5 15.9534 5 15H2V13H5V12C5 11.3573 5.08661 10.7348 5.2488 10.1436L3.0359 8.86602L4.0359 7.13397L6.05636 8.30049C6.11995 8.19854 6.18609 8.09835 6.25469 8H17.7453C17.8139 8.09835 17.88 8.19854 17.9436 8.30049L19.9641 7.13397L20.9641 8.86602L18.7512 10.1436C18.9134 10.7348 19 11.3573 19 12V13H22V15H19C19 15.9534 18.8094 16.8623 18.4642 17.6907L20.9641 19.134L19.9641 20.866L17.4383 19.4077C16.1549 20.9893 14.1955 22 12 22C9.80453 22 7.84512 20.9893 6.56171 19.4077L4.0359 20.866L3.0359 19.134L5.5358 17.6907ZM8 6C8 3.79086 9.79086 2 12 2C14.2091 2 16 3.79086 16 6H8Z"
+                                ></path>
+                            </svg>
+                            <span
+                                :class="
+                                    isNavHovered ? 'opacity-100' : 'opacity-0'
+                                "
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
+                                >Bugs & Idées</span
+                            >
+                        </NavLink>
+                    </li> -->
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <NavLink
                             :href="route('profile.show')"
-                            class="flex items-center space-x-2 py-2.5 px-4"
+                            class="flex items-center space-x-2 px-4"
                         >
                             <!-- Icône SVG pour "Paramètre" -->
                             <svg
@@ -347,17 +394,17 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-400 ease-in-out whitespace-nowrap"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-white"
                                 >Paramètre</span
                             >
                         </NavLink>
                     </li>
                     <li
-                        class="group hover:bg-gray-300 transition-colors duration-200 ease-in-out"
+                        class="group hover:bg-gray-200/30 py-2 transition-colors duration-200 ease-in-out"
                     >
                         <button
                             @click="logout"
-                            class="flex items-center space-x-2 py-2.5 px-4"
+                            class="flex items-center space-x-2 px-4 py-1"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -373,7 +420,7 @@ const isSidebarOpen = ref(false);
                                 :class="
                                     isNavHovered ? 'opacity-100' : 'opacity-0'
                                 "
-                                class="ml-4 transition-opacity duration-400 ease-in-out whitespace-nowrap text-sm font-bold text-red-400"
+                                class="ml-4 transition-opacity duration-300 ease-in-out whitespace-nowrap text-red-400 font-semibold"
                                 >Déconnexion</span
                             >
                         </button>
@@ -872,9 +919,10 @@ const isSidebarOpen = ref(false);
             <!-- Page Content -->
             <div class="flex justify-center items-center w-full h-full">
                 <div
-                    class="w-[85vw] h-[80vh] overflow-y-auto bg-slate-50 shadow-lg rounded-lg m-auto"
+                    class="w-[85vw] h-[85vh] custom-scrollbar overflow-y-auto text-slate-200 shadow-lg rounded-lg m-auto bg-cover bg-center"
+                    style="background-image: url(/images/places/ville.webp)"
                 >
-                    <main class="p-4">
+                    <main class="m-8">
                         <slot />
                     </main>
                 </div>

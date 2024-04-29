@@ -47,13 +47,13 @@ const isCurrentJob = (job) => {
     <AppLayout title="Jobs">
         <template #header></template>
 
-        <div class="md:pt-24">
+        <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md"
                 >
-                    <div class="flex flex-col">
-                        <h2 class="text-3xl font-bold mb-4">Lif'Emploi</h2>
+                    <div class="flex flex-col tracking-wide leading-relaxed">
+                        <h1 class="text-xl font-bold mb-4">Lif'Emploi</h1>
                         <p>
                             Le choix de ton métier est plus qu'une décision,
                             c'est le début d'une aventure. Que tu te vois
@@ -66,7 +66,7 @@ const isCurrentJob = (job) => {
                     </div>
                     <div
                         v-if="currentJob"
-                        class="bg-gray-500 p-4 rounded-lg shadow-lg text-white"
+                        class="bg-emerald-950 p-4 rounded-lg shadow-lg"
                     >
                         <div
                             class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full"
@@ -88,13 +88,15 @@ const isCurrentJob = (job) => {
                                         {{ currentJob.name }}
                                     </h2>
                                     <Link
-                                        :href="`/study/current/${currentJob.id}`"
-                                        class="inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition"
+                                        :href="`/job/current/${currentJob.id}`"
+                                        class="inline-flex items-center justify-center px-4 py-2 bg-emerald-900/80 hover:bg-emerald-900 border border-transparent rounded-md font-semibold text-xs percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
                                         >Aller</Link
                                     >
                                 </div>
 
-                                <p class="text-xs font-semibold pt-2">
+                                <p
+                                    class="text-sm pt-2 tracking-wide leading-relaxed"
+                                >
                                     {{ currentJob.description_1 }}
                                 </p>
                             </div>
@@ -104,12 +106,12 @@ const isCurrentJob = (job) => {
 
                 <!-- Image institutionnelle sur le côté droit -->
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
                 >
                     <img
                         src="/images/places/poleemploi_4-6.webp"
                         alt="Workplace Image"
-                        class="object-cover h-full rounded-lg shadow-lg"
+                        class="object-cover h-full"
                     />
                 </div>
             </div>
@@ -117,12 +119,12 @@ const isCurrentJob = (job) => {
             <!-- Section job choix -->
 
             <div
-                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 bg-emerald-900/90 backdrop-blur-md  rounded-lg shadow-md p-4"
             >
                 <div
                     v-for="job in jobs"
                     :key="job.id"
-                    class="relative flex flex-col bg-white hover:bg-gray-300 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 h-72"
+                    class="relative flex flex-col bg-emerald-950 backdrop-blur-md  hover:bg-emerald-950/50 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 min-h-80"
                 >
                     <div
                         @click="toggleDescription(job.id)"
@@ -178,19 +180,19 @@ const isCurrentJob = (job) => {
                     <div
                         v-if="showDescription[job.id]"
                         @click.stop="toggleDescription(job.id)"
-                        class="absolute justify-between inset-0 bg-white py-4 rounded-lg shadow-md flex flex-col transition-transform duration-300 ease-in-out cursor-pointer"
+                        class="absolute flex flex-col bg-emerald-900/90 backdrop-blur-md  hover:bg-emerald-900 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer py-4 min-h-80"
                     >
-                        <div
-                            class="flex flex-col justify-between p-4 flex-grow"
-                        >
+                        <div class="flex flex-col px-4 pt-4 flex-grow">
                             <h3 class="font-semibold text-center">
                                 {{ job.name }}
                             </h3>
-                            <p class="text-gray-600 text-xs font-semibold">
+                            <p
+                                class="pt-2 text-xs tracking-wide leading-relaxed"
+                            >
                                 {{ job.description_1 }}
                             </p>
                         </div>
-                        <div class="mt-2 flex flex-col items-center text-sm">
+                        <div class="flex flex-col items-center text-sm">
                             <button
                                 v-if="isCurrentJob(job)"
                                 disabled

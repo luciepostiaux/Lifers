@@ -52,12 +52,12 @@ const claimDiploma = () => {
     <AppLayout title="Suivi des études">
         <template #header></template>
 
-        <div class="md:pt-24">
+        <div class="">
             <!-- Card principale pour l'étude en cours -->
 
             <div class="flex flex-col md:flex-row mb-4 w-full h-full">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 mr-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 p-4 mr-4 rounded-lg shadow-md backdrop-blur-md "
                 >
                     <div class="flex flex-col">
                         <h2 class="text-3xl font-bold mb-4">
@@ -99,12 +99,12 @@ const claimDiploma = () => {
                 </div>
 
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
                 >
                     <img
                         src="/images/places/university_4-6.webp"
                         alt="University Image"
-                        class="object-cover h-full rounded-lg shadow-lg"
+                        class="object-cover h-full"
                     />
                 </div>
             </div>
@@ -112,7 +112,7 @@ const claimDiploma = () => {
             <!-- Études associées -->
             <!-- <div
                 v-if="associatedStudies > 0"
-                class="bg-white p-6 rounded-lg shadow-lg mt-4"
+                class="bg-emerald-900/90   p-6 rounded-lg shadow-lg mt-4"
             >
                 <h3 class="text-lg font-semibold mb-4">Études associées</h3>
                 <div class="divide-y divide-gray-200">
@@ -137,33 +137,32 @@ const claimDiploma = () => {
                     </div>
                 </div>
             </div> -->
-
-            <!-- Modal de confirmation pour l'abandon des études -->
-            <ConfirmationModal
-                :show="showModal"
-                @close="showModal = false"
-                @confirm="resignFromStudy"
-            >
-                <template #title>Abandonner les études en cours</template>
-                <template #content
-                    >Êtes-vous sûr de vouloir abandonner vos études actuelles
-                    ?</template
-                >
-                <template #footer>
-                    <button
-                        @click="showModal = false"
-                        class="px-4 py-2 bg-gray-200 text-black rounded"
-                    >
-                        Annuler
-                    </button>
-                    <button
-                        @click="resignFromStudy"
-                        class="px-4 py-2 bg-red-600 text-white rounded"
-                    >
-                        Confirmer et abandonner
-                    </button>
-                </template>
-            </ConfirmationModal>
         </div>
     </AppLayout>
+    <!-- Modal de confirmation pour l'abandon des études -->
+    <ConfirmationModal
+        :show="showModal"
+        @close="showModal = false"
+        @confirm="resignFromStudy"
+    >
+        <template #title>Abandonner les études en cours</template>
+        <template #content
+            >Êtes-vous sûr de vouloir abandonner vos études actuelles
+            ?</template
+        >
+        <template #footer>
+            <button
+                @click="showModal = false"
+                class="px-4 py-2 bg-gray-200 text-black rounded"
+            >
+                Annuler
+            </button>
+            <button
+                @click="resignFromStudy"
+                class="px-4 py-2 bg-red-600 text-white rounded"
+            >
+                Confirmer et abandonner
+            </button>
+        </template>
+    </ConfirmationModal>
 </template>

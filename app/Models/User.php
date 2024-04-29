@@ -112,7 +112,7 @@ class User extends Authenticatable
 
         return $message;
     }
-    
+
     public function notifications()
     {
         return $this->hasMany(Notification::class);
@@ -121,5 +121,15 @@ class User extends Authenticatable
     public function unreadNotifications()
     {
         return $this->notifications()->where('read', false);
+    }
+
+    public function sentSmsMessages()
+    {
+        return $this->hasMany(SmsMessage::class, 'sender_id');
+    }
+
+    public function receivedSmsMessages()
+    {
+        return $this->hasMany(SmsMessage::class, 'receiver_id');
     }
 }

@@ -11,11 +11,17 @@ defineProps({
 <template>
     <AppLayout title="City">
         <template #header></template>
-        <div class="flex flex-col gap-4 mx-auto mb-4">
+        <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
-                <div class="flex bg-white p-4 rounded-lg shadow-md">
-                    <div class="space-y-2">
-                        <h2 class="text-xl font-bold">Bienvenue à Lif'City</h2>
+                <div
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                    <div
+                        class="flex flex-col tracking-wide leading-relaxed gap-2"
+                    >
+                        <h1 class="text-xl font-bold mb-4">
+                            Bienvenue à Lif'City
+                        </h1>
 
                         <p>
                             Plonge au cœur de notre ville dynamique, où chaque
@@ -39,58 +45,62 @@ defineProps({
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md bg-emerald-900/90 backdrop-blur-md p-4"
                 >
-                    <img
-                        src="/images/places/ville.webp"
-                        alt="Ville"
-                        class="object-cover h-full rounded-lg shadow-lg"
-                    />
+                    <div class="">
+                        <h2 class="text-xl font-semibold mb-4">Lieux</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <Link
+                                href="/city/lifemarket"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Market
+                            </Link>
+                            <Link
+                                href="/city/doctor"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Hôpital
+                            </Link>
+                            <Link
+                                href="/city/sport"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Sport
+                            </Link>
+                            <Link
+                                href="/city/entertainment"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Activité
+                            </Link>
+                            <Link
+                                href="/study"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Université
+                            </Link>
+                            <Link
+                                href="/job"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Emploi
+                            </Link>
+                            <Link
+                                href="/city/housing"
+                                class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
+                            >
+                                Lif'Logement
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg shadow-md">
-                <div class="grid grid-cols-2 gap-4">
-                    <Link
-                        href="/city/lifemarket"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Market
-                    </Link>
-                    <Link
-                        href="/city/doctor"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Hôpital
-                    </Link>
-                    <Link
-                        href="/city/sport"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Sport
-                    </Link>
-                    <Link
-                        href="/city/entertainment"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Activité
-                    </Link>
-                    <Link
-                        href="/study"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Université
-                    </Link>
-                    <Link
-                        href="/job"
-                        class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Lif'Emploi
-                    </Link>
-                </div>
-            </div>
             <!-- Section pour afficher les persos -->
-            <div class="bg-white p-4 rounded-lg shadow-md">
+            <div
+                class="bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+            >
                 <h2 class="text-xl font-bold mb-2">Liste des Lifers</h2>
                 <ul>
                     <li
@@ -99,18 +109,19 @@ defineProps({
                         class="py-2"
                     >
                         <div v-if="user.perso" class="flex items-center gap-2">
-                            <Link
-                                :href="`/perso/${user.perso.id}`"
-                                class="text-gray-600 hover:text-gray-800"
-                            >
-                                <p>
+                            <!-- <Link :href="`/perso/${user.perso.id}`" class="">
+                                <p
+                                    class="text-gray-100 hover:text-gray-300 font-semibold"
+                                >
                                     {{ user.perso.first_name }}
                                     {{ user.perso.last_name }}
                                 </p>
-                            </Link>
-                            <p class="text-sm text-gray-500">
-                                {{ user.perso.age }} ans
+                            </Link> -->
+                            <p class="text-gray-100 font-semibold">
+                                {{ user.perso.first_name }}
+                                {{ user.perso.last_name }}
                             </p>
+                            <p class="text-sm">{{ user.perso.age }} ans</p>
                             <span
                                 v-if="user.is_online"
                                 class="text-sm font-semibold text-green-500"
@@ -124,6 +135,7 @@ defineProps({
                                 Hors ligne</span
                             >
                         </div>
+                        <hr class="mt-3 border border-gray-200/50" />
                     </li>
                 </ul>
             </div>

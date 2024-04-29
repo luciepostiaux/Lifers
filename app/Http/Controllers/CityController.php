@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\Item;
+use App\Models\Residence;
 use App\Models\Sickness;
 use App\Models\SportSession;
 use App\Models\User;
@@ -169,6 +170,30 @@ class CityController extends Controller
             'lifeGauges' => $lifeGauges,
 
 
+        ]);
+    }
+    public function residence()
+    {
+        $user = auth()->user(); // Assurez-vous de récupérer l'utilisateur authentifié
+        $perso = $user->perso; // Récupérer le personnage lié à l'utilisateur
+
+        if (!$perso) {
+            return redirect()->route('some.route')->withErrors('Aucun personnage trouvé pour cet utilisateur.');
+        }
+
+        $residences = Residence::with(['personnages' => function ($query) use ($perso) {
+            $query->where('perso_id', $perso->id); // Filtre les personnages par l'ID du perso actuel
+        }])->get()->map(function ($residence) use ($perso) {
+            // Vérifie si le perso actuel possède cette résidence
+            $owned = $residence->personnages->contains($perso);
+            $residence->owned_count = $owned ? 1 : 0;
+            $residence->image_path = asset($residence->image_path);
+            return $residence;
+        });
+
+        return Inertia::render('City/Housing', [
+            'residences' => $residences,
+            'perso' => $perso ? $perso->toArray() : null,
         ]);
     }
 }

@@ -12,12 +12,13 @@ defineProps({
     lifeGauges: Object,
     studyDetails: Object,
     currentSicknesses: Array,
+    activeResidence: Object,
 });
 
 const gaugeColor = (value) => {
-    if (value <= 20) return "bg-red-500";
-    else if (value <= 50) return "bg-orange-500";
-    return "bg-green-500";
+    if (value <= 20) return "bg-red-800";
+    else if (value <= 50) return "bg-orange-400";
+    return "bg-lime-700";
 };
 </script>
 
@@ -26,10 +27,12 @@ const gaugeColor = (value) => {
         <template #header></template>
         <div class="flex flex-col gap-4 md:flex-row mb-4 w-full h-full">
             <div
-                class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 p-4 rounded-lg shadow-md md:mb-0 backdrop-blur-md"
             >
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                    <div class="flex border-2 border-green-500 pb-4">
+                <h1 class="text-xl font-bold mb-4">Accueil</h1>
+
+                <div class="gap-4 h-full">
+                    <div class="flex pb-4 justify-between">
                         <div class="w-1/2 flex items-end">
                             <img
                                 v-if="bodyImageUrl"
@@ -39,49 +42,69 @@ const gaugeColor = (value) => {
                             />
                         </div>
                         <div
-                            class="flex flex-col justify-center items-center w-1/2 border-2 border-blue-400"
+                            class="flex flex-col w-1/2 justify-between items-center"
                         >
-                            <div class="h-1/2 w-full border-2 border-red-400">
-                                <p>logement</p>
-                            </div>
-                            <div
-                                class="flex flex-col justify-end border-2 border-red-400 mt-2 text-sm font-bold py-2 px-4 rounded h-1/2 w-full"
-                            >
-                                <div>
-                                    <h1
-                                        v-if="perso"
-                                        class="text-xl font-semibold"
-                                    >
-                                        {{ perso.first_name }}
-                                        {{ perso.last_name }}
-                                    </h1>
-                                    <div class="flex flex-col text-sm">
-                                        <p class="font-semibold">
-                                            {{ age }} ans
-                                        </p>
-                                        <p class="font-semibold">
-                                            {{ money }} Lif'Coins
-                                        </p>
+                            <div class="w-full">
+                                <div
+                                    v-if="activeResidence"
+                                    class="relative group"
+                                >
+                                    <div class="relative w-full md:h-64">
+                                        <img
+                                            :src="activeResidence.image_path"
+                                            alt="Résidence Active"
+                                            class="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 ease-in-out group-hover:opacity-75"
+                                        />
+
+                                        <div
+                                            class="absolute inset-0 bg-emerald-950 bg-opacity-70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg"
+                                        >
+                                            <div>
+                                                <h2
+                                                    class="text-white font-semibold text-center"
+                                                >
+                                                    Résidence Active
+                                                </h2>
+                                                <p
+                                                    class="text-white text-xl font-bold text-center"
+                                                >
+                                                    {{ activeResidence.type }}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <div
+                                    v-else
+                                    class="bg-gray-300/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
+                                >
+                                    <h2 class="text-xl font-bold mb-4">
+                                        Aucune résidence active
+                                    </h2>
+                                    <p>
+                                        Vous n'avez pas de résidence active en
+                                        ce moment.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-4 py-4">
-                        <div class="flex flex-col justify-between">
-                            <h3 class="font-semibold mb-4">Jauges de vie</h3>
-                            <div
-                                v-for="(value, key) in lifeGauges"
-                                :key="key"
-                                class="mb-4"
-                            >
-                                <div class="mb-1">{{ key }}</div>
-                                <div class="w bg-gray-200 rounded-full h-4">
-                                    <div
-                                        :class="gaugeColor(value)"
-                                        :style="{ width: `${value}%` }"
-                                        class="h-4 rounded-full text-center"
-                                    ></div>
+                            <div class="text-gray-200">
+                                <h2 v-if="perso" class="text-xl font-bold">
+                                    {{ perso.first_name }}
+                                    {{ perso.last_name }}
+                                </h2>
+                                <div class="flex flex-col text-sm">
+                                    <div class="flex gap-1">
+                                        <p class="font-semibold">
+                                            {{ age }}
+                                        </p>
+                                        <p class="">ans</p>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <p class="font-semibold">
+                                            {{ money }}
+                                        </p>
+                                        <p class="">LC</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -90,12 +113,34 @@ const gaugeColor = (value) => {
             </div>
 
             <div
-                class="flex flex-col flex-1 justify-between md:flex-auto md:w-2/5 lg:w-2/5 p-8 mb-4 md:mb-0"
+                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md mb-4 md:mb-0"
+            >
+                <h2 class="text-lg font-semibold mb-4">Jauges de vie</h2>
+                <div
+                    v-for="(value, key) in lifeGauges"
+                    :key="key"
+                    class="mb-4 p"
+                >
+                    <div class="mb-1 text-sm font-semibold">
+                        {{ key }}
+                    </div>
+                    <div class="w-full bg-gray-200/80 rounded-full h-4">
+                        <div
+                            :class="gaugeColor(value)"
+                            :style="{ width: `${value}%` }"
+                            class="h-4 rounded-full text-center"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md mb-4 md:mb-0"
             >
                 <div class="grid grid-cols-2 gap-4">
                     <Link :href="route('study.index')">
                         <div
-                            class="mt-2 text-sm bg-gray-400 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700"
+                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
                         >
                             <h3 class="font-semibold pb-2">Étude en cours</h3>
                             <div
@@ -121,7 +166,7 @@ const gaugeColor = (value) => {
                     </Link>
                     <Link :href="route('job')">
                         <div
-                            class="mt-2 text-sm bg-gray-400 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700"
+                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
                         >
                             <h3 class="font-semibold pb-2">Métier actif</h3>
                             <div
@@ -152,7 +197,7 @@ const gaugeColor = (value) => {
                     </Link>
                     <Link :href="route('doctor.index')">
                         <div
-                            class="mt-2 text-sm bg-gray-400 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700"
+                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
                         >
                             <h3 class="font-semibold mb-4">
                                 {{
@@ -184,7 +229,7 @@ const gaugeColor = (value) => {
                 <div class="flex self-end">
                     <Link :href="route('city')">
                         <div
-                            class="text-sm bg-gray-400 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700"
+                            class="bg-gray-300/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-2 px-4"
                         >
                             <h3 class="font-semibold">Aller en ville</h3>
                         </div>
@@ -192,9 +237,11 @@ const gaugeColor = (value) => {
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-between p-4 text-sm">
-            <div>
-                <h2 class="text-xl font-semibold mb-2">
+        <div
+            class="h-full flex items-center justify-between p-4 rounded-lg text-sm bg-emerald-900/90 backdrop-blur-md"
+        >
+            <div class="tracking-wide leading-relaxed">
+                <h2 class="text-xl mb-2 font-semibold">
                     Bienvenue dans Lifers !
                 </h2>
                 <p class="flex-grow">

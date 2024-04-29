@@ -40,9 +40,9 @@ const visitDoctor = () => {
 };
 
 const gaugeColor = (value) => {
-    if (value <= 20) return "bg-red-500";
-    else if (value <= 50) return "bg-orange-500";
-    return "bg-green-500";
+    if (value <= 20) return "bg-red-800";
+    else if (value <= 50) return "bg-orange-400";
+    return "bg-lime-700";
 };
 </script>
 
@@ -50,35 +50,52 @@ const gaugeColor = (value) => {
     <AppLayout title="Soin des maladies">
         <template #header></template>
 
-        <div class="md:pt-24">
+        <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
                 >
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-3xl font-bold">Lif'Hôpital</h2>
-
-                        <p class="mb-4">
-                            Prenez soin de votre personnage en traitant ses
-                            maladies. Sélectionnez une maladie et payez le
-                            traitement nécessaire pour améliorer sa santé.
+                    <div
+                        class="flex flex-col tracking-wide leading-relaxed gap-2"
+                    >
+                        <h1 class="text-xl font-bold mb-4">Lif'Hôpital</h1>
+                        <p class="">
+                            Prenez soin de votre personnage en lui offrant les
+                            traitements nécessaires pour combattre ses maladies
+                            et améliorer sa santé. Choisissez parmi notre
+                            sélection de maladies courantes, telles que le
+                            rhume, la grippe, ou les troubles
+                            gastro-intestinaux, et payez le traitement approprié
+                            pour aider votre personnage à retrouver son
+                            bien-être.
+                        </p>
+                        <p class="">
+                            Explorez notre gamme de médicaments et de remèdes,
+                            soigneusement sélectionnés pour leur efficacité et
+                            leur sécurité, et choisissez celui qui correspond le
+                            mieux aux besoins de votre personnage. Que ce soit
+                            des comprimés pour soulager les symptômes, des
+                            sirops pour apaiser la toux, ou des probiotiques
+                            pour rétablir l'équilibre intestinal, nous avons
+                            tout ce qu'il faut pour aider votre personnage à se
+                            sentir mieux.
                         </p>
                     </div>
                 </div>
                 <!-- Image institutionnelle sur le côté droit -->
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
                 >
                     <img
                         src="/images/places/hopital_4-6.webp"
                         alt="Workplace Image"
-                        class="object-cover h-full rounded-lg shadow-lg"
+                        class="object-cover h-full"
                     />
                 </div>
             </div>
             <div class="flex gap-4">
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 bg-white p-4 rounded-lg shadow-md md:mb-0"
+                    class="flex-1 md:flex-auto md:w-2/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md md:mb-0"
                 >
                     <div class="flex flex-col justify-between">
                         <h3 class="font-semibold mb-4">Jauges de vie</h3>
@@ -99,14 +116,14 @@ const gaugeColor = (value) => {
                     </div>
                 </div>
                 <div
-                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-white p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
                 >
                     <div class="flex justify-between mb-4">
                         <h2 class="font-semibold mb-4">Maladies Actuelles</h2>
 
                         <button
                             @click="visitDoctor"
-                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                            class="py-2 px-4 text-gray-100 bg-emerald-950/50 text-sm font-semibold rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-emerald-950"
                         >
                             Soigner sa jauge de santé (200LC)
                         </button>
@@ -116,7 +133,7 @@ const gaugeColor = (value) => {
                             v-for="sickness in currentSicknesses"
                             :key="sickness.id"
                             @click="treatSickness(sickness.id)"
-                            class="relative flex flex-col bg-white hover:bg-gray-300 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 p-4"
+                            class="relative flex flex-col bg-emerald-900/90 backdrop-blur-md hover:bg-gray-300 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 p-4"
                         >
                             <div class="flex-grow">
                                 <h4 class="text-md font-semibold">
@@ -267,7 +284,7 @@ const gaugeColor = (value) => {
                 <div
                     v-for="sickness in allSicknesses"
                     :key="sickness.id"
-                    class="bg-white p-4 rounded-lg shadow-md flex flex-col"
+                    class="bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md flex flex-col"
                 >
                     <div class="flex-grow">
                         <h4 class="text-md font-semibold">
