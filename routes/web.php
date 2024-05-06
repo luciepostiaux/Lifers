@@ -44,7 +44,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('welcome');
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -55,7 +55,9 @@ Route::middleware([
 });
 
 Route::get('/perso/{perso}', [ProfilPersoController::class, 'public'])->name('profil.public');
-
+Route::get('/mentions-legales', function () {
+    return Inertia::render('LegalMentions');
+});
 
 Route::middleware([
     'auth:sanctum',
@@ -65,6 +67,9 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/aides-informations', function () {
+        return Inertia::render('HelpInfo');
+    })->name('help-info');
 
     Route::get('/profil', [ProfilPersoController::class, 'index'])->name('profil');
     Route::post('/profil/description', [ProfilPersoController::class, 'saveDescription'])->name('profil.description');
@@ -131,7 +136,8 @@ Route::middleware([
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'storeMessage']);
 
     Route::get('/bugidea', [BugIdeaController::class, 'index'])->name('bugidea.index');
-
+    Route::get('/suggestions/{id}', [BugIdeaController::class, 'showSuggestion'])->name('suggestions.show');
+    Route::get('/bugs/{id}', [BugIdeaController::class, 'showBug'])->name('bugs.show');
 
     Route::get('/life-gauges', [LifeGaugesController::class, 'index'])->name('life-gauges.index');
     // Route::put('/life-gauges/{perso}', [LifeGaugesController::class, 'update'])->name('life-gauges.update');

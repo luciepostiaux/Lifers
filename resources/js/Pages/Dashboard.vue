@@ -3,6 +3,8 @@ import { defineProps, computed } from "vue";
 
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link } from "@inertiajs/vue3";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import LifeGauges from "@/Components/LifeGauges.vue";
 
 defineProps({
     perso: Object,
@@ -14,26 +16,20 @@ defineProps({
     currentSicknesses: Array,
     activeResidence: Object,
 });
-
-const gaugeColor = (value) => {
-    if (value <= 20) return "bg-red-800";
-    else if (value <= 50) return "bg-orange-400";
-    return "bg-lime-700";
-};
 </script>
 
 <template>
     <AppLayout title="Dashboard">
         <template #header></template>
-        <div class="flex flex-col gap-4 md:flex-row mb-4 w-full h-full">
+        <div class="flex flex-col gap-4 lg:flex-row mb-4 w-full h-full">
             <div
-                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 p-4 rounded-lg shadow-md md:mb-0 backdrop-blur-md"
+                class="w-full lg:w-1/3 flex flex-col justify-between bg-emerald-900/90 p-4 rounded-lg shadow-md md:mb-0 backdrop-blur-lg "
             >
                 <h1 class="text-xl font-bold mb-4">Accueil</h1>
 
                 <div class="gap-4 h-full">
-                    <div class="flex pb-4 justify-between">
-                        <div class="w-1/2 flex items-end">
+                    <div class="flex justify-between">
+                        <div class="w-1/2 h-full flex items-end">
                             <img
                                 v-if="bodyImageUrl"
                                 :src="bodyImageUrl"
@@ -42,9 +38,9 @@ const gaugeColor = (value) => {
                             />
                         </div>
                         <div
-                            class="flex flex-col w-1/2 justify-between items-center"
+                            class="flex flex-col w-1/2 h-full justify-between gap-4"
                         >
-                            <div class="w-full">
+                            <div class="w-full h-full">
                                 <div
                                     v-if="activeResidence"
                                     class="relative group"
@@ -87,7 +83,7 @@ const gaugeColor = (value) => {
                                     </p>
                                 </div>
                             </div>
-                            <div class="text-gray-200">
+                            <div class="text-gray-200 lg:mt-4">
                                 <h2 v-if="perso" class="text-xl font-bold">
                                     {{ perso.first_name }}
                                     {{ perso.last_name }}
@@ -111,140 +107,162 @@ const gaugeColor = (value) => {
                     </div>
                 </div>
             </div>
-
             <div
-                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md mb-4 md:mb-0"
+                class="w-full lg:w-2/3 flex flex-col md:flex-row gap-2 md:gap-4"
             >
-                <h2 class="text-lg font-semibold mb-4">Jauges de vie</h2>
                 <div
-                    v-for="(value, key) in lifeGauges"
-                    :key="key"
-                    class="mb-4 p"
+                    class="w-full md:w-1/2 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
                 >
-                    <div class="mb-1 text-sm font-semibold">
-                        {{ key }}
+                    <!-- <H2 class="">Jauges de vie</H2> -->
+                    <div>
+                        <LifeGauges :gauges="lifeGauges" />
                     </div>
-                    <div class="w-full bg-gray-200/80 rounded-full h-4">
-                        <div
-                            :class="gaugeColor(value)"
-                            :style="{ width: `${value}%` }"
-                            class="h-4 rounded-full text-center"
-                        ></div>
+                    <div class="flex self-end">
+                        <Link :href="route('athome')">
+                            <PrimaryButton>
+                                <h3 class="font-semibold">Aller chez soi</h3>
+                            </PrimaryButton>
+                        </Link>
                     </div>
                 </div>
-            </div>
 
-            <div
-                class="md:w-1/3 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md mb-4 md:mb-0"
-            >
-                <div class="grid grid-cols-2 gap-4">
-                    <Link :href="route('study.index')">
-                        <div
-                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
-                        >
-                            <h3 class="font-semibold pb-2">Étude en cours</h3>
-                            <div
-                                v-if="studyDetails"
-                                class="flex flex-col flex-grow"
-                            >
-                                <div class="size-20 mx-auto mb-4">
-                                    <img
-                                        :src="studyDetails.img"
-                                        alt="Image du cours"
-                                        class="w-full h-full object-contain"
-                                    />
-                                </div>
+                <div
+                    class="w-full md:w-1/2 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
+                >
+                    <div>
+                        <h2 class="text-lg mb-2">Accès rapide</h2>
 
-                                <p class="text-sm">
-                                    {{ studyDetails.name }}
-                                </p>
-                            </div>
-                            <div v-else>
-                                <p class="text-sm">Pas d'étude en cours.</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link :href="route('job')">
-                        <div
-                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
-                        >
-                            <h3 class="font-semibold pb-2">Métier actif</h3>
-                            <div
-                                v-if="perso.job"
-                                class="flex flex-col space-y-4"
-                            >
-                                <div class="size-20 mx-auto mb-4">
-                                    <img
-                                        :src="perso.job.img_job"
-                                        alt="Image du job"
-                                        class="w-full h-full object-contain"
-                                    />
-                                </div>
-
-                                <p class="text-sm">
-                                    {{ perso.job.name }}
-                                </p>
-                                <!-- <p
-                                            class="px-4 py-2 text-sm font-semibold underline underline-offset-2"
-                                        >
-                                            Aller aux métiers
-                                        </p> -->
-                            </div>
-                            <div v-else>
-                                <p class="text-sm">Pas de métier actif.</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link :href="route('doctor.index')">
-                        <div
-                            class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-4"
-                        >
-                            <h3 class="font-semibold mb-4">
-                                {{
-                                    currentSicknesses.length <= 1
-                                        ? "Maladie active"
-                                        : "Maladies actives"
-                                }}
-                            </h3>
-                            <div v-if="currentSicknesses.length > 0">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Étude en cours -->
+                            <Link :href="route('study.index')">
                                 <div
-                                    v-for="sickness in currentSicknesses"
-                                    :key="sickness.id"
-                                    class="mb-4"
+                                    class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:shadow-lg cursor-pointer p-4 h-full"
                                 >
-                                    <h4 class="text-md">
-                                        {{ sickness.name }}
-                                    </h4>
-                                    <p class="text-sm mt-1">
-                                        {{ sickness.description }}
+                                    <h3 class="font-semibold pb-2">
+                                        Étude en cours
+                                    </h3>
+                                    <div
+                                        v-if="studyDetails"
+                                        class="flex flex-col lg:flex-grow justify-center items-center"
+                                    >
+                                        <div class="size-20 mx-auto">
+                                            <img
+                                                :src="studyDetails.img"
+                                                alt="Image du cours"
+                                                class="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        <p class="text-sm text-center">
+                                            {{ studyDetails.name }}
+                                        </p>
+                                    </div>
+                                    <div v-else>
+                                        <p class="text-sm text-center mt-2">
+                                            Pas d'étude en cours.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Link>
+
+                            <!-- Métier actif -->
+                            <Link :href="route('job')">
+                                <div
+                                    class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:shadow-lg cursor-pointer p-4 h-full"
+                                >
+                                    <h3 class="font-semibold pb-2">
+                                        Métier actif
+                                    </h3>
+                                    <div
+                                        v-if="perso.job"
+                                        class="flex flex-grow justify-center items-center"
+                                    >
+                                        <div class="size-20 mx-auto">
+                                            <img
+                                                :src="perso.job.img_job"
+                                                alt="Image du job"
+                                                class="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        <p class="text-sm text-center">
+                                            {{ perso.job.name }}
+                                        </p>
+                                    </div>
+                                    <div v-else>
+                                        <p class="text-sm text-center mt-2">
+                                            Pas de métier actif.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Link>
+
+                            <!-- Maladies actives -->
+                            <Link :href="route('doctor.index')">
+                                <div
+                                    class="bg-emerald-950 hover:bg-emerald-950/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:shadow-lg cursor-pointer p-4 h-full"
+                                >
+                                    <h3 class="font-semibold mb-2">
+                                        {{
+                                            currentSicknesses.length <= 1
+                                                ? "Maladie active"
+                                                : "Maladies actives"
+                                        }}
+                                    </h3>
+                                    <div
+                                        v-if="currentSicknesses.length > 0"
+                                        class="flex-grow"
+                                    >
+                                        <div
+                                            v-for="sickness in currentSicknesses"
+                                            :key="sickness.id"
+                                            class="mb-4"
+                                        >
+                                            <div class="flex space-x-2">
+                                                <h4
+                                                    class="text-sm font-semibold text-red-500"
+                                                >
+                                                    {{ sickness.name }}
+                                                </h4>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    class="size-4 text-red-500"
+                                                >
+                                                    <path
+                                                        d="M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM10.9999 16.0002V18.0002H12.9999V16.0002H10.9999ZM10.9999 9.00017V14.0002H12.9999V9.00017H10.9999Z"
+                                                    ></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs mt-1">
+                                                {{ sickness.description }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p v-else class="text-sm text-center mt-2">
+                                        Aucune maladie pour le moment !
                                     </p>
                                 </div>
-                            </div>
-                            <p v-else class="text-center text-sm">
-                                Aucune maladie pour le moment!
-                            </p>
+                            </Link>
                         </div>
-                    </Link>
-                </div>
-                <div class="flex self-end">
-                    <Link :href="route('city')">
-                        <div
-                            class="bg-gray-300/50 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer p-2 px-4"
-                        >
-                            <h3 class="font-semibold">Aller en ville</h3>
-                        </div>
-                    </Link>
+                    </div>
+                    <div class="flex self-end">
+                        <Link :href="route('city')">
+                            <PrimaryButton>
+                                <h3 class="font-semibold">Aller en ville</h3>
+                            </PrimaryButton>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
         <div
-            class="h-full flex items-center justify-between p-4 rounded-lg text-sm bg-emerald-900/90 backdrop-blur-md"
+            class="h-full flex items-center justify-between p-4 rounded-lg text-sm bg-emerald-900/90 backdrop-blur-lg"
         >
-            <div class="tracking-wide leading-relaxed">
+            <div class="">
                 <h2 class="text-xl mb-2 font-semibold">
                     Bienvenue dans Lifers !
                 </h2>
-                <p class="flex-grow">
+                <p class="flex-grow leading-6 tracking-wider">
                     Votre nouvelle vie vous attend. Dès maintenant, vous allez
                     réincarner un Lifer et naviguez à travers les choix et les
                     défis d'une existence virtuelle riche et captivante.
@@ -253,8 +271,7 @@ const gaugeColor = (value) => {
                     dans le monde du travail et gagner vos premiers
                     Lifers'coins, ou inscrivez-vous à des études pour ouvrir la
                     porte à des carrières plus spécialisées et ambitieuses.
-                </p>
-                <p>
+                    <br />
                     Pour bien démarrer, n'oubliez pas de prendre soin de votre
                     Lifer. Comme dans la vraie vie, équilibrer travail, loisirs,
                     relations sociales et bien-être est la clé d'une existence
@@ -267,6 +284,11 @@ const gaugeColor = (value) => {
                     vivre la vie dont vous avez toujours rêvé, en version
                     accélérée !
                 </p>
+                <div class="flex justify-end mt-4">
+                    <Link :href="route('help-info')">
+                        <PrimaryButton>Informations et Aide</PrimaryButton>
+                    </Link>
+                </div>
             </div>
         </div>
     </AppLayout>

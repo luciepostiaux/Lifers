@@ -3,6 +3,7 @@ import { ref, defineProps, computed, reactive } from "vue";
 import { router, Link } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     jobs: Array,
@@ -21,7 +22,10 @@ const toggleDescription = (jobId) => {
 };
 
 const userCanApply = (job) => {
-    return props.userDiplomas.some((diploma) => diploma.id === job.diplomas_id);
+    return (
+        !job.diplomas_id ||
+        props.userDiplomas.some((diploma) => diploma.id === job.diplomas_id)
+    );
 };
 
 const applyForJob = (jobId) => {
@@ -48,12 +52,16 @@ const isCurrentJob = (job) => {
         <template #header></template>
 
         <div class="">
-            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+            <div
+                class="flex flex-col lg:flex-row mb-4 w-full h-full gap-2 lg:gap-4"
+            >
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between lg:flex-auto lg:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 pb-0 rounded-lg shadow-md order-2 lg:order-1"
                 >
-                    <div class="flex flex-col tracking-wide leading-relaxed">
-                        <h1 class="text-xl font-bold mb-4">Lif'Emploi</h1>
+                    <div
+                        class="flex flex-col tracking-wide leading-relaxed gap-2 pb-4"
+                    >
+                        <h1 class="text-xl font-bold">Lif'Emploi</h1>
                         <p>
                             Le choix de ton métier est plus qu'une décision,
                             c'est le début d'une aventure. Que tu te vois
@@ -66,10 +74,10 @@ const isCurrentJob = (job) => {
                     </div>
                     <div
                         v-if="currentJob"
-                        class="bg-emerald-950 p-4 rounded-lg shadow-lg"
+                        class="bg-emerald-950 p-4 rounded-lg shadow-lg my-4"
                     >
                         <div
-                            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full"
+                            class="lg:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full"
                         >
                             <div
                                 class="flex flex-col col-span-1 rounded-lg place-self-center"
@@ -82,16 +90,21 @@ const isCurrentJob = (job) => {
                             </div>
                             <div class="flex flex-col col-span-4">
                                 <div
-                                    class="flex flex-col md:flex-row justify-between gap-2 mb-2"
+                                    class="flex flex-col lg:flex-row justify-between gap-2 mb-2"
                                 >
                                     <h2 class="font-bold">
                                         {{ currentJob.name }}
                                     </h2>
+
                                     <Link
                                         :href="`/job/current/${currentJob.id}`"
-                                        class="inline-flex items-center justify-center px-4 py-2 bg-emerald-900/80 hover:bg-emerald-900 border border-transparent rounded-md font-semibold text-xs percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
-                                        >Aller</Link
                                     >
+                                        <PrimaryButton>
+                                            <h3 class="font-semibold">
+                                                Suivi du métier
+                                            </h3>
+                                        </PrimaryButton>
+                                    </Link>
                                 </div>
 
                                 <p
@@ -106,7 +119,7 @@ const isCurrentJob = (job) => {
 
                 <!-- Image institutionnelle sur le côté droit -->
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 lg:flex-auto lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 lg:order-2"
                 >
                     <img
                         src="/images/places/poleemploi_4-6.webp"
@@ -119,108 +132,111 @@ const isCurrentJob = (job) => {
             <!-- Section job choix -->
 
             <div
-                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 bg-emerald-900/90 backdrop-blur-md  rounded-lg shadow-md p-4"
+                class="bg-emerald-900/90 backdrop-blur-lg rounded-lg shadow-md p-4"
             >
+                <h3 class="text-lg mb-4">Liste des métiers disponibles</h3>
                 <div
-                    v-for="job in jobs"
-                    :key="job.id"
-                    class="relative flex flex-col bg-emerald-950 backdrop-blur-md  hover:bg-emerald-950/50 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 min-h-80"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4"
                 >
                     <div
-                        @click="toggleDescription(job.id)"
-                        class="flex flex-col justify-between p-4 flex-grow"
+                        v-for="job in jobs"
+                        :key="job.id"
+                        class="relative flex flex-col bg-emerald-950 backdrop-blur-lg hover:bg-emerald-950/50 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer py-4 min-h-80"
                     >
-                        <div>
-                            <div class="size-28 mx-auto mb-4">
-                                <img
-                                    :src="job.img_job"
-                                    alt="Image du métier"
-                                    class="w-full h-full object-contain"
-                                />
+                        <div
+                            @click="toggleDescription(job.id)"
+                            class="flex flex-col justify-between p-4 flex-grow"
+                        >
+                            <div>
+                                <div class="size-28 mx-auto mb-4">
+                                    <img
+                                        :src="job.img_job"
+                                        alt="Image du métier"
+                                        class="w-full h-full object-contain"
+                                    />
+                                </div>
+                                <div class="flex-grow text-center">
+                                    <h3 class="font-semibold text-sm">
+                                        {{ job.name }}
+                                    </h3>
+                                </div>
                             </div>
-                            <div class="flex-grow text-center">
-                                <h3 class="font-semibold text-sm">
-                                    {{ job.name }}
-                                </h3>
-                            </div>
                         </div>
-                    </div>
-                    <div class="mt-2 flex flex-col items-center text-sm">
-                        <button
-                            v-if="isCurrentJob(job)"
-                            disabled
-                            class="mt-2 text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Travail Actuel
-                        </button>
-                        <button
-                            v-else-if="userCanApply(job)"
-                            @click="requestApplyForJob(job.id)"
-                            class="mt-2 text-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Postuler
-                        </button>
-
-                        <span
-                            v-else
-                            class="mt-2 text-sm bg-red-500 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Diplôme requis
-                        </span>
-                    </div>
-                    <div class="flex justify-center gap-2 mt-2 italic">
-                        <div class="text-sm flex justify-center gap-1">
-                            <p class="font-semibold">
-                                Salaire: {{ job.salary }}
-                            </p>
-                            <p class="">LC</p>
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="showDescription[job.id]"
-                        @click.stop="toggleDescription(job.id)"
-                        class="absolute flex flex-col bg-emerald-900/90 backdrop-blur-md  hover:bg-emerald-900 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer py-4 min-h-80"
-                    >
-                        <div class="flex flex-col px-4 pt-4 flex-grow">
-                            <h3 class="font-semibold text-center">
-                                {{ job.name }}
-                            </h3>
-                            <p
-                                class="pt-2 text-xs tracking-wide leading-relaxed"
-                            >
-                                {{ job.description_1 }}
-                            </p>
-                        </div>
-                        <div class="flex flex-col items-center text-sm">
+                        <div class="mt-2 flex flex-col items-center text-sm">
                             <button
                                 v-if="isCurrentJob(job)"
                                 disabled
-                                class="mt-2 text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                                class="mt-2 text-sm text-amber-500 font-bold py-2 px-4 rounded"
                             >
                                 Travail Actuel
                             </button>
-                            <button
+
+                            <PrimaryButton
                                 v-else-if="userCanApply(job)"
                                 @click="requestApplyForJob(job.id)"
-                                class="mt-2 text-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                             >
-                                Postuler
-                            </button>
-
+                                <h3 class="font-semibold">Postuler</h3>
+                            </PrimaryButton>
                             <span
                                 v-else
-                                class="mt-2 text-sm bg-red-500 text-white font-bold py-2 px-4 rounded"
+                                class="mt-2 text-sm text-red-500 font-bold py-2 px-4 rounded"
                             >
                                 Diplôme requis
                             </span>
                         </div>
-                        <div class="flex justify-center gap-2 mt-2 italic">
+                        <div class="flex justify-center gap-2 mt-2">
                             <div class="text-sm flex justify-center gap-1">
                                 <p class="font-semibold">
                                     Salaire: {{ job.salary }}
                                 </p>
                                 <p class="">LC</p>
+                            </div>
+                        </div>
+
+                        <div
+                            v-if="showDescription[job.id]"
+                            @click.stop="toggleDescription(job.id)"
+                            class="absolute flex flex-col bg-emerald-900/90 backdrop-blur-lg hover:bg-emerald-900 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer py-4 min-h-80"
+                        >
+                            <div class="flex flex-col px-4 pt-4 flex-grow">
+                                <h3 class="font-semibold text-center">
+                                    {{ job.name }}
+                                </h3>
+                                <p
+                                    class="pt-2 text-xs tracking-wide leading-relaxed"
+                                >
+                                    {{ job.description_1 }}
+                                </p>
+                            </div>
+                            <div class="flex flex-col items-center text-sm">
+                                <button
+                                    v-if="isCurrentJob(job)"
+                                    disabled
+                                    class="mt-2 text-sm text-amber-500 font-bold py-2 px-4 rounded"
+                                >
+                                    Travail Actuel
+                                </button>
+                                <PrimaryButton
+                                    v-else-if="userCanApply(job)"
+                                    @click="requestApplyForJob(job.id)"
+                                >
+                                    <h3 class="font-semibold">Postuler</h3>
+                                </PrimaryButton>
+
+                                <span
+                                    v-else
+                                    class="mt-2 text-sm text-red-500 font-bold py-2 px-4 rounded"
+                                >
+                                    Diplôme requis
+                                </span>
+                            </div>
+                            <div class="flex justify-center gap-2 mt-2">
+                                <div class="text-sm flex justify-center gap-1">
+                                    <p class="font-semibold">
+                                        Salaire: {{ job.salary }}
+                                    </p>
+                                    <p class="">LC</p>
+                                </div>
                             </div>
                         </div>
                     </div>

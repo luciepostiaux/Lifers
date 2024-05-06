@@ -31,22 +31,26 @@ const submit = () => {
 
 <template>
     <Head title="Log in" />
-    <div class="flex justify-center bg-emerald-950 h-screen">
+    <div class="flex flex-col static justify-center bg-emerald-950 h-screen">
         <div
-            class="w-[85vw] h-[85vh] custom-scrollbar overflow-y-auto text-gray-800 shadow-lg rounded-lg m-auto bg-cover bg-center"
+            class="lg:w-[85vw] lg:h-[85vh] w-full h-full custom-scrollbar overflow-y-auto text-gray-800 shadow-lg lg:rounded-lg m-auto bg-cover bg-center"
             style="background-image: url(/images/places/ville.webp)"
         >
             <div
                 class="flex justify-center items-center gap-4 md:flex-row w-full h-full"
             >
                 <div
-                    class="flex flex-col justify-center bg-emerald-900/90 w-3/4 h-3/4 rounded-lg shadow-md md:mb-0 backdrop-blur-md"
+                    class="flex flex-col justify-center bg-emerald-900/90 md:w-3/4 h-4/5 rounded-lg shadow-md backdrop-blur-lg p-4"
                 >
                     <AuthenticationCard>
                         <template #logo>
-                            <h1 class="font-bangers text-9xl text-gray-100">
-                                Lifers
-                            </h1>
+                            <Link :href="route('welcome')" class="no-underline">
+                                <h1
+                                    class="font-bangers text-9xl text-gray-100 cursor-pointer"
+                                >
+                                    Lifers
+                                </h1>
+                            </Link>
                         </template>
 
                         <div
@@ -109,7 +113,7 @@ const submit = () => {
                                 <Link
                                     v-if="canResetPassword"
                                     :href="route('password.request')"
-                                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 focus:bg-white p-1"
                                 >
                                     Mot de passe oublié?
                                 </Link>
@@ -127,5 +131,18 @@ const submit = () => {
                 </div>
             </div>
         </div>
+        <footer class="absolute inset-x-0 bottom-0 text-gray-200 text-sm mb-4">
+            <div
+                class="container mx-auto flex justify-center items-center space-x-2"
+            >
+                <span> {{ new Date().getFullYear() }} Lifers </span>
+                <p>|</p>
+                <nav>
+                    <a href="/mentions-legales" class="hover:underline">
+                        Mentions légales</a
+                    >
+                </nav>
+            </div>
+        </footer>
     </div>
 </template>

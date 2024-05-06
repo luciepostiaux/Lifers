@@ -1,12 +1,11 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import AuthenticationCard from "@/Components/AuthenticationCard.vue";
-import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 
 const form = useForm({
     name: "",
@@ -14,6 +13,7 @@ const form = useForm({
     password: "",
     password_confirmation: "",
     terms: false,
+    age_confirm: false,
 });
 
 const submit = () => {
@@ -24,28 +24,32 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="S'enregistrer" />
     <div class="flex justify-center bg-emerald-950 h-screen">
         <div
-            class="w-[85vw] h-[85vh] custom-scrollbar overflow-y-auto text-gray-800 shadow-lg rounded-lg m-auto bg-cover bg-center"
+            class="lg:w-[85vw] lg:h-[85vh] w-full h-full custom-scrollbar overflow-y-auto text-gray-800 shadow-lg rounded-lg m-auto bg-cover bg-center"
             style="background-image: url(/images/places/ville.webp)"
         >
             <div
                 class="flex justify-center items-center gap-4 md:flex-row w-full h-full"
             >
                 <div
-                    class="flex flex-col justify-center bg-emerald-900/90 w-3/4 h-3/4 rounded-lg shadow-md md:mb-0 backdrop-blur-md "
+                    class="flex flex-col justify-center bg-emerald-900/90 w-4/5 rounded-lg shadow-md p-4 backdrop-blur-lg"
                 >
                     <AuthenticationCard>
                         <template #logo>
-                            <h1 class="font-bangers text-9xl text-gray-100">
-                                Lifers
-                            </h1>
+                            <Link :href="route('welcome')" class="no-underline">
+                                <h1
+                                    class="font-bangers text-9xl text-gray-100 cursor-pointer"
+                                >
+                                    Lifers
+                                </h1>
+                            </Link>
                         </template>
 
                         <form @submit.prevent="submit">
                             <div>
-                                <InputLabel for="name" value="Pseudo" />
+                                <InputLabel for="name" value="Identifiant" />
                                 <TextInput
                                     id="name"
                                     v-model="form.name"
@@ -99,7 +103,7 @@ const submit = () => {
                             <div class="mt-4">
                                 <InputLabel
                                     for="password_confirmation"
-                                    value="Confirmation mot de passe"
+                                    value="Confirmation du mot de passe"
                                 />
                                 <TextInput
                                     id="password_confirmation"
@@ -115,50 +119,55 @@ const submit = () => {
                                 />
                             </div>
 
-                            <div
-                                v-if="
-                                    $page.props.jetstream
-                                        .hasTermsAndPrivacyPolicyFeature
-                                "
-                                class="mt-4"
-                            >
-                                <InputLabel for="terms">
-                                    <div class="flex items-center">
-                                        <Checkbox
-                                            id="terms"
-                                            v-model:checked="form.terms"
-                                            name="terms"
-                                            required
-                                        />
-
-                                        <div class="ms-2">
-                                            I agree to the
-                                            <a
-                                                target="_blank"
-                                                :href="route('terms.show')"
-                                                class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                >Terms of Service</a
-                                            >
-                                            and
-                                            <a
-                                                target="_blank"
-                                                :href="route('policy.show')"
-                                                class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                >Privacy Policy</a
-                                            >
-                                        </div>
-                                    </div>
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.terms"
-                                    />
+                            <!-- Case pour accepter les CGU -->
+                            <div class="mt-4 flex items-center">
+                                <Checkbox
+                                    id="terms"
+                                    v-model:checked="form.terms"
+                                    required
+                                />
+                                <InputLabel for="terms" class="ms-2">
+                                    J'accepte les
+                                    <a
+                                        href="/mentions-legales"
+                                        class="underline text-sm text-gray-600 hover:text-gray-900"
+                                    >
+                                        Conditions Générales d'Utilisation
+                                    </a>
+                                    et la
+                                    <a
+                                        href="/mentions-legales"
+                                        class="underline text-sm text-gray-600 hover:text-gray-900"
+                                    >
+                                        Politique de Confidentialité
+                                    </a>
                                 </InputLabel>
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.terms"
+                                />
+                            </div>
+
+                            <!-- Case pour confirmer l'âge -->
+                            <div class="mt-4 flex items-center">
+                                <Checkbox
+                                    id="age_confirm"
+                                    v-model:checked="form.age_confirm"
+                                    required
+                                />
+                                <InputLabel for="age_confirm" class="ms-2">
+                                    Je confirme que j'ai 16 ans ou plus.
+                                </InputLabel>
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.age_confirm"
+                                />
                             </div>
 
                             <div class="flex items-center justify-end mt-4">
                                 <Link
                                     :href="route('login')"
-                                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    class="underline text-sm text-gray-600 hover:text-gray-900"
                                 >
                                     Déjà un compte?
                                 </Link>
@@ -176,5 +185,18 @@ const submit = () => {
                 </div>
             </div>
         </div>
+        <footer class="absolute inset-x-0 bottom-0 text-gray-200 text-sm mb-4">
+            <div
+                class="container mx-auto flex justify-center items-center space-x-2"
+            >
+                <span> {{ new Date().getFullYear() }} Lifers </span>
+                <p>|</p>
+                <nav>
+                    <a href="/mentions-legales" class="hover:underline">
+                        Mentions légales</a
+                    >
+                </nav>
+            </div>
+        </footer>
     </div>
 </template>

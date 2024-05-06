@@ -76,11 +76,12 @@ class AtHomeController extends Controller
         });
 
         $activeResidence = $residences->where('active', true)->first();
+        $formattedMoney = $perso ? number_format($perso->money, 2, ',', ' ') : null;
 
         return Inertia::render('AtHome/Index', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,
-            'money' => $money,
+            'money' => $formattedMoney,
             'age' => $perso ? $perso->calculateAge() : null,
             'lifeGauges' => $lifeGauges,
             'inventoryItemsByCategory' => $inventoryItemsByCategory,

@@ -1,7 +1,9 @@
 <script setup>
 import { defineProps, ref, computed } from "vue";
-import { router } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import LifeGauges from "@/Components/LifeGauges.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     perso: Object,
@@ -106,12 +108,12 @@ const sellResidence = (residence) => {
         <template #header></template>
 
         <div class="flex justify-center">
-            <div class="flex flex-col gap-4 mx-auto">
+            <div class="flex flex-col gap-2 lg:gap-4 mx-auto">
                 <!-- Jauges de vie et Image du perso sur une ligne -->
-                <div class="flex gap-4 h-full">
+                <div class="flex flex-col lg:flex-row gap-2 lg:gap-4 h-full">
                     <!-- Image du perso -->
                     <div
-                        class="md:w-1/3 bg-emerald-900/90 backdrop-blur-md  flex flex-col justify-between p-4 rounded-lg shadow-md mb-4 md:mb-0"
+                        class="w-full lg:w-1/3 bg-emerald-900/90 backdrop-blur-lg flex flex-col justify-between p-4 rounded-lg shadow-md"
                     >
                         <h1 class="text-xl font-bold mb-4">Lif'Home</h1>
 
@@ -124,100 +126,125 @@ const sellResidence = (residence) => {
                                     class="h-96 mx-auto"
                                 />
                             </div>
-                            <div class="text-gray-200 w-1/2">
-                                <h2 v-if="perso" class="text-xl font-bold">
-                                    {{ perso.first_name }}
-                                    {{ perso.last_name }}
-                                </h2>
-                                <div class="flex flex-col text-sm">
-                                    <div class="flex gap-1">
-                                        <p class="font-semibold">
-                                            {{ age }}
-                                        </p>
-                                        <p class="">ans</p>
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <p class="font-semibold">
-                                            {{ money }}
-                                        </p>
-                                        <p class="">LC</p>
+                            <div
+                                class="text-gray-200 w-1/2 flex flex-col justify-between h-full mb-2"
+                            >
+                                <div
+                                    class="w-full h-1/2 bg-emerald-950 rounded-lg p-4"
+                                >
+                                    <p class="text-sm text-center">
+                                        Contenu à venir
+                                    </p>
+                                </div>
+                                <div class="lg:ml-4">
+                                    <h2 v-if="perso" class="text-xl font-bold">
+                                        {{ perso.first_name }}
+                                        {{ perso.last_name }}
+                                    </h2>
+                                    <div class="flex flex-col justify-between">
+                                        <div class="flex flex-col text-sm">
+                                            <div class="flex gap-1">
+                                                <p class="font-semibold">
+                                                    {{ age }}
+                                                </p>
+                                                <p class="">ans</p>
+                                            </div>
+                                            <div class="flex gap-1">
+                                                <p class="font-semibold">
+                                                    {{ money }}
+                                                </p>
+                                                <p class="">LC</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Jauges de vie -->
-                    <div class="flex md:w-2/3 gap-4">
+                    <div class="flex w-full lg:w-2/3 gap-2 lg:gap-4">
                         <div
-                            class="md:w-1/2 flex flex-col justify-between backdrop-blur-md  bg-emerald-900/90 p-4 rounded-lg shadow-md mb-4 md:mb-0"
+                            class="w-1/2 flex flex-col justify-between backdrop-blur-lg bg-emerald-900/90 p-4 rounded-lg shadow-md md:mb-0"
                         >
-                            <h2 class="text-lg font-semibold mb-4">
-                                Jauges de vie
-                            </h2>
-                            <div
-                                v-for="(value, key) in lifeGauges"
-                                :key="key"
-                                class="mb-4 p"
-                            >
-                                <div class="mb-1 text-sm font-semibold">
-                                    {{ key }}
-                                </div>
-                                <div
-                                    class="w-full bg-gray-200/80 rounded-full h-4"
-                                >
-                                    <div
-                                        :class="gaugeColor(value)"
-                                        :style="{ width: `${value}%` }"
-                                        class="h-4 rounded-full text-center"
-                                    ></div>
-                                </div>
-                            </div>
+                            <LifeGauges :gauges="lifeGauges" />
                         </div>
                         <!-- Maladies Actuelles -->
                         <div
-                            class="md:w-1/2 bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md mb-4 md:mb-0"
+                            class="w-1/2 flex flex-col justify-between bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md md:mb-0"
                         >
-                            <h2 class="text-lg font-semibold mb-4">
-                                {{
-                                    currentSicknesses.length <= 1
-                                        ? "Maladie active"
-                                        : "Maladies actives"
-                                }}
-                            </h2>
-                            <div v-if="currentSicknesses.length > 0">
+                            <div>
+                                <h3 class="text-lg mb-2">
+                                    {{
+                                        currentSicknesses.length <= 1
+                                            ? "Maladie active"
+                                            : "Maladies actives"
+                                    }}
+                                </h3>
                                 <div
-                                    v-for="sickness in currentSicknesses"
-                                    :key="sickness.id"
-                                    class="mb-4"
+                                    v-if="currentSicknesses.length > 0"
+                                    class="flex-grow"
                                 >
-                                    <h4 class="text-md font-semibold">
-                                        {{ sickness.name }}
-                                    </h4>
-                                    <p class="text-sm mt-1">
-                                        {{ sickness.description }}
-                                    </p>
-                                    <p
-                                        class="text-xs italic font-semibold text-right pt-2"
+                                    <div
+                                        v-for="sickness in currentSicknesses"
+                                        :key="sickness.id"
+                                        class="mb-4"
                                     >
-                                        Contracté le:
-                                        {{ formatDate(sickness.contracted_at) }}
-                                    </p>
+                                        <div class="flex space-x-2">
+                                            <h4
+                                                class="text-sm font-semibold text-red-500"
+                                            >
+                                                {{ sickness.name }}
+                                            </h4>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="currentColor"
+                                                class="size-4 text-red-500"
+                                            >
+                                                <path
+                                                    d="M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM10.9999 16.0002V18.0002H12.9999V16.0002H10.9999ZM10.9999 9.00017V14.0002H12.9999V9.00017H10.9999Z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+
+                                        <p class="text-xs mt-1">
+                                            {{ sickness.description }}
+                                        </p>
+                                        <p
+                                            class="text-xs italic text-right pt-2"
+                                        >
+                                            Contracté le:
+                                            {{
+                                                formatDate(
+                                                    sickness.contracted_at
+                                                )
+                                            }}
+                                        </p>
+                                    </div>
                                 </div>
+                                <p v-else class="text-sm text-center mt-2">
+                                    Aucune maladie pour le moment !
+                                </p>
                             </div>
-                            <p v-else class="text-center text-sm">
-                                Aucune maladie pour le moment!
-                            </p>
+                            <div class="flex self-end">
+                                <Link :href="route('doctor.index')">
+                                    <PrimaryButton>
+                                        <h3 class="font-semibold">
+                                            Se soigner
+                                        </h3>
+                                    </PrimaryButton>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex gap-4">
+                <div class="flex flex-col lg:flex-row gap-4">
                     <div
-                        class="flex flex-col md:w-1/3 gap-4 backdrop-blur-md  bg-emerald-900/90 p-4 rounded-lg shadow-md"
+                        class="flex flex-col w-full lg:w-1/3 gap-4 backdrop-blur-lg bg-emerald-900/90 p-4 rounded-lg shadow-md order-2 lg:order-1"
                     >
                         <div>
                             <!-- Résidence Active ou message d'absence -->
                             <div v-if="activeResidence" class="relative group">
-                                <div class="relative w-full md:h-96">
+                                <div class="relative w-full h-36 md:h-96">
                                     <img
                                         :src="activeResidence.image_path"
                                         alt="Résidence Active"
@@ -225,7 +252,7 @@ const sellResidence = (residence) => {
                                     />
                                     />
                                     <div
-                                        class="absolute inset-0 bg-emerald-950/50 backdrop-blur-md  flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg"
+                                        class="absolute inset-0 bg-emerald-950/50 backdrop-blur-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg"
                                     >
                                         <div>
                                             <h2
@@ -254,7 +281,7 @@ const sellResidence = (residence) => {
 
                             <!-- Liste des autres résidences -->
                             <h2 class="text-lg font-semibold py-4">
-                                Autres résidences
+                                Toutes vos résidences
                             </h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div
@@ -279,7 +306,7 @@ const sellResidence = (residence) => {
                                         class="w-full h-full object-cover rounded-lg transition-opacity duration-300 ease-in-out group-hover:opacity-75"
                                     />
                                     <div
-                                        class="absolute inset-0 flex bg-emerald-950/80 backdrop-blur-md  rounded-lg shadow-md opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out"
+                                        class="absolute inset-0 flex bg-emerald-950/80 backdrop-blur-lg rounded-lg shadow-md opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out"
                                     >
                                         <div
                                             class="flex flex-col justify-around p-4"
@@ -424,18 +451,18 @@ const sellResidence = (residence) => {
 
                     <!-- Inventaire -->
                     <div
-                        class="md:w-2/3 bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md"
+                        class="w-full lg:w-2/3 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md order-1 lg:order-2"
                     >
                         <div class="flex items-center flex-wrap gap-4 mb-4">
-                            <h2 class="text-lg font-semibold">Inventaire</h2>
+                            <h2 class="text-lg">Inventaire</h2>
                             <input
                                 type="text"
                                 v-model="searchTerm"
                                 placeholder="Rechercher des articles..."
-                                class="p-2 border text-sm focus:ring-1 focus:ring-gray-500 rounded shadow-sm bg-white/70"
+                                class="text-sm border-gray-300 focus:border-amber-600 focus:ring-amber-600 rounded-md shadow-sm text-slate-900 font-semibold"
                             />
                             <button
-                                class="py-2 px-4 text-gray-100 bg-emerald-950/50 text-sm font-semibold rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-emerald-950"
+                                class="py-2 px-4 text-gray-100 bg-amber-500 text-sm font-semibold rounded transition-all hover:shadow-lg hover:bg-amber-600"
                                 @click="filterByCategory('')"
                             >
                                 Tout
@@ -446,9 +473,9 @@ const sellResidence = (residence) => {
                                 )"
                                 :key="category"
                                 :class="[
-                                    'py-2 px-4 rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg text-sm',
+                                    'py-2 px-4 rounded transition-transform duration-200 ease-in-out  hover:shadow-lg text-sm',
                                     selectedCategory.valueOf() === category
-                                        ? 'bg-gray-300 text-gray-100'
+                                        ? 'bg-emerald-950 text-gray-100'
                                         : ' bg-white/70  text-gray-900 hover:text-gray-100 hover:bg-emerald-950 ',
                                 ]"
                                 @click="filterByCategory(category)"
@@ -473,7 +500,7 @@ const sellResidence = (residence) => {
                                             class="w-full h-full object-cover rounded-lg transition-all duration-300 ease-in-out hover:blur-sm"
                                         />
                                         <div
-                                            class="absolute inset-0 flex flex-col items-center justify-evenly hover:bg-emerald-950/50 backdrop-blur-md  rounded-lg shadow-md opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out"
+                                            class="absolute inset-0 flex flex-col items-center justify-evenly hover:bg-emerald-950/75 backdrop-blur-lg rounded-lg shadow-md opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out"
                                         >
                                             <div class="lg:mt-6">
                                                 <h4
@@ -605,14 +632,6 @@ const sellResidence = (residence) => {
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="text-center mt-3">
-                    <button
-                        @click="consumeItem(item)"
-                        class="bg-gray-500 hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 active:bg-gray-800 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
-                    >
-                        Consommer
-                    </button>
-                </div> -->
                         </div>
                     </div>
                 </div>

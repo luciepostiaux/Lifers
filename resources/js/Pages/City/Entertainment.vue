@@ -15,12 +15,12 @@ const buyActivity = (activityId) => {
 const cardClass = (planType) => {
     switch (planType.toLowerCase()) {
         case "premium":
-            return "bg-purple-200 border-purple-500";
+            return "bg-purple-400 ";
         case "standard":
-            return "bg-green-200 border-green-500";
+            return "bg-green-400 ";
         case "basic":
         default:
-            return "bg-blue-200 border-blue-500";
+            return "bg-blue-400";
     }
 };
 </script>
@@ -29,14 +29,16 @@ const cardClass = (planType) => {
     <AppLayout title="Entertainment">
         <template #header></template>
         <div class="">
-            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+            <div
+                class="flex flex-col md:flex-row mb-4 w-full h-full gap-2 lg:gap-4"
+            >
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md order-2 md:order-1"
                 >
                     <div
                         class="flex flex-col tracking-wide leading-relaxed gap-2"
                     >
-                        <h1 class="text-xl font-bold mb-4">Lif'Activités</h1>
+                        <h1 class="text-xl font-bold">Lif'Activités</h1>
                         <p class="">
                             Explorez un monde d'opportunités de divertissement
                             et ajoutez de la joie et de l'excitation à la vie de
@@ -58,7 +60,7 @@ const cardClass = (planType) => {
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 md:order-2"
                 >
                     <img
                         src="/images/places/entertainment_4-6.webp"
@@ -69,7 +71,7 @@ const cardClass = (planType) => {
             </div>
 
             <div
-                class="bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                class="bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
             >
                 <h2 class="text-xl font-bold mb-4">Découvrez Nos Activités</h2>
                 <div
@@ -84,7 +86,7 @@ const cardClass = (planType) => {
                             :key="activity.id"
                             @click="buyActivity(activity.id)"
                             :class="cardClass(activity.plan_type)"
-                            class="rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg h-full"
+                            class="rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:shadow-lg h-full hover:cursor-pointer border-transparent"
                         >
                             <div class="flex h-full w-full">
                                 <div
@@ -93,32 +95,32 @@ const cardClass = (planType) => {
                                     <div
                                         class="flex flex-col items-center gap-2"
                                     >
-                                        <div class="flex items-center gap-1">
+                                        <div
+                                            class="flex items-center gap-1 text-white"
+                                        >
                                             <p class="text-xl font-bold">
                                                 {{ parseInt(activity.price) }}
                                             </p>
                                             <p class="font-semibold">LC</p>
                                         </div>
-                                        <p class="text-gray-600">
+                                        <p class="text-slate-900">
                                             {{ activity.plan_type }}
                                         </p>
                                     </div>
                                 </div>
                                 <div
-                                    class="flex flex-1 flex-col bg-gray-100 rounded-r-lg p-4"
+                                    class="flex flex-1 flex-col bg-gray-100 hover:bg-gray-300 rounded-r-lg p-4"
                                 >
                                     <div class="flex">
                                         <div
-                                            class="flex flex-col flex-grow px-2"
+                                            class="flex flex-col justify-between flex-grow px-2"
                                         >
                                             <h4
-                                                class="text-md font-semibold pb-2"
+                                                class="font-semibold pb-2 text-slate-900 leading-5 mt-2"
                                             >
                                                 {{ activity.name }}
                                             </h4>
-                                            <p
-                                                class="text-sm font-light text-gray-600"
-                                            >
+                                            <p class="text-sm text-slate-900">
                                                 {{ activity.description }}
                                             </p>
                                         </div>
@@ -127,7 +129,7 @@ const cardClass = (planType) => {
                                             class="flex flex-col flex-grow px-2"
                                         >
                                             <div
-                                                class="size-36 place-self-center"
+                                                class="size-20 md:size-36 place-self-center"
                                             >
                                                 <img
                                                     :src="activity.image"
@@ -138,10 +140,10 @@ const cardClass = (planType) => {
                                         </div>
                                     </div>
                                     <div
-                                        class="flex self-end items-end gap-2 mt-auto"
+                                        class="flex self-end items-end gap-2 mt-auto text-slate-900"
                                     >
                                         <p class="text-xs font-light">
-                                            Clique pour participer
+                                            Cliquez pour participer
                                         </p>
 
                                         <svg

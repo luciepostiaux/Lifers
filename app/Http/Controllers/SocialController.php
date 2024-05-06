@@ -16,7 +16,6 @@ class SocialController extends Controller
         $perso = $user->perso;
         Inertia::share('csrf_token', csrf_token());
 
-        // Récupération des conversations de l'utilisateur authentifié
         $conversations = Conversation::all();
 
 
@@ -24,7 +23,6 @@ class SocialController extends Controller
             $currentConversation = Conversation::firstOrCreate([
                 'name' => 'Général',
 
-                // Ajoutez ici d'autres critères si nécessaire
             ]);
             return redirect('/social/' . $currentConversation->id);
         } else {
@@ -32,19 +30,22 @@ class SocialController extends Controller
         }
 
         $currentConversationId = $currentConversation->id;
-        // Récupération des messages de la conversation courante
         $messages = $currentConversation->messages()->with('sender')->get();
-        // Si vous souhaitez également afficher les autres utilisateurs et leurs persos
-        $allPerso = User::with('perso')->get()->mapWithKeys(function ($user) {
-            return [
-                $user->id =>
-                [
-                    'id' => $user->id,
-                    'persoName' => $user->perso->first_name . ' ' . $user->perso->last_name,
-                    'isOnline' => $user->is_online,
-                ]
-            ];
-        });
+        $allPerso = User::with('perso', 'roles')
+            ->get()
+            ->mapWithKeys(function ($user) {
+                // Vérifier si l'utilisateur est un admin
+                $isAdmin = $user->roles->contains('name', 'admin');
+
+                return [
+                    $user->id => [
+                        'id' => $user->id,
+                        'persoName' => $user->perso?->first_name . ' ' . $user->perso?->last_name,
+                        'isOnline' => $user->is_online,
+                        'isAdmin' => $isAdmin, // Indiquer si l'utilisateur est admin
+                    ],
+                ];
+            });
         return Inertia::render('Social/Index', [
             'conversations' => $conversations,
             'messages' => $messages,

@@ -4,6 +4,7 @@ import { Link } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineProps({
+    perso: Object,
     usersWithPerso: Object,
     age: Number,
 });
@@ -14,12 +15,12 @@ defineProps({
         <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
                 >
                     <div
                         class="flex flex-col tracking-wide leading-relaxed gap-2"
                     >
-                        <h1 class="text-xl font-bold mb-4">
+                        <h1 class="text-xl font-bold mb-2">
                             Bienvenue à Lif'City
                         </h1>
 
@@ -45,11 +46,11 @@ defineProps({
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md bg-emerald-900/90 backdrop-blur-md p-4"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md bg-emerald-900/90 backdrop-blur-lg p-4"
                 >
                     <div class="">
-                        <h2 class="text-xl font-semibold mb-4">Lieux</h2>
-                        <div class="grid grid-cols-2 gap-4">
+                        <h2 class="text-lg mb-2">Lieux</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <Link
                                 href="/city/lifemarket"
                                 class="inline-flex items-center px-4 py-2 bg-emerald-950/50 hover:bg-emerald-950 hover:font-bold border border-transparent rounded-md font-semibold percase tracking-widest transition-all duration-300 ease-in-out hover:scale-105"
@@ -98,18 +99,7 @@ defineProps({
             </div>
 
             <!-- Section pour afficher les persos -->
-            <div
-                class="bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
-            >
-                <h2 class="text-xl font-bold mb-2">Liste des Lifers</h2>
-                <ul>
-                    <li
-                        v-for="user in $page.props.usersWithPerso"
-                        :key="user.id"
-                        class="py-2"
-                    >
-                        <div v-if="user.perso" class="flex items-center gap-2">
-                            <!-- <Link :href="`/perso/${user.perso.id}`" class="">
+            <!-- <Link :href="`/perso/${user.perso.id}`" class="">
                                 <p
                                     class="text-gray-100 hover:text-gray-300 font-semibold"
                                 >
@@ -117,6 +107,26 @@ defineProps({
                                     {{ user.perso.last_name }}
                                 </p>
                             </Link> -->
+            <div
+                class="bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
+            >
+                <div
+                    class="flex flex-col lg:flex-row space-x-2 items-center mb-2"
+                >
+                    <h2 class="text-xl font-bold">Liste des Lifers</h2>
+                    <p class="text-sm">
+                        Le statut peut ne pas être exact si l'on n'utilise pas
+                        le système de déconnexion du jeu.
+                    </p>
+                </div>
+                <ul>
+                    <li
+                        v-for="user in $page.props.usersWithPerso"
+                        :key="user.id"
+                        v-if="perso"
+                        class="py-2"
+                    >
+                        <div class="flex items-center gap-2">
                             <p class="text-gray-100 font-semibold">
                                 {{ user.perso.first_name }}
                                 {{ user.perso.last_name }}
@@ -125,17 +135,16 @@ defineProps({
                             <span
                                 v-if="user.is_online"
                                 class="text-sm font-semibold text-green-500"
-                            >
-                                En ligne</span
+                                >En ligne</span
                             >
                             <span
                                 v-else
                                 class="text-sm font-semibold text-red-500"
-                            >
-                                Hors ligne</span
+                                >Hors ligne</span
                             >
                         </div>
-                        <hr class="mt-3 border border-gray-200/50" />
+                        <!-- Séparateur ajouté seulement si l'utilisateur a un perso -->
+                        <hr class="mt-3 border border-gray-200/40" />
                     </li>
                 </ul>
             </div>

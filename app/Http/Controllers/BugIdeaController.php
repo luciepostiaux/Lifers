@@ -19,4 +19,21 @@ class BugIdeaController extends Controller
 
         ]);
     }
+    public function showSuggestion($id)
+    {
+        $suggestion = Suggestion::with('comments')->findOrFail($id);
+        return Inertia::render('BugIdea/ShowSuggestion', [
+            'suggestion' => $suggestion,
+            'comments' => $suggestion->comments,
+        ]);
+    }
+
+    public function showBug($id)
+    {
+        $bug = Bug::with('comments')->findOrFail($id);
+        return Inertia::render('BugIdea/ShowBug', [
+            'bug' => $bug,
+            'comments' => $bug->comments,
+        ]);
+    }
 }

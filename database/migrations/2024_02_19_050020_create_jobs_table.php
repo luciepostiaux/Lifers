@@ -15,7 +15,7 @@ class CreateJobsTable extends Migration
             $table->string('description_2', 750)->nullable();
             $table->unsignedDecimal('salary');
             $table->string('img_job', 255);
-            $table->foreignId('diplomas_id')->constrained()->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('diplomas_id')->nullable()->constrained()->onDelete('no action')->onUpdate('no action');
             $table->foreignId('places_id')->nullable()->constrained()->onDelete('set null')->onUpdate('cascade');
             $table->timestamps();
         });

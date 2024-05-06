@@ -27,7 +27,7 @@ const resign = () => {
         <div class="">
             <div class="flex flex-col md:flex-row mb-4 w-full h-full">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md  p-4 mr-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 mr-4 rounded-lg shadow-md order-2 md:order-1"
                 >
                     <div class="flex flex-col">
                         <h1 class="text-xl font-bold mb-4">
@@ -55,7 +55,7 @@ const resign = () => {
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 md:order-2 mb-2 md:mb-0"
                 >
                     <img
                         src="/images/places/poleemploi_4-6.webp"

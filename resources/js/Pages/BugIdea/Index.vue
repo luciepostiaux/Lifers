@@ -28,9 +28,12 @@ const submitSuggestion = () => {
     closeSuggestionModal();
 };
 
-function navigateToTopic(id) {
-    // You can adjust this path according to your route configuration
-    router.push(`/details/${id}`);
+function navigateToTopic(id, type) {
+    if (type === "suggestion") {
+        router.push(`/suggestions/${id}`);
+    } else if (type === "bug") {
+        router.push(`/bugs/${id}`);
+    }
 }
 
 function navigateToAdd(type) {
@@ -42,7 +45,7 @@ function navigateToAdd(type) {
 <template>
     <AppLayout title="Bug and Idea Management">
         <div
-            class="container mx-auto bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+            class="container mx-auto bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
         >
             <div class="tabs">
                 <button
@@ -69,9 +72,13 @@ function navigateToAdd(type) {
                     >
                         <h3 class="font-semibold">{{ suggestion.title }}</h3>
                         <p>{{ suggestion.content }}</p>
-                        <button @click="navigateToTopic(suggestion.id)">
+                        <!-- Utilisation du composant Link -->
+                        <Link
+                            :href="`/suggestions/${suggestion.id}`"
+                            class="text-blue-500 underline"
+                        >
                             View Topic
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <button @click="openSuggestionModal">Add Suggestion</button>
@@ -87,9 +94,13 @@ function navigateToAdd(type) {
                     >
                         <h3 class="font-semibold">{{ bug.title }}</h3>
                         <p>{{ bug.description }}</p>
-                        <button @click="navigateToTopic(bug.id)">
+                        <!-- Utilisation du composant Link -->
+                        <Link
+                            :href="`/bugs/${bug.id}`"
+                            class="text-blue-500 underline"
+                        >
                             View Bug
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <button
@@ -101,6 +112,8 @@ function navigateToAdd(type) {
             </div>
         </div>
     </AppLayout>
+
+    <!-- Modal -->
     <Modal
         :show="showSuggestionModal"
         @close="closeSuggestionModal"
@@ -126,6 +139,7 @@ function navigateToAdd(type) {
         </template>
     </Modal>
 </template>
+
 <style scoped>
 .active {
     background-color: #000;

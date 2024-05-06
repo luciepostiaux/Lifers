@@ -13,27 +13,46 @@ class SubscriptionController extends Controller
 {
     public function subscribeToGym(Request $request)
     {
+        // Récupérer l'utilisateur authentifié et son personnage
         $user = Auth::user();
         $perso = $user->perso;
         $subscriptionName = $request->input('subscriptionName');
+
+        // Récupérer la session sportive correspondante
         $sportSession = SportSession::where('name', $subscriptionName)->firstOrFail();
 
-        // Vérifier s'il y a un abonnement actif différent
-        $activeSubscription = $perso->subscriptions()->where('type', 'gym')->where('status', 'active')->first();
-        if ($activeSubscription && $activeSubscription->name != $subscriptionName) {
-            // Désactiver l'abonnement actif
+        // Vérifier si le personnage a assez de fonds
+        $price = $sportSession->price;
+        if ($perso->money < $price) {
+            return redirect()->back()->withErrors('Fonds insuffisants pour cet abonnement.');
+        }
+
+        // Rechercher l'abonnement actif actuel
+        $activeSubscription = $perso->subscriptions()
+            ->where('type', 'gym')
+            ->where('status', 'active')
+            ->first();
+
+        // Désactiver l'abonnement actif s'il est différent du nouveau
+        if ($activeSubscription && $activeSubscription->name !== $subscriptionName) {
             $activeSubscription->update(['status' => 'cancelled']);
         }
 
-        // Réactiver ou créer un abonnement
-        $subscription = $perso->subscriptions()->where('type', 'gym')->where('name', $subscriptionName)->first();
+        // Trouver ou créer un nouvel abonnement
+        $subscription = $perso->subscriptions()
+            ->where('type', 'gym')
+            ->where('name', $subscriptionName)
+            ->first();
+
         if ($subscription) {
+            // Réactiver l'abonnement existant
             $subscription->update([
                 'start_date' => Carbon::now(),
                 'end_date' => Carbon::now()->addDays($sportSession->duration),
                 'status' => 'active'
             ]);
         } else {
+            // Créer un nouvel abonnement
             Subscription::create([
                 'perso_id' => $perso->id,
                 'type' => 'gym',
@@ -44,6 +63,11 @@ class SubscriptionController extends Controller
             ]);
         }
 
+        // Déduire le coût du solde du personnage
+        $perso->money -= $price;
+        $perso->save();
+
+        // Retourner avec un message de succès
         return redirect()->back()->with('message', 'Abonnement à la salle de sport réussi.');
     }
 

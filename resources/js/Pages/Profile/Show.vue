@@ -17,7 +17,7 @@ defineProps({
     <AppLayout title="Profile">
         <div>
             <div
-                class="bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md mb-4 md:mb-0 max-w-7xl mx-auto py-10 sm:px-6 lg:px-8 text-gray-900"
+                class="bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md mb-4 md:mb-0 max-w-7xl mx-auto py-10 sm:px-6 lg:px-8 text-gray-900"
             >
                 <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                     <UpdateProfileInformationForm

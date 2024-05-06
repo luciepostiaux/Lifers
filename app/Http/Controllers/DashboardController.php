@@ -65,15 +65,18 @@ class DashboardController extends Controller
                 $currentSicknesses[] = [
                     'id' => $sickness->id,
                     'name' => $sickness->name,
+                    'description' => $sickness->description,
+
 
                 ];
             }
         }
+        $formattedMoney = $perso ? number_format($perso->money, 2, ',', ' ') : null;
 
         return Inertia::render('Dashboard', [
             'perso' => $perso ? $perso->toArray() : null,
             'bodyImageUrl' => $bodyImageUrl,
-            'money' => $money,
+            'money' => $formattedMoney,
             'age' => $perso ? $perso->calculateAge() : null,
             'lifeGauges' => $lifeGauges,
             'studyDetails' => $studyDetails,

@@ -57,12 +57,15 @@ const claimDiploma = () => {
 
             <div class="flex flex-col md:flex-row mb-4 w-full h-full">
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 p-4 mr-4 rounded-lg shadow-md backdrop-blur-md "
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 p-4 md:mr-4 rounded-lg shadow-md backdrop-blur-lg order-2 md:order-1"
                 >
-                    <div class="flex flex-col">
-                        <h2 class="text-3xl font-bold mb-4">
+                    <div
+                        class="flex flex-col tracking-wide leading-relaxed gap-2"
+                    >
+                        <h1 class="text-xl font-bold mb-4">
                             {{ studyDetails.name }}
-                        </h2>
+                        </h1>
+
                         <p>{{ studyDetails.description_1 }}</p>
                     </div>
                     <div class="flex justify-between items-center">
@@ -99,7 +102,7 @@ const claimDiploma = () => {
                 </div>
 
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 md:flex-auto md:w-2/5 lg:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 md:order-2 mb-2 md:mb-0"
                 >
                     <img
                         src="/images/places/university_4-6.webp"

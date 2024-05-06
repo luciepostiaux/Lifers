@@ -9,10 +9,10 @@ class CreateDiplomasTable extends Migration
     public function up()
     {
         Schema::create('diplomas', function (Blueprint $table) {
-            $table->id(); // INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY
-            $table->string('name', 45); // VARCHAR(45) NOT NULL
-            $table->string('description', 1500); // VARCHAR(1500) NOT NULL
-            $table->timestamps(); // Crée automatiquement `created_at` et `updated_at`
+            $table->id();
+            $table->string('name', 50);
+            $table->string('description', 500);
+            $table->timestamps();
         });
     }
 

@@ -17,9 +17,10 @@ class CityController extends Controller
     public function index()
 
     {
-        $usersWithPerso = User::with(['perso' => function ($query) {
-            $query->select(['id', 'first_name', 'last_name', 'birth_date', 'user_id']);
-        }])
+        $usersWithPerso = User::has('perso')
+            ->with(['perso' => function ($query) {
+                $query->select(['id', 'first_name', 'last_name', 'birth_date', 'user_id']);
+            }])
             ->orderBy('is_online', 'desc')
             ->get()
             ->map(function ($user) {

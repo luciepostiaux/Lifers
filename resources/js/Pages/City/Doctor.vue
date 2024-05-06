@@ -2,6 +2,8 @@
 import { toRefs } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
+import LifeGauges from "@/Components/LifeGauges.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     perso: Object,
@@ -51,14 +53,16 @@ const gaugeColor = (value) => {
         <template #header></template>
 
         <div class="">
-            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+            <div
+                class="flex flex-col md:flex-row mb-2 lg:mb-4 w-full h-full gap-2 lg:gap-4"
+            >
                 <div
-                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col justify-between md:flex-auto md:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md order-2 md:order-1"
                 >
                     <div
                         class="flex flex-col tracking-wide leading-relaxed gap-2"
                     >
-                        <h1 class="text-xl font-bold mb-4">Lif'Hôpital</h1>
+                        <h1 class="text-xl font-bold">Lif'Hôpital</h1>
                         <p class="">
                             Prenez soin de votre personnage en lui offrant les
                             traitements nécessaires pour combattre ses maladies
@@ -84,7 +88,7 @@ const gaugeColor = (value) => {
                 </div>
                 <!-- Image institutionnelle sur le côté droit -->
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 md:order-2"
                 >
                     <img
                         src="/images/places/hopital_4-6.webp"
@@ -93,75 +97,67 @@ const gaugeColor = (value) => {
                     />
                 </div>
             </div>
-            <div class="flex gap-4">
+            <div class="flex gap-2 lg:gap-4">
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md md:mb-0"
+                    class="flex-1 md:flex-auto md:w-2/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md md:mb-0"
                 >
                     <div class="flex flex-col justify-between">
-                        <h3 class="font-semibold mb-4">Jauges de vie</h3>
-                        <div
-                            v-for="(value, key) in lifeGauges"
-                            :key="key"
-                            class="mb-4"
-                        >
-                            <div class="mb-1">{{ key }}</div>
-                            <div class="w-full bg-gray-200 rounded-full h-4">
-                                <div
-                                    :class="gaugeColor(value)"
-                                    :style="{ width: `${value}%` }"
-                                    class="h-4 rounded-full text-center"
-                                ></div>
-                            </div>
-                        </div>
+                        <LifeGauges :gauges="lifeGauges" />
                     </div>
                 </div>
                 <div
-                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
                 >
-                    <div class="flex justify-between mb-4">
-                        <h2 class="font-semibold mb-4">Maladies Actuelles</h2>
-
-                        <button
-                            @click="visitDoctor"
-                            class="py-2 px-4 text-gray-100 bg-emerald-950/50 text-sm font-semibold rounded transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg hover:bg-emerald-950"
-                        >
-                            Soigner sa jauge de santé (200LC)
-                        </button>
+                    <div class="flex flex-col lg:flex-row justify-between mb-4">
+                        <h2 class="text-lg mb-4">
+                            {{
+                                currentSicknesses.length <= 1
+                                    ? "Maladie active"
+                                    : "Maladies actives"
+                            }}
+                        </h2>
+                        <PrimaryButton @click="visitDoctor">
+                            Soigner votre jauge de santé (200 LC)
+                        </PrimaryButton>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-4 mb-8"
+                    >
                         <div
                             v-for="sickness in currentSicknesses"
                             :key="sickness.id"
                             @click="treatSickness(sickness.id)"
-                            class="relative flex flex-col bg-emerald-900/90 backdrop-blur-md hover:bg-gray-300 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer py-4 p-4"
+                            class="relative flex flex-col bg-emerald-950 backdrop-blur-lg hover:bg-emerald-950/50 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer py-4 p-4"
                         >
-                            <div class="flex-grow">
-                                <h4 class="text-md font-semibold">
+                            <div
+                                class="flex-grow flex flex-col justify-between"
+                            >
+                                <h4 class="text-sm font-semibold text-red-500">
                                     {{ sickness.name }}
                                 </h4>
                                 <!-- <p class="text-gray-600 mt-1">
                                     Contracté le:
                                     {{ formatDate(sickness.pivot.created_at) }}
                                 </p> -->
-                                <p class="text-gray-600 mt-1">
+                                <p class="text-sm font-light mt-1">
                                     {{ sickness.description }}
                                 </p>
-                                <span class="flex gap-2 text-sm">
-                                    <p class="text-gray-700">
+                                <span class="flex gap-2 text-sm lg:mt-4">
+                                    <p class="text-gray-300">
                                         Coût du traitement:
                                     </p>
-                                    <p class="text-gray-600 font-medium italic">
+                                    <p class="text-amber-500 font-medium">
                                         {{ sickness.treatment_cost }} LC
                                     </p>
                                 </span>
                             </div>
                             <div class="flex self-end items-end gap-2">
-                                <p class="text-xs">Clique pour te soigner</p>
+                                <p class="text-xs">Cliquez pour vous soigner</p>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     xmlns:xlink="http://www.w3.org/1999/xlink"
                                     viewBox="0 0 256 256"
-                                    class="size-6 text-gray-500 transition-opacity duration-300 ease-in-out"
+                                    class="size-6 transition-opacity duration-300 ease-in-out"
                                 >
                                     <defs></defs>
                                     <g
@@ -284,7 +280,7 @@ const gaugeColor = (value) => {
                 <div
                     v-for="sickness in allSicknesses"
                     :key="sickness.id"
-                    class="bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md flex flex-col"
+                    class="bg-emerald-900/90 backdrop-blur-lg  p-4 rounded-lg shadow-md flex flex-col"
                 >
                     <div class="flex-grow">
                         <h4 class="text-md font-semibold">

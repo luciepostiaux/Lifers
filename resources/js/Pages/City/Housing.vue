@@ -37,14 +37,16 @@ const buyResidence = (residenceId, paymentType) => {
 <template>
     <AppLayout title="Logements">
         <div class="">
-            <div class="flex flex-col md:flex-row mb-4 w-full h-full gap-4">
+            <div
+                class="flex flex-col md:flex-row mb-4 w-full h-full gap-2 lg:gap-4"
+            >
                 <div
-                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md"
+                    class="flex-1 flex flex-col md:flex-auto md:w-3/5 lg:w-3/5 bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md order-2 md:order-1"
                 >
                     <div
                         class="flex flex-col tracking-wide leading-relaxed gap-2"
                     >
-                        <h1 class="text-xl font-bold mb-4">
+                        <h1 class="text-xl font-bold">
                             Découvrez Nos Logements
                         </h1>
                         <p class="">
@@ -69,7 +71,7 @@ const buyResidence = (residenceId, paymentType) => {
                     </div>
                 </div>
                 <div
-                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900"
+                    class="flex-1 md:flex-auto md:w-2/5 rounded-lg shadow-md border-8 border-emerald-900 order-1 md:order-2"
                 >
                     <img
                         src="/images/places/market_4-6.webp"
@@ -79,13 +81,15 @@ const buyResidence = (residenceId, paymentType) => {
                 </div>
             </div>
             <div
-                class="bg-emerald-900/90 backdrop-blur-md  p-4 rounded-lg shadow-md"
+                class="bg-emerald-900/90 backdrop-blur-lg p-4 rounded-lg shadow-md"
             >
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div
+                    class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-4"
+                >
                     <div
                         v-for="residence in residences"
                         :key="residence.id"
-                        class="relative bg-emerald-950/50 hover:bg-emerald-950 backdrop-blur-md  p-4 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg"
+                        class="relative bg-emerald-950/50 hover:bg-emerald-950 backdrop-blur-lg p-4 rounded-lg shadow-md flex flex-col transition-transform duration-200 ease-in-out hover:shadow-lg cursor-pointer"
                         @click="toggleDetails(residence.id)"
                     >
                         <div class="flex flex-col justify-end">
@@ -135,7 +139,7 @@ const buyResidence = (residenceId, paymentType) => {
                             </div>
                             <div
                                 v-else
-                                class="absolute top-0 left-0 w-full h-full justify-end bg-emerald-900/90 backdrop-blur-md  hover:bg-emerald-900 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer p-4 flex flex-col"
+                                class="absolute top-0 left-0 w-full h-full justify-end bg-emerald-900/90 backdrop-blur-lg hover:bg-emerald-900 rounded-lg shadow-md transition-all duration-300 ease-in-out cursor-pointer p-4 flex flex-col"
                             >
                                 <div>
                                     <p
