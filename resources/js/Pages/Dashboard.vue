@@ -34,12 +34,12 @@ const gaugeColor = (value) => {
     <AppLayout title="Dashboard">
         <div class="container mx-auto p-4">
     
-            <!-- <div>
+            <div>
                 <h1 v-if="perso" class="text-xl font-bold">
                     {{ perso.first_name }}
                     {{ perso.last_name }}
                 </h1>
-            </div> -->
+            </div> 
 
             <div class="md:grid md:grid-cols-3 md:gap-4">
                 <div class="bg-white p-4 rounded-lg shadow-md mb-4 md:mb-0">
