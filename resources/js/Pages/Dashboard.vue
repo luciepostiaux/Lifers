@@ -33,6 +33,7 @@ const gaugeColor = (value) => {
 <template>
     <AppLayout title="Dashboard">
         <div class="container mx-auto p-4">
+    
             <!-- <div>
                 <h1 v-if="perso" class="text-xl font-bold">
                     {{ perso.first_name }}
