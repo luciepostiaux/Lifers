@@ -1,6 +1,6 @@
 <script setup>
 import { ref, defineProps } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     messages: Array,
@@ -11,7 +11,7 @@ const newMessage = ref("");
 
 const sendMessage = () => {
     if (newMessage.value.trim() !== "") {
-        Inertia.post(`/chat/conversations/${props.conversationId}/send`, {
+        router.post(`/chat/conversations/${props.conversationId}/send`, {
             content: newMessage.value,
         });
         newMessage.value = ""; // Réinitialiser après l'envoi

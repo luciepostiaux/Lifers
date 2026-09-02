@@ -2,31 +2,38 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmailContract
 {
+    public const TRUSTED_ADMIN_EMAIL = 'admin@admin.com';
+
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
+    use MustVerifyEmailTrait {
+        hasVerifiedEmail as protected hasVerifiedEmailFromTimestamp;
+    }
     use Notifiable;
     use TwoFactorAuthenticatable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'adult_confirmed_at',
+        'terms_accepted_at',
+        'terms_version',
+        'privacy_acknowledged_at',
+        'privacy_version',
         'consentement_newsletter',
         'date_consentement',
         'consentement_rgpd',
@@ -34,11 +41,6 @@ class User extends Authenticatable
         'consecutive_login_days',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -46,70 +48,85 @@ class User extends Authenticatable
         'two_factor_secret',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'adult_confirmed_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
+        'privacy_acknowledged_at' => 'datetime',
+        'consentement_newsletter' => 'boolean',
+        'date_consentement' => 'datetime',
+        'consentement_rgpd' => 'boolean',
+        'last_login_at' => 'datetime',
+        'is_online' => 'boolean',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
-
-    public function perso()
+    public function lifers()
     {
-        return $this->hasOne(Perso::class);
+        return $this->hasMany(Lifer::class);
     }
 
-
-    public function events()
+    public function hasVerifiedEmail(): bool
     {
-        return $this->belongsToMany(Event::class, 'events_has_users', 'user_id', 'event_id')->withTimestamps();
+        return $this->isTrustedAdmin() || $this->hasVerifiedEmailFromTimestamp();
     }
 
-    public function rewinds()
+    public function activeLifer()
     {
-        return $this->belongsToMany(Rewind::class, 'rewinds_has_users', 'user_id', 'rewind_id')->withTimestamps();
+        return $this->hasOne(Lifer::class)->where('status', Lifer::STATUS_ACTIVE);
+    }
+
+    public function accountBan()
+    {
+        return $this->hasOne(AccountBan::class);
+    }
+
+    public function isBanned(): bool
+    {
+        return AccountBan::query()
+            ->active()
+            ->where('email', Str::lower(trim($this->email)))
+            ->exists();
     }
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    public function hasRole($role)
+    public function hasRole(string $role): bool
     {
+        if ($this->relationLoaded('roles')) {
+            return $this->roles->contains('name', $role);
+        }
+
         return $this->roles()->where('name', $role)->exists();
     }
 
-    public function conversations()
+    public function isTrustedAdmin(): bool
     {
-        return $this->belongsToMany(Conversation::class)->withTimestamps();
-    }
-    public function messages()
-    {
-        return $this->hasMany(Message::class, 'sender_id');
+        return Str::lower(trim($this->email)) === self::TRUSTED_ADMIN_EMAIL;
     }
 
-    /**
-     * Envoie un message à une conversation.
-     *
-     * @param  \App\Models\Conversation $conversation
-     * @param  string $content
-     * @return \App\Models\Message
-     */
-    public function sendMessageToConversation(Conversation $conversation, $content)
+    public function isAdmin(): bool
     {
-        $message = new Message(['content' => $content]);
-        $message->conversation()->associate($conversation);
-        $message->sender()->associate($this);
-        $message->save();
+        return $this->isTrustedAdmin() || $this->hasRole(Role::ADMIN);
+    }
 
-        return $message;
+    public function canModerate(): bool
+    {
+        return $this->isAdmin() || $this->hasRole(Role::MODERATOR);
+    }
+
+    public function displayRole(): string
+    {
+        if ($this->isAdmin()) {
+            return Role::ADMIN;
+        }
+
+        if ($this->hasRole(Role::MODERATOR)) {
+            return Role::MODERATOR;
+        }
+
+        return Role::USER;
     }
 }

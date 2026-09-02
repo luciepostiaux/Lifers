@@ -5,9 +5,9 @@ import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import InputError from '@/Components/InputError.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 
 defineProps({
     sessions: Array,
@@ -107,10 +107,9 @@ const closeModal = () => {
                     Please enter your password to confirm you would like to log out of your other browser sessions across all of your devices.
 
                     <div class="mt-4">
-                        <TextInput
+                        <PasswordInput
                             ref="passwordInput"
                             v-model="form.password"
-                            type="password"
                             class="mt-1 block w-3/4"
                             placeholder="Password"
                             autocomplete="current-password"

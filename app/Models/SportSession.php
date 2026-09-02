@@ -9,9 +9,17 @@ class SportSession extends Model
 {
     use HasFactory;
 
-    protected $table = 'sport_sessions';
-
     protected $fillable = [
-        'name', 'type', 'price', 'duration', 'effect'
+        'name',
+        'type',
+        'price',
+        'duration_days',
+        'physical_condition_effect',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'duration_days' => 'integer',
+        'physical_condition_effect' => 'integer',
     ];
 }

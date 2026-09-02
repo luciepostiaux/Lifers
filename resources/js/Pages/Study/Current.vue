@@ -1,152 +1,196 @@
 <script setup>
-import { ref, defineProps } from "vue";
+import { computed, ref } from "vue";
+import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Link } from "@inertiajs/vue3";
-import ConfirmationModal from "@/Components/ConfirmationModal.vue";
-import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
-    studyDetails: Object,
-    associatedStudies: Array,
-    enrollmentDetails: Object,
+    studyDetails: { type: Object, required: true },
+    enrollmentDetails: { type: Object, required: true },
+    canClaimDiploma: Boolean,
+    money: [String, Number],
 });
-const showModal = ref(false); // État pour contrôler la visibilité du modal
+
+const page = usePage();
+const showResignDialog = ref(false);
+const actionPending = ref(false);
+
+const progress = computed(() => {
+    const start = new Date(props.enrollmentDetails.started_at).getTime();
+    const end = new Date(props.enrollmentDetails.ends_at).getTime();
+
+    if (![start, end].every(Number.isFinite) || end <= start) return 0;
+
+    return Math.min(
+        100,
+        Math.max(0, Math.round(((Date.now() - start) / (end - start)) * 100)),
+    );
+});
+
+const remainingDays = computed(() =>
+    Math.max(
+        0,
+        Math.ceil(
+            (new Date(props.enrollmentDetails.ends_at).getTime() - Date.now()) /
+                86400000,
+        ),
+    ),
+);
+
+const feedbackMessage = computed(
+    () =>
+        page.props.flash?.message ??
+        page.props.errors?.study ??
+        page.props.errors?.msg,
+);
+
+const formatDate = (date) =>
+    new Intl.DateTimeFormat("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    }).format(new Date(date));
 
 const resignFromStudy = () => {
-    Inertia.post(
+    actionPending.value = true;
+    router.post(
         route("study.resign"),
         {},
         {
             onFinish: () => {
-                // Vous pouvez mettre ici le code que vous souhaitez exécuter après la fin de l'action
-                // Par exemple, fermer une modale ou rafraîchir une partie de l'interface
-                showModal.value = false;
+                actionPending.value = false;
+                showResignDialog.value = false;
             },
-        }
+        },
     );
 };
 
 const claimDiploma = () => {
-    if (props.studyDetails && props.studyDetails.id) {
-        Inertia.post(
-            route("study.claimDiploma", { study: props.studyDetails.id }),
-            {},
-            {
-                onSuccess: () => {
-                    // Votre logique de succès ici
-                },
-                onError: () => {
-                    // Votre logique d'erreur ici
-                },
-            }
-        );
-    } else {
-        console.error("studyDetails is not defined or missing ID");
-    }
+    actionPending.value = true;
+    router.post(
+        route("study.claimDiploma", { study: props.studyDetails.id }),
+        {},
+        { onFinish: () => (actionPending.value = false) },
+    );
 };
 </script>
+
 <template>
-    <AppLayout title="Suivi des études">
-        <div class="container mx-auto p-4">
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-3/4 space-y-2">
-                    <h2 class="text-2xl font-bold mb-4">
-                        Étude en cours : {{ studyDetails.name }}
-                    </h2>
-                    <!-- Affichage de la première description -->
-                    <p>{{ studyDetails.description_1 }}</p>
-                    <!-- Ajouté pour afficher la description plus détaillée si elle existe -->
-                    <p
-                        class="text-sm"
-                        v-if="enrollmentDetails && enrollmentDetails.end_date"
-                    >
-                        Fin prévue :
-                        {{
-                            new Date(
-                                enrollmentDetails.end_date
-                            ).toLocaleDateString()
-                        }}
-                    </p>
-                </div>
-                <img
-                    src="/images/places/university.webp"
-                    alt="University Image"
-                    class="size-64"
-                />
+    <AppLayout title="Étude en cours" :money="money">
+        <div class="path-page path-page--current">
+            <Link :href="route('study.index')" class="path-back-link">
+                <span aria-hidden="true">←</span> Toutes les études
+            </Link>
+
+            <div v-if="feedbackMessage" class="path-feedback" role="status">
+                {{ feedbackMessage }}
             </div>
 
-            <div class="my-6">
-                <h3 class="text-lg font-semibold">Détails de l'étude</h3>
-                <!-- Suivi de l'étude : Affichage de la date de fin prévue -->
-                <p class="text-sm" v-if="studyDetails && studyDetails.end_date">
-                    Fin prévue :
-                    {{ new Date(studyDetails.end_date).toLocaleDateString() }}
-                </p>
-
-                <!-- Ajouter d'autres informations utiles ici si nécessaire -->
-            </div>
-            <button
-                @click="showModal = true"
-                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-                Abandonner les études
-            </button>
-
-            <div v-if="associatedStudies">
-                <h3 class="text-lg font-semibold mb-4">Études associées</h3>
-                <div class="divide-y divide-gray-200">
-                    <div
-                        v-for="study in associatedStudies"
-                        :key="study.id"
-                        class="py-4"
-                    >
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-md font-semibold">
-                                {{ study.name }}
-                            </h4>
-                            <Link
-                                :href="`/study/${study.id}`"
-                                class="text-sm bg-[#9EE5F5] hover:text-white rounded px-4 py-2 hover:bg-[#71A4B0] transition-all"
-                                >Explorer</Link
-                            >
+            <section class="path-detail-hero" aria-labelledby="current-study-name">
+                <div class="path-detail-hero__copy">
+                    <div class="path-detail-hero__heading">
+                        <div>
+                            <span class="path-kicker">Étude en cours</span>
+                            <h1 id="current-study-name">{{ studyDetails.name }}</h1>
                         </div>
-                        <p class="text-sm text-gray-600 mt-1">
-                            {{ study.description }}
-                        </p>
+                        <span class="path-badge path-badge--active">En progression</span>
+                    </div>
+                    <p>{{ studyDetails.short_description }}</p>
+
+                    <div class="path-progress-block path-progress-block--wide">
+                        <div class="path-progress-block__label">
+                            <span>Progression vers le diplôme</span>
+                            <strong>{{ progress }} %</strong>
+                        </div>
+                        <div
+                            class="path-progress"
+                            role="progressbar"
+                            aria-label="Progression vers le diplôme"
+                            :aria-valuenow="progress"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                            <span :style="{ width: `${progress}%` }"></span>
+                        </div>
+                        <small>
+                            {{ canClaimDiploma ? "La formation est terminée." : `${remainingDays} jour${remainingDays > 1 ? "s" : ""} avant la fin.` }}
+                        </small>
                     </div>
                 </div>
+                <div class="path-detail-hero__visual">
+                    <img
+                        :src="studyDetails.image_path || '/images/places/universite.png'"
+                        :alt="`Illustration de ${studyDetails.name}`"
+                    />
+                </div>
+            </section>
+
+            <div class="path-detail-layout">
+                <section class="path-detail-card" aria-labelledby="study-information-title">
+                    <span class="path-kicker">Informations</span>
+                    <h2 id="study-information-title">Le programme</h2>
+                    <p>
+                        {{ studyDetails.long_description || studyDetails.short_description }}
+                    </p>
+                    <dl class="path-detail-facts">
+                        <div><dt>Début</dt><dd>{{ formatDate(enrollmentDetails.started_at) }}</dd></div>
+                        <div><dt>Fin prévue</dt><dd>{{ formatDate(enrollmentDetails.ends_at) }}</dd></div>
+                        <div><dt>Lieu</dt><dd>{{ studyDetails.place?.name || "Université" }}</dd></div>
+                        <div><dt>Diplôme préparé</dt><dd>{{ studyDetails.awarded_diploma?.name || "Non renseigné" }}</dd></div>
+                    </dl>
+                </section>
+
+                <aside class="path-action-card" aria-labelledby="study-next-step-title">
+                    <span class="path-kicker">Prochaine étape</span>
+                    <h2 id="study-next-step-title">
+                        {{ canClaimDiploma ? "Ton diplôme est prêt" : "Poursuis ta formation" }}
+                    </h2>
+                    <p v-if="canClaimDiploma">
+                        La date de fin est atteinte. Récupère ton diplôme pour terminer cette étude.
+                    </p>
+                    <p v-else>
+                        Le diplôme sera disponible le {{ formatDate(enrollmentDetails.ends_at) }}.
+                    </p>
+                    <button
+                        v-if="canClaimDiploma"
+                        type="button"
+                        class="path-button path-button--primary path-button--full"
+                        :disabled="actionPending"
+                        @click="claimDiploma"
+                    >
+                        {{ actionPending ? "Validation…" : "Récupérer mon diplôme" }}
+                    </button>
+                    <button
+                        type="button"
+                        class="path-button path-button--danger-link path-button--full"
+                        :disabled="actionPending"
+                        @click="showResignDialog = true"
+                    >
+                        Quitter cette étude
+                    </button>
+                </aside>
             </div>
-            <button
-                v-if="new Date(enrollmentDetails.end_date) < new Date()"
-                @click="claimDiploma"
-                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-                Récupérer le diplôme
-            </button>
         </div>
-        <ConfirmationModal
-            :show="showModal"
-            @close="showModal = false"
-            @confirm="resignFromStudy"
+
+        <div
+            v-if="showResignDialog"
+            class="path-dialog-backdrop"
+            role="presentation"
+            @click.self="showResignDialog = false"
+            @keydown.esc="showResignDialog = false"
         >
-            <template #title> Abandonner les études en cours </template>
-            <template #content>
-                Êtes-vous sûr de vouloir abandonner vos études actuelles ?
-            </template>
-            <template #footer>
-                <button
-                    @click="showModal = false"
-                    class="px-4 py-2 bg-gray-200 text-black rounded"
-                >
-                    Annuler
-                </button>
-                <button
-                    @click="resignFromStudy"
-                    class="px-4 py-2 bg-red-600 text-white rounded"
-                >
-                    Confirmer et abandonner
-                </button>
-            </template>
-        </ConfirmationModal>
+            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="resign-study-title">
+                <span class="path-kicker">Attention</span>
+                <h2 id="resign-study-title">Quitter cette étude ?</h2>
+                <p>
+                    La progression de <strong>{{ studyDetails.name }}</strong> sera perdue et aucun diplôme ne sera accordé.
+                </p>
+                <div class="path-dialog__actions">
+                    <button type="button" class="path-button path-button--ghost" :disabled="actionPending" @click="showResignDialog = false">Continuer mes études</button>
+                    <button type="button" class="path-button path-button--danger" :disabled="actionPending" @click="resignFromStudy">
+                        {{ actionPending ? "Abandon…" : "Confirmer l’abandon" }}
+                    </button>
+                </div>
+            </section>
+        </div>
     </AppLayout>
 </template>

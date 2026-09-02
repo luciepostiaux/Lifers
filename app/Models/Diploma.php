@@ -9,20 +9,11 @@ class Diploma extends Model
 {
     use HasFactory;
 
-    protected $table = 'diplomas';
+    protected $fillable = ['name', 'description'];
 
-    protected $fillable = [
-        'name',
-        'description',
-    ];
-
-    protected $hidden = [];
-
-    protected $casts = [];
-
-
-    public function persos()
+    public function lifers()
     {
-        return $this->belongsToMany(Perso::class, 'perso_has_diplomas', 'diplomas_id', 'perso_id');
+        return $this->belongsToMany(Lifer::class, 'lifer_diplomas')
+            ->withPivot(['earned_at', 'is_public']);
     }
 }

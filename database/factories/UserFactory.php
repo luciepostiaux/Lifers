@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -26,6 +26,11 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'password' => Hash::make('password'),  // Utiliser Hash pour hasher le mot de passe
             'email_verified_at' => now(),
+            'adult_confirmed_at' => now(),
+            'terms_accepted_at' => now(),
+            'terms_version' => config('legal.terms_version'),
+            'privacy_acknowledged_at' => now(),
+            'privacy_version' => config('legal.privacy_version'),
             'consentement_newsletter' => $this->faker->boolean,
             'date_consentement' => $this->faker->dateTimeThisYear(),
             'consentement_rgpd' => $this->faker->boolean,
@@ -51,16 +56,16 @@ class UserFactory extends Factory
     /**
      * Indicate that the user should have a personal team.
      */
-    public function withPersonalTeam(callable $callback = null): static
+    public function withPersonalTeam(?callable $callback = null): static
     {
-        if (!Features::hasTeamFeatures()) {
+        if (! Features::hasTeamFeatures()) {
             return $this->state([]);
         }
 
         return $this->has(
             Team::factory()
                 ->state(fn (array $attributes, User $user) => [
-                    'name' => $user->name . '\'s Team',
+                    'name' => $user->name.'\'s Team',
                     'user_id' => $user->id,
                     'personal_team' => true,
                 ])

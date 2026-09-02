@@ -1,12 +1,8 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import AuthenticationCard from "@/Components/AuthenticationCard.vue";
-import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
-import Checkbox from "@/Components/Checkbox.vue";
 import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
+import PasswordInput from "@/Components/PasswordInput.vue";
+import SiteHeader from "@/Components/SiteHeader.vue";
 
 defineProps({
     canResetPassword: Boolean,
@@ -30,71 +26,123 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head title="Lifers — Se connecter">
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link
+            href="https://fonts.bunny.net/css?family=bricolage-grotesque:700,800|dm-sans:400,500,600,700&display=swap"
+            rel="stylesheet"
+        />
+    </Head>
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
+    <div class="lifers-auth-page">
+        <div class="lifers-auth-scene" aria-hidden="true">
+            <img
+                src="/images/landing/hero-lifers.png"
+                alt=""
+                width="1672"
+                height="941"
+                decoding="async"
+            />
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+        <SiteHeader />
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Mot de passe" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Se souvenir de moi</span
-                    >
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Mot de passe oublié?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
+        <main class="lifers-auth-main">
+            <section
+                class="lifers-auth-card"
+                aria-labelledby="login-title"
+            >
+                <h1 id="login-title" class="lifers-auth-title">
                     Se connecter
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+                </h1>
+                <div class="lifers-auth-accent" aria-hidden="true"></div>
+
+                <div
+                    v-if="status"
+                    class="lifers-auth-status"
+                    role="status"
+                >
+                    {{ status }}
+                </div>
+
+                <form class="lifers-auth-form" @submit.prevent="submit">
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="email">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            class="lifers-auth-input"
+                            required
+                            autofocus
+                            autocomplete="username"
+                            :aria-invalid="Boolean(form.errors.email)"
+                            :aria-describedby="
+                                form.errors.email ? 'email-error' : undefined
+                            "
+                        />
+                        <InputError
+                            id="email-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.email"
+                        />
+                    </div>
+
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="password">
+                            Mot de passe
+                        </label>
+                        <PasswordInput
+                            id="password"
+                            v-model="form.password"
+                            input-class="lifers-auth-input"
+                            required
+                            autocomplete="current-password"
+                            :aria-invalid="Boolean(form.errors.password)"
+                            :aria-describedby="
+                                form.errors.password
+                                    ? 'password-error'
+                                    : undefined
+                            "
+                        />
+                        <InputError
+                            id="password-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.password"
+                        />
+                    </div>
+
+                    <label class="lifers-auth-checkline">
+                        <input
+                            v-model="form.remember"
+                            name="remember"
+                            type="checkbox"
+                            class="lifers-auth-checkbox"
+                        />
+                        <span>Se souvenir de moi</span>
+                    </label>
+
+                    <div class="lifers-auth-actions">
+                        <Link
+                            v-if="canResetPassword"
+                            :href="route('password.request')"
+                            class="lifers-auth-link"
+                        >
+                            Mot de passe oublié ?
+                        </Link>
+
+                        <button
+                            type="submit"
+                            class="lifers-auth-submit"
+                            :disabled="form.processing"
+                        >
+                            Se connecter
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
 </template>

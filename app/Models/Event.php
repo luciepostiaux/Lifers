@@ -9,44 +9,12 @@ class Event extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'events';
+    protected $fillable = ['name', 'description', 'starts_at', 'ends_at'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'description',
-        'start_time',
-        'end_time',
-    ];
+    protected $casts = ['starts_at' => 'datetime', 'ends_at' => 'datetime'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-    ];
-
-    public function users()
+    public function lifers()
     {
-        return $this->belongsToMany(User::class, 'events_has_users', 'event_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(Lifer::class, 'event_lifer')->withTimestamps();
     }
 }

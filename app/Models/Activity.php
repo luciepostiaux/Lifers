@@ -9,13 +9,9 @@ class Activity extends Model
 {
     use HasFactory;
 
-    // Spécifiez les colonnes qui peuvent être remplies massivement.
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'category',
-    ];
+    protected $fillable = ['name', 'description', 'price', 'category'];
+
+    protected $casts = ['price' => 'decimal:2'];
 
     public function effects()
     {

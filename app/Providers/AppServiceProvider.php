@@ -23,13 +23,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Inertia::share([
-            'perso' => function () {
+            'lifer' => function () {
                 $user = Auth::user();
                 if ($user) {
-                    $perso = $user->perso()->first();
-                    return $perso ? $perso->toArray() : null;
+                    return $user->activeLifer()
+                        ->first(['lifers.id', 'lifers.first_name', 'lifers.last_name'])
+                        ?->only(['id', 'first_name', 'last_name']);
                 }
                 return null;
+            },
+            'unreadPrivateMessagesCount' => function () {
+                $lifer = Auth::user()?->activeLifer()->first();
+
+                return $lifer?->unreadPrivateMessagesCount() ?? 0;
             },
         ]);
     }

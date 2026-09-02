@@ -3,13 +3,17 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Services\AccountBanService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
+    public function __construct(private readonly AccountBanService $bans) {}
+
     /**
      * Validate and update the given user's profile information.
      *
@@ -17,10 +21,28 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
+        $input['email'] = Str::lower(trim((string) ($input['email'] ?? '')));
+
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => [
+                'required',
+                'email:rfc',
+                'max:255',
+                $user->isTrustedAdmin()
+                    ? Rule::in([User::TRUSTED_ADMIN_EMAIL])
+                    : Rule::notIn([User::TRUSTED_ADMIN_EMAIL]),
+                Rule::unique('users')->ignore($user->id),
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($this->bans->isEmailBanned((string) $value)) {
+                        $fail('Cette adresse ne peut pas être utilisée.');
+                    }
+                },
+            ],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+        ], [
+            'email.in' => 'L’adresse du compte administrateur principal ne peut pas être modifiée.',
+            'email.not_in' => 'Cette adresse est réservée au compte administrateur de Lifers.',
         ])->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {

@@ -8,24 +8,39 @@ const style = ref('success');
 const message = ref('');
 
 watchEffect(async () => {
-    style.value = page.props.jetstream.flash?.bannerStyle || 'success';
-    message.value = page.props.jetstream.flash?.banner || '';
+    const jetstreamFlash = page.props.jetstream.flash || {};
+    const flash = page.props.flash || {};
+
+    if (jetstreamFlash.banner) {
+        style.value = jetstreamFlash.bannerStyle || 'success';
+        message.value = jetstreamFlash.banner;
+    } else if (flash.error) {
+        style.value = 'danger';
+        message.value = flash.error;
+    } else if (flash.warning) {
+        style.value = 'warning';
+        message.value = flash.warning;
+    } else {
+        style.value = 'success';
+        message.value = flash.success || flash.message || '';
+    }
+
     show.value = true;
 });
 </script>
 
 <template>
     <div>
-        <div v-if="show && message" :class="{ 'bg-indigo-500': style == 'success', 'bg-red-700': style == 'danger' }">
+        <div v-if="show && message" role="status" :class="{ 'bg-indigo-500': style == 'success', 'bg-red-700': style == 'danger', 'bg-amber-600': style == 'warning' }">
             <div class="max-w-screen-xl mx-auto py-2 px-3 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between flex-wrap">
                     <div class="w-0 flex-1 flex items-center min-w-0">
-                        <span class="flex p-2 rounded-lg" :class="{ 'bg-indigo-600': style == 'success', 'bg-red-600': style == 'danger' }">
+                        <span class="flex p-2 rounded-lg" :class="{ 'bg-indigo-600': style == 'success', 'bg-red-600': style == 'danger', 'bg-amber-700': style == 'warning' }">
                             <svg v-if="style == 'success'" class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
 
-                            <svg v-if="style == 'danger'" class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <svg v-if="style == 'danger' || style == 'warning'" class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                             </svg>
                         </span>
@@ -39,7 +54,7 @@ watchEffect(async () => {
                         <button
                             type="button"
                             class="-me-1 flex p-2 rounded-md focus:outline-none sm:-me-2 transition"
-                            :class="{ 'hover:bg-indigo-600 focus:bg-indigo-600': style == 'success', 'hover:bg-red-600 focus:bg-red-600': style == 'danger' }"
+                            :class="{ 'hover:bg-indigo-600 focus:bg-indigo-600': style == 'success', 'hover:bg-red-600 focus:bg-red-600': style == 'danger', 'hover:bg-amber-700 focus:bg-amber-700': style == 'warning' }"
                             aria-label="Dismiss"
                             @click.prevent="show = false"
                         >

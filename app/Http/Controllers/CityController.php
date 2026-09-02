@@ -3,136 +3,194 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\DailyJournalAccess;
+use App\Models\FamilyChild;
 use App\Models\Item;
-use App\Models\Sickness;
+use App\Models\LiferGameState;
 use App\Models\SportSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CityController extends Controller
 {
     public function index()
     {
-        return Inertia::render('City/Index');
+        $lifer = $this->activeLifer([
+            'gameState',
+            'lifeGauge',
+            'inventory.items',
+            'sicknesses',
+            'subscriptions.sportSession',
+            'activeStudyEnrollment.study',
+            'employment.job',
+        ]);
+
+        $activeSubscription = $lifer->subscriptions->first(
+            fn ($subscription) => $subscription->status === 'active'
+                && $subscription->ends_at->isFuture(),
+        );
+
+        return Inertia::render('City/Index', [
+            'money' => $lifer->gameState?->money,
+            'cityStatus' => [
+                'inventory_quantity' => $lifer->inventory?->items
+                    ->sum(fn ($item) => $item->pivot->quantity) ?? 0,
+                'market_items_count' => Item::count(),
+                'health' => $lifer->lifeGauge?->health,
+                'sickness_count' => $lifer->sicknesses->count(),
+                'activities_count' => Activity::count(),
+                'sport_options_count' => SportSession::count(),
+                'active_subscription' => $activeSubscription?->sportSession?->name,
+                'current_study' => $lifer->activeStudyEnrollment?->study?->name,
+                'current_job' => $lifer->employment?->job?->name,
+                'orphan_count' => FamilyChild::query()->where('status', FamilyChild::STATUS_ORPHANED)->count(),
+                'has_daily_journal_access' => DailyJournalAccess::query()
+                    ->where('lifer_id', $lifer->id)
+                    ->whereDate('access_date', today())
+                    ->exists(),
+            ],
+        ]);
     }
+
     public function lifeMarket()
     {
-        $user = auth()->user();
+        $lifer = $this->activeLifer(['gameState', 'inventory.items']);
+        $quantities = $lifer->inventory->items->pluck('pivot.quantity', 'id');
 
-
-        $products = Item::all()->map(function ($item) use ($user) {
-            $inventoryQuantity = 0;
-            if ($user && $user->perso && $user->perso->inventory) {
-                $inventoryItem = $user->perso->inventory->items->where('id', $item->id)->first();
-                $inventoryQuantity = $inventoryItem ? $inventoryItem->pivot->quantity : 0;
-            }
-            $item->inventoryQuantity = $inventoryQuantity;
-            return $item;
-        });
-
-        $productsByCategory = $products->groupBy('category');
+        $products = Item::with('effects')
+            ->get()
+            ->sortBy(fn (Item $item) => sprintf('%02d-%s', Item::categoryRank($item->category), $item->name))
+            ->values()
+            ->map(fn (Item $item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'description' => $item->description,
+                'price' => $item->price,
+                'units_per_purchase' => $item->units_per_purchase,
+                'category' => $item->category,
+                'image_path' => $item->image_path,
+                'background_image_path' => $item->background_image_path,
+                'inventory_quantity' => $quantities->get($item->id, 0),
+                'effects' => $item->effects->map(fn ($effect) => [
+                    'gauge' => $effect->gauge,
+                    'effect' => $effect->effect,
+                ])->values(),
+            ]);
 
         return Inertia::render('City/LifeMarket', [
-            'productsByCategory' => $productsByCategory,
+            'productsByCategory' => $products->groupBy('category'),
+            'money' => $lifer->gameState?->money,
         ]);
     }
+
     public function sport()
     {
-        $user = Auth::user();
-        $perso = $user->perso;
-        $sportSessions = SportSession::all();
-        $activeSubscription = null;
-
-        if ($perso) {
-            $activeSubscription = $perso->subscriptions()
-                ->where('type', 'gym')
-                ->where('end_date', '>', now())
-                ->first();
-        }
+        $lifer = $this->activeLifer([
+            'gameState',
+            'lifeGauge',
+            'subscriptions.sportSession',
+        ]);
 
         return Inertia::render('City/Sport', [
-            'sportSessions' => $sportSessions,
-            'activeSubscription' => $activeSubscription,
+            'singleSession' => SportSession::where('type', 'single')->first(),
+            'sportSessions' => SportSession::where('type', 'gym')->get(),
+            'activeSubscription' => $lifer->subscriptions
+                ->first(fn ($subscription) => $subscription->status === 'active' && $subscription->ends_at->isFuture()),
+            'physicalCondition' => $lifer->lifeGauge?->physical_condition,
+            'money' => $lifer->gameState?->money,
         ]);
     }
-
-
 
     public function buySingleSportSession(Request $request)
     {
-        $user = Auth::user();
-        $perso = $user->perso;
-        $sessionPrice = 40;
-        $sessionEffect = 15;
+        $validated = $request->validate([
+            'sessionId' => ['required', 'integer', 'exists:sport_sessions,id'],
+        ]);
 
-        if ($perso->money < $sessionPrice) {
-            return redirect()->back()->withErrors('Vous n\'avez pas assez d\'argent pour cette séance.');
-        }
+        $lifer = $this->activeLifer();
+        $session = SportSession::whereKey($validated['sessionId'])->where('type', 'single')->firstOrFail();
 
-        $perso->decrement('money', $sessionPrice);
-        $currentPhysicalCondition = $perso->lifeGauge->physical_condition;
-        $newPhysicalCondition = max(0, min(100, $currentPhysicalCondition + $sessionEffect));
-        $perso->lifeGauge->update(['physical_condition' => $newPhysicalCondition]);
-        $perso->lifeGauge->save();
+        DB::transaction(function () use ($lifer, $session) {
+            $state = LiferGameState::query()->lockForUpdate()->findOrFail($lifer->id);
+            $lifeGauge = $lifer->lifeGauge()->lockForUpdate()->firstOrFail();
 
-        return redirect()->back()->with('success', 'Séance de sport achetée avec succès.');
+            if ($state->money < $session->price) {
+                throw ValidationException::withMessages([
+                    'sessionId' => 'Vous n’avez pas assez d’argent pour cette séance.',
+                ]);
+            }
+
+            $state->decrement('money', $session->price);
+            $state->update(['last_sport_activity_on' => today()]);
+            $lifeGauge->update([
+                'physical_condition' => min(
+                    100,
+                    $lifeGauge->physical_condition + $session->physical_condition_effect,
+                ),
+            ]);
+        });
+
+        return back()->with('success', 'Séance de sport achetée avec succès.');
     }
-
 
     public function entertainment()
     {
-        $activities = Activity::all();
-        $activitiesByCategory = $activities->groupBy('category');
+        $lifer = $this->activeLifer(['gameState', 'lifeGauge']);
 
         return Inertia::render('City/Entertainment', [
-            'activitiesByCategory' => $activitiesByCategory,
+            'activitiesByCategory' => Activity::with('effects')->get()->groupBy('category'),
+            'lifeGauges' => [
+                'happiness' => $lifer->lifeGauge?->happiness,
+                'entertainment' => $lifer->lifeGauge?->entertainment,
+                'physical_condition' => $lifer->lifeGauge?->physical_condition,
+            ],
+            'money' => $lifer->gameState?->money,
         ]);
     }
 
     public function participateInActivity(Request $request)
     {
-        $user = Auth::user();
-        $perso = $user->perso;
-        $activity = Activity::findOrFail($request->activityId);
+        $validated = $request->validate([
+            'activityId' => ['required', 'integer', 'exists:activities,id'],
+        ]);
 
+        $lifer = $this->activeLifer();
+        $activity = Activity::with('effects')->findOrFail($validated['activityId']);
 
-        if ($perso->money < $activity->price) {
-            return redirect()->back()->withErrors('Vous n\'avez pas assez d\'argent pour cette activité.');
-        }
+        DB::transaction(function () use ($lifer, $activity) {
+            $state = LiferGameState::query()->lockForUpdate()->findOrFail($lifer->id);
+            $lifeGauge = $lifer->lifeGauge()->lockForUpdate()->firstOrFail();
 
-        $perso->decrement('money', $activity->price);
-        $effects = $activity->effects;
-        foreach ($effects as $effect) {
-            $gauge = $effect->effect_type;
-            $value = $effect->effect_value;
-
-
-            if (in_array($gauge, ['hunger', 'thirst', 'clean', 'happiness', 'health', 'entertainment'])) {
-                $currentValue = $perso->lifeGauge->{$gauge};
-                $newValue = max(0, min(100, $currentValue + $value));
-                $perso->lifeGauge->{$gauge} = $newValue;
+            if ($state->money < $activity->price) {
+                throw ValidationException::withMessages([
+                    'activityId' => 'Vous n’avez pas assez d’argent pour cette activité.',
+                ]);
             }
-        }
 
-        $perso->lifeGauge->save();
+            $state->decrement('money', $activity->price);
 
-        return redirect()->back()->with('success', 'Vous avez participé à l\'activité avec succès.');
+            foreach ($activity->effects as $effect) {
+                $gauge = $effect->gauge;
+                $lifeGauge->{$gauge} = max(0, min(100, $lifeGauge->{$gauge} + $effect->effect));
+            }
+
+            $lifeGauge->save();
+        });
+
+        return back()->with('success', 'Vous avez participé à l’activité avec succès.');
     }
 
     public function doctor()
     {
-        $user = Auth::user();
-        $perso = $user->perso;
-        $allSicknesses = Sickness::all(); // Récupère toutes les maladies
+        $lifer = $this->activeLifer(['gameState', 'lifeGauge', 'sicknesses']);
 
-        $currentSicknesses = $perso->sicknesses()->withPivot('created_at')->get();
-        // dd($currentSicknesses);
         return Inertia::render('City/Doctor', [
-            'currentSicknesses' => $currentSicknesses,
-            'allSicknesses' => $allSicknesses,
-
+            'currentSicknesses' => $lifer->sicknesses,
+            'health' => $lifer->lifeGauge?->health,
+            'doctorVisitCost' => 150,
+            'money' => $lifer->gameState?->money,
         ]);
     }
-   
 }

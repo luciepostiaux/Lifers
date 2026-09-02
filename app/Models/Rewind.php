@@ -9,19 +9,12 @@ class Rewind extends Model
 {
     use HasFactory;
 
-    protected $table = 'rewinds';
+    protected $fillable = ['price', 'image_path'];
 
-    protected $fillable = [
-        'price',
-        'img',
-    ];
+    protected $casts = ['price' => 'decimal:2'];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-    ];
-
-    public function users()
+    public function lifers()
     {
-        return $this->belongsToMany(User::class, 'rewinds_has_users', 'rewind_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(Lifer::class, 'lifer_rewind')->withTimestamps();
     }
 }

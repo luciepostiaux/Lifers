@@ -1,18 +1,15 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import AuthenticationCard from "@/Components/AuthenticationCard.vue";
-import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
-import Checkbox from "@/Components/Checkbox.vue";
 import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
+import PasswordInput from "@/Components/PasswordInput.vue";
+import SiteHeader from "@/Components/SiteHeader.vue";
 
 const form = useForm({
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
+    adult_confirmation: false,
     terms: false,
 });
 
@@ -24,123 +21,237 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="Lifers — Créer mon Lifer">
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link
+            href="https://fonts.bunny.net/css?family=bricolage-grotesque:700,800|dm-sans:400,500,600,700&display=swap"
+            rel="stylesheet"
+        />
+    </Head>
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+    <div class="lifers-auth-page">
+        <div class="lifers-auth-scene" aria-hidden="true">
+            <img
+                src="/images/landing/hero-lifers.png"
+                alt=""
+                width="1672"
+                height="941"
+                decoding="async"
+            />
+        </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Pseudo" />
-                <TextInput
-                    id="name"
-                    v-model="form.name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+        <SiteHeader />
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Mot de passe" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirmation mot de passe"
-                />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div
-                v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature"
-                class="mt-4"
+        <main class="lifers-auth-main">
+            <section
+                class="lifers-auth-card lifers-auth-card--register"
+                aria-labelledby="register-title"
             >
-                <InputLabel for="terms">
-                    <div class="flex items-center">
-                        <Checkbox
-                            id="terms"
-                            v-model:checked="form.terms"
-                            name="terms"
+                <h1 id="register-title" class="lifers-auth-title">
+                    Créer mon Lifer
+                </h1>
+                <div class="lifers-auth-accent" aria-hidden="true"></div>
+
+                <form class="lifers-auth-form" @submit.prevent="submit">
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="name">
+                            Pseudo
+                        </label>
+                        <input
+                            id="name"
+                            v-model="form.name"
+                            type="text"
+                            class="lifers-auth-input"
                             required
+                            autofocus
+                            autocomplete="name"
+                            :aria-invalid="Boolean(form.errors.name)"
+                            :aria-describedby="
+                                form.errors.name ? 'name-error' : undefined
+                            "
                         />
-
-                        <div class="ms-2">
-                            I agree to the
-                            <a
-                                target="_blank"
-                                :href="route('terms.show')"
-                                class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >Terms of Service</a
-                            >
-                            and
-                            <a
-                                target="_blank"
-                                :href="route('policy.show')"
-                                class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >Privacy Policy</a
-                            >
-                        </div>
+                        <InputError
+                            id="name-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.name"
+                        />
                     </div>
-                    <InputError class="mt-2" :message="form.errors.terms" />
-                </InputLabel>
-            </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Déjà un compte?
-                </Link>
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="email">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            class="lifers-auth-input"
+                            required
+                            autocomplete="username"
+                            :aria-invalid="Boolean(form.errors.email)"
+                            :aria-describedby="
+                                form.errors.email ? 'email-error' : undefined
+                            "
+                        />
+                        <InputError
+                            id="email-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.email"
+                        />
+                    </div>
 
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    S'enregistrer
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="password">
+                            Mot de passe
+                        </label>
+                        <PasswordInput
+                            id="password"
+                            v-model="form.password"
+                            input-class="lifers-auth-input"
+                            required
+                            autocomplete="new-password"
+                            :aria-invalid="Boolean(form.errors.password)"
+                            :aria-describedby="
+                                form.errors.password
+                                    ? 'password-error'
+                                    : undefined
+                            "
+                        />
+                        <InputError
+                            id="password-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.password"
+                        />
+                    </div>
+
+                    <div class="lifers-auth-field">
+                        <label
+                            class="lifers-auth-label"
+                            for="password_confirmation"
+                        >
+                            Confirmation du mot de passe
+                        </label>
+                        <PasswordInput
+                            id="password_confirmation"
+                            v-model="form.password_confirmation"
+                            input-class="lifers-auth-input"
+                            required
+                            autocomplete="new-password"
+                            :aria-invalid="
+                                Boolean(form.errors.password_confirmation)
+                            "
+                            :aria-describedby="
+                                form.errors.password_confirmation
+                                    ? 'password-confirmation-error'
+                                    : undefined
+                            "
+                        />
+                        <InputError
+                            id="password-confirmation-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.password_confirmation"
+                        />
+                    </div>
+
+                    <div class="lifers-auth-terms">
+                        <label
+                            class="lifers-auth-checkline"
+                            for="adult_confirmation"
+                        >
+                            <input
+                                id="adult_confirmation"
+                                v-model="form.adult_confirmation"
+                                name="adult_confirmation"
+                                type="checkbox"
+                                class="lifers-auth-checkbox"
+                                required
+                                :aria-invalid="
+                                    Boolean(form.errors.adult_confirmation)
+                                "
+                                :aria-describedby="
+                                    form.errors.adult_confirmation
+                                        ? 'adult-confirmation-error'
+                                        : undefined
+                                "
+                            />
+                            <span>Je confirme avoir 18 ans ou plus.</span>
+                        </label>
+                        <InputError
+                            id="adult-confirmation-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.adult_confirmation"
+                        />
+                    </div>
+
+                    <div
+                        v-if="
+                            $page.props.jetstream
+                                .hasTermsAndPrivacyPolicyFeature
+                        "
+                        class="lifers-auth-terms"
+                    >
+                        <label class="lifers-auth-checkline" for="terms">
+                            <input
+                                id="terms"
+                                v-model="form.terms"
+                                name="terms"
+                                type="checkbox"
+                                class="lifers-auth-checkbox"
+                                required
+                                :aria-invalid="Boolean(form.errors.terms)"
+                                :aria-describedby="
+                                    form.errors.terms
+                                        ? 'terms-error'
+                                        : undefined
+                                "
+                            />
+                            <span>
+                                J’accepte les
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    :href="route('terms.show')"
+                                    class="lifers-auth-link"
+                                >
+                                    conditions d’utilisation
+                                </a>
+                                et je reconnais avoir pris connaissance de la
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    :href="route('policy.show')"
+                                    class="lifers-auth-link"
+                                >
+                                    politique de confidentialité
+                                </a>
+                                .
+                            </span>
+                        </label>
+                        <InputError
+                            id="terms-error"
+                            class="lifers-auth-error"
+                            :message="form.errors.terms"
+                        />
+                    </div>
+
+                    <div class="lifers-auth-actions">
+                        <Link
+                            :href="route('login')"
+                            class="lifers-auth-link"
+                        >
+                            Déjà un compte ?
+                        </Link>
+
+                        <button
+                            type="submit"
+                            class="lifers-auth-submit"
+                            :disabled="form.processing"
+                        >
+                            Créer mon Lifer
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
 </template>

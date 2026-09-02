@@ -3,150 +3,155 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ApplyStudyRequest;
-use App\Models\PersoStudyEnrollment;
+use App\Models\LiferGameState;
+use App\Models\LiferStudyEnrollment;
 use App\Models\Study;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class StudyController extends Controller
 {
     public function index()
     {
-        $studies = Study::all(); // Récupère toutes les études disponibles
-        $user = Auth::user();
-        $perso = $user->perso()->with(['enrolledStudies.study', 'diplomas'])->first();
-        $latestEnrollment = $perso->enrolledStudies->sortByDesc('created_at')->first();
-        $currentStudyDetails = null; // Initialise la variable
-        if ($latestEnrollment && $latestEnrollment->study) {
-            $currentStudyDetails = [
-                'id' => $latestEnrollment->study->id,
-                'name' => $latestEnrollment->study->name,
-                'description' => $latestEnrollment->study->description_1,
-                'start_date' => $latestEnrollment->start_date,
-                'end_date' => $latestEnrollment->end_date,
-            ];
-        }
+        $lifer = $this->activeLifer([
+            'diplomas',
+            'gameState',
+            'activeStudyEnrollment.study.awardedDiploma',
+            'activeStudyEnrollment.study.requiredDiploma',
+            'activeStudyEnrollment.study.place',
+        ]);
+        $enrollment = $lifer->activeStudyEnrollment;
+
         return Inertia::render('Study/Index', [
-            'studies' => $studies,
-            'currentStudy' => $currentStudyDetails,
-            'persoDiplomas' => $perso->diplomas,
-
+            'studies' => Study::with(['awardedDiploma', 'requiredDiploma', 'place'])->get(),
+            'currentStudy' => $enrollment?->study ? [
+                'id' => $enrollment->study->id,
+                'name' => $enrollment->study->name,
+                'description' => $enrollment->study->short_description,
+                'start_date' => $enrollment->started_at,
+                'end_date' => $enrollment->ends_at,
+                'image_path' => $enrollment->study->image_path,
+                'awarded_diploma' => $enrollment->study->awardedDiploma,
+                'required_diploma' => $enrollment->study->requiredDiploma,
+                'place' => $enrollment->study->place,
+            ] : null,
+            'persoDiplomas' => $lifer->diplomas,
+            'money' => $lifer->gameState?->money,
         ]);
     }
-    public function showCurrentStudy($id)
-    {
-        $study = Study::findOrFail($id);
-        $user = Auth::user();
-        $perso = $user->perso;
 
-        // Recherchez l'inscription du personnage à cette étude spécifique
-        $enrollment = null;
-        if ($perso) {
-            $enrollment = PersoStudyEnrollment::where('perso_id', $perso->id)
-                ->where('study_id', $study->id)
-                ->latest()
-                ->first();
-        }
+    public function showCurrentStudy(int $id)
+    {
+        $lifer = $this->activeLifer(['gameState']);
+        $enrollment = $lifer
+            ->activeStudyEnrollment()
+            ->with(['study.awardedDiploma', 'study.requiredDiploma', 'study.place'])
+            ->where('study_id', $id)
+            ->firstOrFail();
+
         return Inertia::render('Study/Current', [
-            'studyDetails' => $study,
+            'studyDetails' => $enrollment->study,
             'enrollmentDetails' => $enrollment,
+            'canClaimDiploma' => $enrollment->ends_at->isPast(),
+            'money' => $lifer->gameState?->money,
         ]);
     }
 
-    public function enroll(ApplyStudyRequest $request, $studyId)
+    public function enroll(ApplyStudyRequest $request, int $studyId)
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
-        if (!$personnage) {
-            return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
-        }
-
+        $lifer = $this->activeLifer(['diplomas']);
         $study = Study::findOrFail($studyId);
 
-        // Vérifiez si le personnage a suffisamment d'argent pour s'inscrire à l'étude
-        if ($personnage->money < $study->price) {
-            return redirect()->back()->withErrors(['msg' => 'Vous n’avez pas suffisamment d’argent pour vous inscrire à cette étude.']);
-        }
-
-        if ($study->required_diploma_id && !$personnage->diplomas->contains('id', $study->required_diploma_id)) {
-            return redirect()->back()->withErrors(['msg' => 'Vous devez avoir le diplôme requis pour vous inscrire à cette étude.']);
-        }
-
-        DB::beginTransaction();
-        try {
-            // Supprimez toutes les inscriptions existantes avant d'en créer une nouvelle
-            $personnage->enrolledStudies()->delete();
-
-            // Déduisez le coût de l'étude de l'argent du personnage
-            $personnage->money -= $study->price;
-            $personnage->save();
-
-            // Création d'une nouvelle inscription
-            $endDate = now()->addDays($study->duration)->format('Y-m-d');
-            $personnage->enrolledStudies()->create([
-                'study_id' => $studyId,
-                'end_date' => $endDate,
+        if ($study->required_diploma_id && ! $lifer->diplomas->contains('id', $study->required_diploma_id)) {
+            throw ValidationException::withMessages([
+                'study' => 'Vous devez posséder le diplôme requis pour suivre cette étude.',
             ]);
-
-            // Validez la transaction
-            DB::commit();
-            return redirect()->route('study.index')->with('message', 'Inscription à l’étude réussie et paiement effectué.');
-        } catch (\Exception $e) {
-            // Si une erreur survient, annulez la transaction
-            DB::rollBack();
-            return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’inscription à l’étude.']);
         }
+
+        DB::transaction(function () use ($lifer, $study) {
+            $state = LiferGameState::query()->lockForUpdate()->findOrFail($lifer->id);
+
+            if ($state->money < $study->price) {
+                throw ValidationException::withMessages([
+                    'study' => 'Vous n’avez pas suffisamment d’argent pour cette étude.',
+                ]);
+            }
+
+            LiferStudyEnrollment::query()
+                ->where('lifer_id', $lifer->id)
+                ->where('status', LiferStudyEnrollment::STATUS_ACTIVE)
+                ->lockForUpdate()
+                ->update([
+                    'status' => LiferStudyEnrollment::STATUS_LEFT,
+                    'ended_at' => now(),
+                ]);
+
+            $state->decrement('money', $study->price);
+
+            LiferStudyEnrollment::create([
+                'lifer_id' => $lifer->id,
+                'study_id' => $study->id,
+                'started_at' => now(),
+                'ends_at' => now()->addDays($study->duration_days),
+                'status' => LiferStudyEnrollment::STATUS_ACTIVE,
+            ]);
+        });
+
+        return redirect()->route('study.index')->with('message', 'Inscription à l’étude réussie.');
     }
-
-
-
-
 
     public function resign()
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $lifer = $this->activeLifer();
+        $updated = $lifer->activeStudyEnrollment()->update([
+            'status' => LiferStudyEnrollment::STATUS_LEFT,
+            'ended_at' => now(),
+        ]);
 
-        if (!$personnage) {
-            return redirect()->route('study.index')->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
+        if (! $updated) {
+            return back()->withErrors(['msg' => 'Vous ne suivez actuellement aucune étude.']);
         }
 
-        // Utilisez la méthode que nous venons d'ajouter pour résigner de l'étude
-        $personnage->resignFromStudy();
-
-        return redirect()->route('study.index')->with('message', 'Vous avez quitté l\'étude avec succès.');
+        return redirect()->route('study.index')->with('message', 'Vous avez quitté l’étude.');
     }
 
-    public function claimDiploma(Request $request, $studyId)
+    public function claimDiploma(Request $request, int $studyId)
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $lifer = $this->activeLifer();
 
-        if (!$personnage) {
-            return redirect()->route('study.index')->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
-        }
-
-        $study = Study::findOrFail($studyId);
-        $diploma = $study->diploma;
-        if (!$diploma) {
-            return redirect()->route('study.index')->withErrors(['msg' => 'Cette étude ne propose aucun diplôme.']);
-        }
-
-        if (!$personnage->diplomas->contains('id', $diploma->id)) {
-            $personnage->diplomas()->attach($diploma->id);
-
-            $enrollment = PersoStudyEnrollment::where('perso_id', $personnage->id)
-                ->where('study_id', $study->id)
+        DB::transaction(function () use ($lifer, $studyId) {
+            $enrollment = LiferStudyEnrollment::query()
+                ->where('lifer_id', $lifer->id)
+                ->where('study_id', $studyId)
+                ->where('status', LiferStudyEnrollment::STATUS_ACTIVE)
+                ->with('study.awardedDiploma')
+                ->lockForUpdate()
                 ->first();
-            if ($enrollment) {
-                $enrollment->delete();
+
+            if (! $enrollment) {
+                throw ValidationException::withMessages([
+                    'study' => 'Aucune inscription active ne correspond à cette étude.',
+                ]);
             }
 
-            return redirect()->route('study.index')->with('message', 'Diplôme récupéré avec succès. Inscription aux études terminée.');
-        } else {
-            return redirect()->route('study.index')->withErrors(['msg' => 'Le personnage possède déjà ce diplôme.']);
-        }
+            if ($enrollment->ends_at->isFuture()) {
+                throw ValidationException::withMessages([
+                    'study' => 'La date de fin de cette étude n’est pas encore atteinte.',
+                ]);
+            }
+
+            $lifer->diplomas()->syncWithoutDetaching([
+                $enrollment->study->awarded_diploma_id => ['earned_at' => now()],
+            ]);
+
+            $enrollment->update([
+                'status' => LiferStudyEnrollment::STATUS_COMPLETED,
+                'ended_at' => now(),
+            ]);
+        });
+
+        return redirect()->route('study.index')->with('message', 'Diplôme récupéré avec succès.');
     }
 }

@@ -4,123 +4,117 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ApplyJobRequest;
 use App\Models\Job;
-use Illuminate\Support\Facades\Auth;
+use App\Models\LiferEmployment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class JobController extends Controller
 {
     public function index()
     {
-        $jobs = Job::with('diploma')->get();
-        $user = Auth::user();
-        $perso = $user->perso()->with(['job.diploma'])->first();
+        $lifer = $this->activeLifer([
+            'diplomas',
+            'gameState',
+            'employment.job.requiredDiploma',
+            'employment.job.place',
+        ]);
 
         return Inertia::render('Job/Index', [
-            'jobs' => $jobs,
-            'userDiplomas' => $perso ? $perso->diplomas : collect(),
-            'currentJob' => $perso ? $perso->job : null,
+            'jobs' => Job::with(['requiredDiploma', 'place'])->get(),
+            'userDiplomas' => $lifer->diplomas,
+            'currentJob' => $this->currentJobPayload($lifer->employment),
+            'money' => $lifer->gameState?->money,
         ]);
     }
 
-
-    public function apply(ApplyJobRequest $request, $jobId)
+    public function apply(ApplyJobRequest $request, int $jobId)
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $this->assignJob($jobId);
 
-        if (!$personnage) {
-
-            return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
-        }
-
-        $job = Job::findOrFail($jobId);
-
-        if (!$personnage->diplomas->contains('id', $job->diplomas_id)) {
-            return redirect()->back()->withErrors(['msg' => 'Tu dois avant tout réaliser les études liées.']);
-        }
-
-        $personnage->update([
-            'jobs_id' => $jobId,
-            'salary' => $job->salary,
-        ]);
-
-        return redirect()->back()->with('message', 'Vous avez postulé avec succès pour ce métier.');
+        return back()->with('message', 'Vous avez postulé avec succès pour ce métier.');
     }
 
-    public function showCurrentJob($jobId)
+    public function showCurrentJob(int $jobId)
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $lifer = $this->activeLifer([
+            'gameState',
+            'employment.job.requiredDiploma',
+            'employment.job.place',
+        ]);
+        $employment = $lifer->employment;
 
-        $job = Job::findOrFail($jobId);
-        if (!$job) {
-            return redirect()->route('job');
-        }
+        abort_unless($employment && $employment->job_id === $jobId, 404);
 
         return Inertia::render('Job/Current', [
-            'jobDetails' => $job,
+            'jobDetails' => $employment->job,
+            'employmentDetails' => $this->employmentPayload($employment),
+            'money' => $lifer->gameState?->money,
         ]);
     }
-
 
     public function resign()
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $lifer = $this->activeLifer(['employment']);
 
-
-        if ($personnage && $personnage->job) {
-            $personnage->jobs_id = null;
-            $personnage->save();
-
-            return redirect()->route('job')->with('message', 'Vous avez démissionné avec succès de votre poste.');
-        } else {
-            return redirect()->route('job')->withErrors(['msg' => 'Vous n\'avez pas de poste actuel duquel démissionner.']);
+        if (! $lifer->employment) {
+            return back()->withErrors(['msg' => 'Vous n’avez actuellement aucun métier.']);
         }
+
+        $lifer->employment->delete();
+
+        return redirect()->route('job')->with('message', 'Vous avez démissionné avec succès.');
     }
 
-    public function changeJob(Request $request, $newJobId)
+    public function changeJob(Request $request, int $newJobId)
     {
-        $user = Auth::user();
-        $personnage = $user->perso;
+        $this->assignJob($newJobId);
 
-        if (!$personnage) {
-            return redirect()->back()->withErrors(['msg' => 'Aucun personnage associé à cet utilisateur.']);
+        return redirect()->route('job')->with('message', 'Changement de métier effectué avec succès.');
+    }
+
+    private function assignJob(int $jobId): void
+    {
+        $lifer = $this->activeLifer(['diplomas']);
+        $job = Job::findOrFail($jobId);
+
+        if ($job->required_diploma_id && ! $lifer->diplomas->contains('id', $job->required_diploma_id)) {
+            throw ValidationException::withMessages([
+                'job' => 'Tu dois avant tout obtenir le diplôme lié à ce métier.',
+            ]);
         }
 
-        // Trouver le nouveau job
-        $newJob = Job::findOrFail($newJobId);
+        DB::transaction(function () use ($lifer, $job) {
+            LiferEmployment::query()->updateOrCreate(
+                ['lifer_id' => $lifer->id],
+                ['job_id' => $job->id, 'started_at' => now()],
+            );
+        });
+    }
 
-        // Vérifier si le personnage possède le diplôme requis pour le nouveau travail
-        if (!$personnage->diplomas->contains('id', $newJob->diplomas_id)) {
-            return redirect()->back()->withErrors(['msg' => 'Tu dois avant tout réaliser les études liées.']);
+    private function currentJobPayload(?LiferEmployment $employment): ?array
+    {
+        if (! $employment) {
+            return null;
         }
 
-        // Commencer la transaction
-        DB::beginTransaction();
-        try {
-            // Si le personnage a un job, le résigner
-            if ($personnage->job) {
-                $personnage->jobs_id = null;
-                $personnage->save();
-            }
+        return array_merge(
+            $employment->job->toArray(),
+            $this->employmentPayload($employment),
+        );
+    }
 
-            // Postuler pour le nouveau job
-            $personnage->jobs_id = $newJobId;
-            $personnage->save();
-
-            $personnage->salary = $job->salary;
-            $personnage->save();
-
-            // Valider la transaction
-            DB::commit();
-            return redirect()->route('job.index')->with('message', 'Changement de travail effectué avec succès.');
-        } catch (\Exception $e) {
-            // Annuler la transaction en cas d'erreur
-            DB::rollBack();
-            return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors du changement de travail.']);
-        }
+    private function employmentPayload(LiferEmployment $employment): array
+    {
+        return [
+            'started_at' => $employment->started_at,
+            'current_salary' => $employment->currentSalary(),
+            'seniority_years' => $employment->seniorityYears(),
+            'raise_count' => $employment->raiseCount(),
+            'max_raises' => LiferEmployment::MAX_RAISES,
+            'raise_rate' => LiferEmployment::ANNUAL_RAISE_RATE * 100,
+            'next_raise_at' => $employment->nextRaiseAt(),
+        ];
     }
 }

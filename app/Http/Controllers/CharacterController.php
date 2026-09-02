@@ -2,66 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\LifeGauge;
-use App\Models\Perso;
-use App\Models\PersoBody;
-use Carbon\Carbon;
+use App\Models\BodyType;
+use App\Models\FamilyChild;
+use App\Services\LiferLifecycleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class CharacterController extends Controller
 {
     public function create()
     {
-        $persoBodies = PersoBody::all();
+        if (Auth::user()->activeLifer()->exists()) {
+            return redirect()->route('dashboard');
+        }
 
         return Inertia::render('Character/Create', [
-            'persoBodies' => $persoBodies
+            'bodyTypes' => BodyType::query()
+                ->whereIn('code', [BodyType::CODE_MALE, BodyType::CODE_FEMALE])
+                ->orderBy('code')
+                ->get(['id', 'sex', 'image_path']),
+            'availableFamilyLifers' => FamilyChild::query()
+                ->where('status', FamilyChild::STATUS_AVAILABLE)
+                ->whereNull('claimed_lifer_id')
+                ->whereNotNull('first_name')
+                ->whereNotNull('last_name')
+                ->whereNotNull('adult_at')
+                ->where('adult_at', '<=', now())
+                ->orderBy('first_name')
+                ->orderBy('last_name')
+                ->get(['id', 'first_name', 'last_name', 'sex']),
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, LiferLifecycleService $lifecycle)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'perso_bodies_id' => 'required|exists:perso_bodies,id',
+        $validated = $request->validate([
+            'creation_mode' => ['required', Rule::in(['new', 'reincarnation'])],
+            'first_name' => ['exclude_unless:creation_mode,new', 'required', 'string', 'max:45'],
+            'last_name' => ['exclude_unless:creation_mode,new', 'required', 'string', 'max:45'],
+            'family_child_id' => ['exclude_unless:creation_mode,reincarnation', 'required', 'integer', 'exists:family_children,id'],
+            'body_type_id' => ['required', 'integer', 'exists:body_types,id'],
         ]);
 
-        $existingPerso = Auth::user()->perso;
+        $bodyType = BodyType::findOrFail($validated['body_type_id']);
 
-        if ($existingPerso) {
-            return redirect()->back()->with('error', 'Vous avez déjà un personnage actif.');
+        if ($validated['creation_mode'] === 'reincarnation') {
+            $child = FamilyChild::findOrFail($validated['family_child_id']);
+            $lifecycle->reincarnate(Auth::user(), $child, $bodyType);
+
+            return redirect()->route('dashboard')->with('success', 'Lifer réincarné avec succès.');
         }
-        DB::transaction(
-            function () use ($request) {
-                $perso = Perso::create([
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'perso_bodies_id' => $request->perso_bodies_id,
-                    'user_id' => Auth::id(),
-                    'birth_date' => Carbon::today()->toDateString(),
-                    'money' => 900,
 
-                ]);
-                Inventory::create(['perso_id' => $perso->id]);
+        $lifecycle->create(Auth::user(), $bodyType, $validated);
 
-                LifeGauge::create([
-                    'perso_id' => $perso->id,
-                    'hunger' => 100,
-                    'thirst' => 100,
-                    'clean' => 100,
-                    'happiness' => 100,
-                    'entertainment' => 100,
-                    'health' => 100,
-                    'physical_condition' => 100,
-                ]);
-            }
-        );
-
-        return redirect()->route('dashboard')->with('success', 'Personnage créé avec succès.');
+        return redirect()->route('dashboard')->with('success', 'Lifer créé avec succès.');
     }
 }

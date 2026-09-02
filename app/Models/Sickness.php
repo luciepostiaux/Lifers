@@ -9,40 +9,52 @@ class Sickness extends Model
 {
     use HasFactory;
 
-    protected $table = 'sickness';
-
     protected $fillable = [
         'name',
+        'slug',
         'description',
-        'duration',
-        'chance',
+        'duration_days',
+        'chance_by_age',
         'type',
         'needs_doctor',
         'self_resolving',
+        'treatment_cost',
+        'effect_timing',
+        'daily_decay_multiplier',
+        'fatal_after_days',
+        'trigger_type',
+        'trigger_days',
+        'trigger_config',
+        'risk_config',
     ];
 
     protected $casts = [
-        'duration' => 'integer',
-        'chance' => 'array',
+        'duration_days' => 'integer',
+        'chance_by_age' => 'array',
+        'needs_doctor' => 'boolean',
+        'self_resolving' => 'boolean',
+        'treatment_cost' => 'decimal:2',
+        'daily_decay_multiplier' => 'decimal:2',
+        'fatal_after_days' => 'integer',
+        'trigger_days' => 'integer',
+        'trigger_config' => 'array',
+        'risk_config' => 'array',
     ];
 
+    public function lifers()
+    {
+        return $this->belongsToMany(Lifer::class, 'lifer_sicknesses')
+            ->withPivot(['contracted_at', 'expected_recovery_at', 'last_effect_applied_on', 'fatal_at'])
+            ->withTimestamps();
+    }
 
-    /**
-     * Les personnages affectés par cette maladie.
-     */
-    public function persos()
-    {
-        return $this->belongsToMany(Perso::class, 'perso_has_sickness', 'sickness_id', 'perso_id')
-            ->withTimestamps();
-    }
-    public function gauges()
-    {
-        return $this->belongsToMany(SicknessGauge::class, 'sickness_has_sickness_gauges', 'sickness_id', 'sickness_gauges_id')
-            ->withPivot('effect_value')
-            ->withTimestamps();
-    }
     public function conditions()
     {
         return $this->hasMany(SicknessCondition::class);
+    }
+
+    public function effects()
+    {
+        return $this->hasMany(SicknessEffect::class);
     }
 }

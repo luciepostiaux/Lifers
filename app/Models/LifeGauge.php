@@ -9,20 +9,12 @@ class LifeGauge extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'life_gauges';
+    protected $primaryKey = 'lifer_id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public $incrementing = false;
+
     protected $fillable = [
-        'perso_id',
+        'lifer_id',
         'hunger',
         'thirst',
         'clean',
@@ -32,18 +24,6 @@ class LifeGauge extends Model
         'health',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'hunger' => 'integer',
         'thirst' => 'integer',
@@ -54,8 +34,8 @@ class LifeGauge extends Model
         'health' => 'integer',
     ];
 
-    public function perso()
+    public function lifer()
     {
-        return $this->belongsTo(Perso::class, 'perso_id');
+        return $this->belongsTo(Lifer::class);
     }
 }

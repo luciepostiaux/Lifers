@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Conversation;
+use App\Broadcasting\ConversationChannel;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -20,14 +20,4 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 
 
-Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
-    // $conversation = Conversation::findOrFail($conversationId);
-    // $users = $conversation->users;
-
-    // return $users->contains($user);
-    return [
-        'id' => $user->id,
-        'name' => $user->name,
-        // Vous pouvez ajouter d'autres propriétés ici si nécessaire
-    ];
-});
+Broadcast::channel('conversation.{conversation}', ConversationChannel::class);

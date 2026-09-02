@@ -9,57 +9,30 @@ class Job extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'jobs';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
-        'description_1',
-        'description_2',
+        'short_description',
+        'long_description',
         'salary',
-        'img_job',
-        'diplomas_id',
-        'places_id',
+        'image_path',
+        'required_diploma_id',
+        'place_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
+    protected $casts = ['salary' => 'decimal:2'];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'salary' => 'decimal:2',
-    ];
-
-    /**
-     * Get the diploma associated with the job.
-     */
-    public function diploma()
+    public function requiredDiploma()
     {
-        return $this->belongsTo(Diploma::class, 'diplomas_id');
+        return $this->belongsTo(Diploma::class, 'required_diploma_id');
     }
 
-    /**
-     * Get the place associated with the job.
-     */
     public function place()
     {
-        return $this->belongsTo(Place::class, 'places_id');
+        return $this->belongsTo(Place::class);
+    }
+
+    public function actions()
+    {
+        return $this->hasMany(JobAction::class);
     }
 }

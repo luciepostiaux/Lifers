@@ -2,74 +2,75 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LiferGameState;
+use App\Models\LiferSubscription;
 use App\Models\SportSession;
-use App\Models\Subscription;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SubscriptionController extends Controller
 {
     public function subscribeToGym(Request $request)
     {
-        $user = Auth::user();
-        $perso = $user->perso;
-        $subscriptionName = $request->input('subscriptionName');
-        $sportSession = SportSession::where('name', $subscriptionName)->firstOrFail();
+        $validated = $request->validate([
+            'sportSessionId' => ['required', 'integer', 'exists:sport_sessions,id'],
+        ]);
 
-        // Vérifier s'il y a un abonnement actif différent
-        $activeSubscription = $perso->subscriptions()->where('type', 'gym')->where('status', 'active')->first();
-        if ($activeSubscription && $activeSubscription->name != $subscriptionName) {
-            // Désactiver l'abonnement actif
-            $activeSubscription->update(['status' => 'cancelled']);
-        }
+        $lifer = $this->activeLifer();
+        $plan = SportSession::whereKey($validated['sportSessionId'])->where('type', 'gym')->firstOrFail();
 
-        // Réactiver ou créer un abonnement
-        $subscription = $perso->subscriptions()->where('type', 'gym')->where('name', $subscriptionName)->first();
-        if ($subscription) {
-            $subscription->update([
-                'start_date' => Carbon::now(),
-                'end_date' => Carbon::now()->addDays($sportSession->duration),
-                'status' => 'active'
+        DB::transaction(function () use ($lifer, $plan) {
+            $state = LiferGameState::query()->lockForUpdate()->findOrFail($lifer->id);
+            $active = LiferSubscription::query()
+                ->where('lifer_id', $lifer->id)
+                ->where('status', 'active')
+                ->lockForUpdate()
+                ->first();
+
+            if ($active?->sport_session_id === $plan->id) {
+                throw ValidationException::withMessages([
+                    'sportSessionId' => 'Cet abonnement est déjà actif.',
+                ]);
+            }
+
+            if ($state->money < $plan->price) {
+                throw ValidationException::withMessages([
+                    'sportSessionId' => 'Vous n’avez pas assez d’argent pour cet abonnement.',
+                ]);
+            }
+
+            $active?->update(['status' => 'cancelled', 'ends_at' => now()]);
+            $state->decrement('money', $plan->price);
+            $state->update(['last_sport_activity_on' => today()]);
+
+            LiferSubscription::create([
+                'lifer_id' => $lifer->id,
+                'sport_session_id' => $plan->id,
+                'starts_at' => now(),
+                'ends_at' => now()->addDays($plan->duration_days),
+                'status' => 'active',
             ]);
-        } else {
-            Subscription::create([
-                'perso_id' => $perso->id,
-                'type' => 'gym',
-                'name' => $subscriptionName,
-                'start_date' => Carbon::now(),
-                'end_date' => Carbon::now()->addDays($sportSession->duration),
-                'status' => 'active'
-            ]);
-        }
+        });
 
-        return redirect()->back()->with('message', 'Abonnement à la salle de sport réussi.');
+        return back()->with('message', 'Abonnement à la salle de sport réussi.');
     }
-
-
 
     public function cancelGymSubscription()
     {
-        $user = Auth::user();
-        $perso = $user->perso;
+        $lifer = $this->activeLifer();
 
-        $activeSubscription = $perso->subscriptions()->where('end_date', '>', now())->first();
-        if (!$activeSubscription) {
-            return redirect()->back()->withErrors(['msg' => 'Aucun abonnement actif à annuler.']);
-        }
-        DB::beginTransaction();
-        try {
-            $activeSubscription->update([
-                'end_date' => now(), // Mettre fin immédiatement à l'abonnement
-                'status' => 'cancelled',
+        $updated = LiferSubscription::query()
+            ->where('lifer_id', $lifer->id)
+            ->where('status', 'active')
+            ->update(['status' => 'cancelled', 'ends_at' => now()]);
+
+        if (! $updated) {
+            throw ValidationException::withMessages([
+                'subscription' => 'Aucun abonnement actif à annuler.',
             ]);
-
-            DB::commit();
-            return redirect()->back()->with('message', 'Votre abonnement a été annulé avec succès.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors(['msg' => 'Une erreur est survenue lors de l’annulation de l’abonnement.']);
         }
+
+        return back()->with('message', 'Votre abonnement a été annulé.');
     }
 }

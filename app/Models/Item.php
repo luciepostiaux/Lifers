@@ -9,49 +9,62 @@ class Item extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'items';
+    public const CATEGORY_FOOD = 'Nourriture';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public const CATEGORY_DRINK = 'Boissons';
+
+    public const CATEGORY_HYGIENE_AND_WELLBEING = 'Hygiène et bien-être';
+
+    public const CATEGORY_TOBACCO_AND_ALCOHOL = 'Tabac et alcool';
+
+    public const CATEGORY_FAMILY_PROTECTION = self::CATEGORY_HYGIENE_AND_WELLBEING;
+
+    public const FAMILY_PROTECTION_NAME = 'Boîte de préservatifs';
+
+    public const CATEGORY_ORDER = [
+        self::CATEGORY_FOOD,
+        self::CATEGORY_DRINK,
+        self::CATEGORY_HYGIENE_AND_WELLBEING,
+        self::CATEGORY_TOBACCO_AND_ALCOHOL,
+    ];
+
     protected $fillable = [
         'name',
         'price',
+        'units_per_purchase',
         'description',
-        'img_item',
-        'img_background',
+        'image_path',
+        'background_image_path',
         'category',
+        'usage_tag',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'price' => 'decimal:2',
+        'units_per_purchase' => 'integer',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
+    public static function categoryRank(string $category): int
+    {
+        $rank = array_search($category, self::CATEGORY_ORDER, true);
+
+        return $rank === false ? count(self::CATEGORY_ORDER) : $rank;
+    }
 
     public function inventories()
     {
-        return $this->belongsToMany(Inventory::class, 'inventories_has_items', 'items_id', 'inventories_id');
+        return $this->belongsToMany(Inventory::class, 'inventory_items', 'item_id', 'inventory_id')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
+
     public function effects()
     {
         return $this->hasMany(ItemEffect::class);
+    }
+
+    public function usages()
+    {
+        return $this->hasMany(LiferItemUsage::class);
     }
 }

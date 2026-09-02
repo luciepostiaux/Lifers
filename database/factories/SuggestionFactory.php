@@ -2,25 +2,21 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Lifer;
+use App\Models\Suggestion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Suggestion>
- */
+/** @extends Factory<Suggestion> */
 class SuggestionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Suggestion::class;
+
     public function definition(): array
     {
         return [
-            'user_id' => User::exists() ? User::inRandomOrder()->first()->id : User::factory(),
-            'content' => $this->faker->text,
-            'status' => $this->faker->randomElement(['Ouvert', 'Fermé', 'En cours']),
+            'lifer_id' => Lifer::factory(),
+            'content' => fake()->text(),
+            'status' => 'pending',
         ];
     }
 }

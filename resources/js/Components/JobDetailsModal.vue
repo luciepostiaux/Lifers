@@ -34,7 +34,7 @@ const close = () => {
                             <div class="mt-2">
                                 <p
                                     class="text-sm text-gray-500"
-                                    v-text="job.description_1"
+                                    v-text="job.short_description"
                                 ></p>
                                 <p class="text-sm font-bold text-gray-700">
                                     Salaire: {{ job.salary }}€

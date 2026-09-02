@@ -1,6 +1,6 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import { Head } from "@inertiajs/vue3";
+import SiteHeader from "@/Components/SiteHeader.vue";
 
 defineProps({
     terms: String,
@@ -8,17 +8,13 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Terms of Service" />
+    <Head title="Lifers — Conditions d’utilisation" />
 
-    <div class="font-sans text-gray-900 antialiased">
-        <div class="pt-4 bg-gray-100">
-            <div class="min-h-screen flex flex-col items-center pt-6 sm:pt-0">
-                <div>
-                    <AuthenticationCardLogo />
-                </div>
+    <div class="lifers-legal-page">
+        <SiteHeader />
 
-                <div class="w-full sm:max-w-2xl mt-6 p-6 bg-white shadow-md overflow-hidden sm:rounded-lg prose" v-html="terms" />
-            </div>
-        </div>
+        <main class="lifers-legal-main">
+            <article class="lifers-legal-card" v-html="terms"></article>
+        </main>
     </div>
 </template>

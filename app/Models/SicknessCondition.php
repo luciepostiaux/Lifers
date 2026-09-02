@@ -2,18 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SicknessCondition extends Model
 {
-    use HasFactory;
+    protected $fillable = ['sickness_id', 'gauge', 'operator', 'threshold'];
 
-    protected $fillable = [
-        'sickness_id',
-        'condition_type',
-        'threshold',
-    ];
+    protected $casts = ['threshold' => 'integer'];
 
     public function sickness()
     {

@@ -9,26 +9,23 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $table = 'messages';
+    protected $fillable = ['conversation_id', 'sender_lifer_id', 'content'];
 
-    protected $fillable = [
-        'conversation_id',
-        'sender_id',
-        'content',
-        'is_read',
-    ];
-
-    protected $casts = [
-        'is_read' => 'boolean',
-    ];
+    protected $touches = ['conversation'];
 
     public function sender()
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->belongsTo(Lifer::class, 'sender_lifer_id');
     }
 
     public function conversation()
     {
-        return $this->belongsTo(Conversation::class, 'conversation_id');
+        return $this->belongsTo(Conversation::class);
+    }
+
+    public function readers()
+    {
+        return $this->belongsToMany(Lifer::class, 'message_reads', 'message_id', 'reader_lifer_id')
+            ->withPivot('read_at');
     }
 }

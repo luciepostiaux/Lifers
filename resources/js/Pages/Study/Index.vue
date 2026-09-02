@@ -1,180 +1,288 @@
 <script setup>
-import { defineProps } from "vue";
+import { computed, ref } from "vue";
+import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Link } from "@inertiajs/vue3";
-import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
-    studies: Array,
+    studies: { type: Array, default: () => [] },
     currentStudy: Object,
-    studyDetails: Object,
-    persoDiplomas: Array,
+    persoDiplomas: { type: Array, default: () => [] },
+    money: [String, Number],
 });
 
-const enrollForStudy = (studyId) => {
-    Inertia.post(route("study.enroll", { studyId }));
+const page = usePage();
+const studyToEnroll = ref(null);
+const enrollmentPending = ref(false);
+
+const diplomaIds = computed(
+    () => new Set(props.persoDiplomas.map((diploma) => diploma.id)),
+);
+
+const hasDiploma = (study) => diplomaIds.value.has(study.awarded_diploma_id);
+const hasRequiredDiploma = (study) =>
+    !study.required_diploma_id || diplomaIds.value.has(study.required_diploma_id);
+const userCanEnroll = (study) => hasRequiredDiploma(study) && !hasDiploma(study);
+const canAfford = (study) => Number(props.money) >= Number(study.price);
+const isCurrentStudy = (study) => props.currentStudy?.id === study.id;
+
+const affordableStudies = computed(() =>
+    props.studies.filter(
+        (study) => userCanEnroll(study) && canAfford(study),
+    ),
+);
+
+const studyProgress = computed(() => {
+    if (!props.currentStudy?.start_date || !props.currentStudy?.end_date) return 0;
+
+    const start = new Date(props.currentStudy.start_date).getTime();
+    const end = new Date(props.currentStudy.end_date).getTime();
+
+    if (![start, end].every(Number.isFinite) || end <= start) return 0;
+
+    return Math.min(
+        100,
+        Math.max(0, Math.round(((Date.now() - start) / (end - start)) * 100)),
+    );
+});
+
+const remainingDays = computed(() => {
+    if (!props.currentStudy?.end_date) return null;
+
+    return Math.max(
+        0,
+        Math.ceil(
+            (new Date(props.currentStudy.end_date).getTime() - Date.now()) /
+                86400000,
+        ),
+    );
+});
+
+const feedbackMessage = computed(
+    () =>
+        page.props.flash?.message ??
+        page.props.errors?.study ??
+        page.props.errors?.msg,
+);
+
+const studyStatus = (study) => {
+    if (isCurrentStudy(study)) return { label: "En cours", tone: "active" };
+    if (hasDiploma(study)) return { label: "Diplôme obtenu", tone: "complete" };
+    if (!hasRequiredDiploma(study)) {
+        return { label: "Prérequis manquant", tone: "locked" };
+    }
+    if (!canAfford(study)) return { label: "Budget insuffisant", tone: "locked" };
+
+    return { label: "Accessible", tone: "available" };
 };
 
-const hasDiploma = (study) => {
-    // Assurez-vous que props.persoDiplomas est défini et est un tableau.
-    if (
-        props.persoDiplomas.some((diploma) => diploma.id === study.diplomas_id)
-    ) {
-        return true;
-    }
+const formatDate = (date) => {
+    if (!date) return "Non renseignée";
+
+    return new Intl.DateTimeFormat("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    }).format(new Date(date));
 };
 
-const userCanEnroll = (study) => {
-    const hasDiplomas = Array.isArray(props.persoDiplomas);
-    if (
-        !hasDiplomas ||
-        props.persoDiplomas.some((diploma) => diploma.id === study.diplomas_id)
-    ) {
-        return false;
-    }
-    if (
-        !study.diplomas_required_id ||
-        props.persoDiplomas.some(
-            (diploma) => diploma.id === study.diplomas_required_id
-        )
-    ) {
-        return true;
-    }
+const formatAmount = (amount) =>
+    new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(
+        Number(amount),
+    );
+
+const imageSource = (study) =>
+    study.image_path || "/images/places/universite.png";
+
+const closeEnrollmentDialog = () => {
+    if (!enrollmentPending.value) studyToEnroll.value = null;
+};
+
+const confirmEnrollment = () => {
+    if (!studyToEnroll.value) return;
+
+    enrollmentPending.value = true;
+    router.post(
+        route("study.enroll", { studyId: studyToEnroll.value.id }),
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                enrollmentPending.value = false;
+                studyToEnroll.value = null;
+            },
+        },
+    );
 };
 </script>
+
 <template>
-    <AppLayout title="Study">
-        <template #header></template>
-        <div class="container mx-auto p-4">
-            <div class="flex">
-                <div class="space-y-2">
-                    <h2 class="text-2xl font-bold mb-4">Cours disponibles</h2>
+    <AppLayout title="Études" :money="money">
+        <div class="path-page">
+            <div v-if="feedbackMessage" class="path-feedback" role="status">
+                {{ feedbackMessage }}
+            </div>
 
+            <section class="path-hero" aria-labelledby="study-title">
+                <div class="path-hero__copy">
+                    <span class="path-kicker">Progression</span>
+                    <h1 id="study-title">Construis ton parcours d’études</h1>
                     <p>
-                        Lance-toi dans l'exploration de nos divers programmes
-                        d'études, où chaque cours est une étape vers ta future
-                        carrière. Notre univers t'offre des domaines aussi
-                        variés que stimulants. Que tu sois attiré par les
-                        mystères de la biologie, la précision de l'ingénierie,
-                        la profondeur de la psychologie, ou l'expression de
-                        l'art, chaque discipline est une porte ouverte sur un
-                        monde de possibilités.
+                        Choisis une formation compatible avec tes diplômes et ton
+                        budget. Une seule étude peut être suivie à la fois.
                     </p>
-                    <p>
-                        Plonge dans un voyage éducatif riche et captivant, où
-                        chaque leçon te rapproche de ton but. Nos programmes
-                        sont conçus pour te préparer au monde professionnel,
-                        affûtant tes compétences et élargissant ton horizon.
-                        Chaque étude que tu choisis est un pas de plus vers ta
-                        réalisation personnelle et professionnelle. Embrasse ton
-                        ambition, engage-toi dans le parcours qui résonne avec
-                        tes passions et construis l'avenir que tu désires dans
-                        notre monde plein d'opportunités et de découvertes.
-                    </p>
-                </div>
-                <img
-                    src="/images/places/university.webp"
-                    alt="University Image"
-                    class="size-64"
-                />
-            </div>
-            <!-- Section Études en cours -->
-            <div v-if="currentStudy" class="mb-8">
-                <h2 class="text-2xl font-bold mb-2">Étude en cours</h2>
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold">
-                        {{ currentStudy.name }}
-                    </h3>
-                    <p class="text-sm text-gray-600">
-                        {{ currentStudy.description }}
-                    </p>
-                    <Link
-                        :href="`/study/current/${currentStudy.id}`"
-                        class="mt-4 inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring focus:ring-blue-300 disabled:opacity-25 transition"
-                        >Etude en cours</Link
-                    >
-                </div>
-            </div>
-
-            <div v-if="studyDetails" class="flex flex-col space-y-4">
-                <p class="text-sm">{{ studyDetails.name }}</p>
-                <p class="text-sm" v-if="studyDetails.end_date">
-                    Fin prévue : {{ studyDetails.end_date }}
-                </p>
-
-                <Link
-                    :href="route('study')"
-                    class="px-4 py-2 text-sm bg-[#9EE5F5] hover:text-white rounded hover:bg-[#71A4B0] transition-all"
-                    >Aller aux études</Link
-                >
-            </div>
-
-            <div class="divide-y divide-gray-200">
-                <div
-                    v-for="study in studies"
-                    :key="study.id"
-                    class="flex items-stretch py-4"
-                >
-                    <div
-                        class="flex-none w-24 h-24 mr-4 bg-gray-100 rounded-lg overflow-hidden self-center"
-                    >
-                        <img
-                            :src="study.img_study"
-                            alt="Image du cours"
-                            class="w-full h-full object-contain"
-                        />
+                    <div class="path-hero__stats" aria-label="Résumé des études">
+                        <span><strong>{{ studies.length }}</strong> formations</span>
+                        <span><strong>{{ persoDiplomas.length }}</strong> diplômes obtenus</span>
+                        <span><strong>{{ affordableStudies.length }}</strong> accessibles maintenant</span>
                     </div>
+                </div>
+                <div class="path-hero__visual">
+                    <img
+                        src="/images/places/universite.png"
+                        alt="Bâtiment de l’université"
+                        decoding="async"
+                    />
+                </div>
+            </section>
 
-                    <div class="flex-grow self-center">
-                        <h3 class="text-lg font-semibold">{{ study.name }}</h3>
-                        <p class="text-sm text-gray-600 mt-1">
-                            {{ study.description_1 }}
-                        </p>
-                        <div class="flex space-x-4 mt-2">
-                            <p class="font-bold">Prix: {{ study.price }}€</p>
-                            <p class="">Durée: {{ study.duration }} jours</p>
+            <section class="path-current" aria-labelledby="current-study-title">
+                <div class="path-current__heading">
+                    <div>
+                        <span class="path-kicker">En ce moment</span>
+                        <h2 id="current-study-title">Ton étude actuelle</h2>
+                    </div>
+                    <span
+                        class="path-badge"
+                        :class="currentStudy ? 'path-badge--active' : 'path-badge--neutral'"
+                    >
+                        {{ currentStudy ? "En cours" : "Aucune étude" }}
+                    </span>
+                </div>
+
+                <div v-if="currentStudy" class="path-current__body">
+                    <div>
+                        <h3>{{ currentStudy.name }}</h3>
+                        <p>{{ currentStudy.description }}</p>
+                        <div class="path-meta-list">
+                            <span v-if="currentStudy.awarded_diploma">
+                                Diplôme préparé : <strong>{{ currentStudy.awarded_diploma.name }}</strong>
+                            </span>
+                            <span>
+                                Fin prévue : <strong>{{ formatDate(currentStudy.end_date) }}</strong>
+                            </span>
                         </div>
                     </div>
-
-                    <div
-                        class="flex-none self-center w-24 flex flex-col justify-start"
-                    >
+                    <div class="path-progress-block">
+                        <div class="path-progress-block__label">
+                            <span>Progression</span>
+                            <strong>{{ studyProgress }} %</strong>
+                        </div>
+                        <div
+                            class="path-progress"
+                            role="progressbar"
+                            aria-label="Progression de l’étude"
+                            :aria-valuenow="studyProgress"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                            <span :style="{ width: `${studyProgress}%` }"></span>
+                        </div>
+                        <small v-if="remainingDays !== null">
+                            {{ remainingDays === 0 ? "Diplôme prêt à être récupéré" : `${remainingDays} jour${remainingDays > 1 ? "s" : ""} restant${remainingDays > 1 ? "s" : ""}` }}
+                        </small>
                         <Link
-                            :href="`/study/${study.id}`"
-                            class="text-sm bg-[#9EE5F5] hover:text-white rounded px-4 py-2 hover:bg-[#71A4B0] transition-all mb-2"
+                            :href="route('study.current.show', currentStudy.id)"
+                            class="path-button path-button--secondary"
                         >
-                            Voir plus
+                            Voir mon étude
                         </Link>
-                        <button
-                            v-if="currentStudy && currentStudy.id === study.id"
-                            disabled
-                            class="text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Étude en cours
-                        </button>
-                        <button
-                            v-else-if="userCanEnroll(study)"
-                            @click="enrollForStudy(study.id)"
-                            class="text-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Postuler
-                        </button>
-
-                        <span
-                            v-else-if="hasDiploma(study)"
-                            class="text-sm bg-gray-500 text-white font-bold py-2 px-4 rounded"
-                            >Diplôme déjà acquis</span
-                        >
-
-                        <span
-                            v-else
-                            class="text-sm bg-red-500 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Diplôme requis
-                        </span>
                     </div>
                 </div>
-            </div>
+
+                <div v-else class="path-empty">
+                    <p>Tu ne suis aucune étude pour le moment.</p>
+                    <a href="#study-catalog" class="path-text-link">Découvrir les formations</a>
+                </div>
+            </section>
+
+            <section id="study-catalog" class="path-catalog" aria-labelledby="study-catalog-title">
+                <div class="path-catalog__heading">
+                    <div>
+                        <span class="path-kicker">Catalogue</span>
+                        <h2 id="study-catalog-title">Formations disponibles</h2>
+                    </div>
+                    <p>Le diplôme requis et le coût sont vérifiés avant chaque inscription.</p>
+                </div>
+
+                <div class="path-grid">
+                    <article v-for="study in studies" :key="study.id" class="path-card">
+                        <div class="path-card__visual">
+                            <img :src="imageSource(study)" :alt="`Illustration de ${study.name}`" loading="lazy" />
+                            <span class="path-badge" :class="`path-badge--${studyStatus(study).tone}`">
+                                {{ studyStatus(study).label }}
+                            </span>
+                        </div>
+
+                        <div class="path-card__content path-card__content--study">
+                            <div>
+                                <span class="path-card__place">{{ study.place?.name || "Université" }}</span>
+                                <h3>{{ study.name }}</h3>
+                                <p>{{ study.short_description }}</p>
+                            </div>
+
+                            <dl class="path-card__facts path-card__facts--study">
+                                <div><dt>Durée</dt><dd>{{ study.duration_days }} jours</dd></div>
+                                <div><dt>Coût</dt><dd>{{ formatAmount(study.price) }} Lif’coins</dd></div>
+                                <div><dt>Diplôme obtenu</dt><dd>{{ study.awarded_diploma?.name || "Non renseigné" }}</dd></div>
+                                <div><dt>Prérequis</dt><dd>{{ study.required_diploma?.name || "Aucun" }}</dd></div>
+                            </dl>
+
+                            <Link
+                                v-if="isCurrentStudy(study)"
+                                :href="route('study.current.show', study.id)"
+                                class="path-button path-button--secondary path-button--full"
+                            >
+                                Voir l’étude en cours
+                            </Link>
+                            <button
+                                v-else
+                                type="button"
+                                class="path-button path-button--primary path-button--full"
+                                :disabled="!userCanEnroll(study) || !canAfford(study)"
+                                @click="studyToEnroll = study"
+                            >
+                                {{ currentStudy ? "Changer pour cette étude" : "Commencer cette étude" }}
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+
+        <div
+            v-if="studyToEnroll"
+            class="path-dialog-backdrop"
+            role="presentation"
+            @click.self="closeEnrollmentDialog"
+            @keydown.esc="closeEnrollmentDialog"
+        >
+            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="study-dialog-title">
+                <span class="path-kicker">Confirmation</span>
+                <h2 id="study-dialog-title">{{ currentStudy ? "Changer d’étude ?" : "Commencer cette étude ?" }}</h2>
+                <p>
+                    Tu vas t’inscrire à <strong>{{ studyToEnroll.name }}</strong> pour
+                    {{ formatAmount(studyToEnroll.price) }} Lif’coins.
+                    <template v-if="currentStudy">
+                        Ton étude actuelle sera quittée et sa progression sera perdue.
+                    </template>
+                </p>
+                <div class="path-dialog__actions">
+                    <button type="button" class="path-button path-button--ghost" :disabled="enrollmentPending" @click="closeEnrollmentDialog">Annuler</button>
+                    <button type="button" class="path-button path-button--primary" :disabled="enrollmentPending" @click="confirmEnrollment">
+                        {{ enrollmentPending ? "Inscription…" : "Confirmer" }}
+                    </button>
+                </div>
+            </section>
         </div>
     </AppLayout>
 </template>

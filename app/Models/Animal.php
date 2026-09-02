@@ -9,28 +9,28 @@ class Animal extends Model
 {
     use HasFactory;
 
-    protected $table = 'animals';
-
     protected $fillable = [
+        'lifer_id',
+        'animal_type_id',
         'name',
-        'sex',
-        'birth_date',
-        'animals_types_id',
-        'perso_id',
+        'born_at',
+        'is_alive',
+        'died_at',
     ];
 
     protected $casts = [
-        'sex' => 'integer',
-        'birth_date' => 'date',
+        'born_at' => 'datetime',
+        'is_alive' => 'boolean',
+        'died_at' => 'datetime',
     ];
+
+    public function lifer()
+    {
+        return $this->belongsTo(Lifer::class);
+    }
 
     public function type()
     {
-        return $this->belongsTo(AnimalsType::class, 'animals_types_id');
-    }
-
-    public function perso()
-    {
-        return $this->belongsTo(Perso::class, 'perso_id');
+        return $this->belongsTo(AnimalType::class, 'animal_type_id');
     }
 }

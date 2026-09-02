@@ -2,65 +2,68 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Perso;
+use App\Models\Lifer;
+use App\Models\LiferGameState;
 use App\Models\Sickness;
+use App\Services\GameRandomizer;
+use App\Services\SicknessRiskCalculator;
+use App\Services\SicknessService;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class CheckRandomSickness extends Command
 {
     protected $signature = 'check:random-sickness';
-    protected $description = 'Check each perso for random sickness based on chance and age';
 
-    public function handle()
-    {
-        $personnages = Perso::with('lifeGauge')->get();
-        $randomSicknesses = Sickness::where('type', 'random')->get();
+    protected $description = 'Évalue les maladies aléatoires pour chaque Lifer actif';
 
-        foreach ($personnages as $perso) {
-            foreach ($randomSicknesses as $sickness) {
-                $age = $perso->calculateAge();
-                $chance = is_array($sickness->chance) ? $sickness->chance : json_decode($sickness->chance, true);
-                $ageRange = $this->getAgeRange($age);
-                $sicknessChance = $chance[$ageRange] ?? 0;
+    public function handle(
+        GameRandomizer $randomizer,
+        SicknessRiskCalculator $riskCalculator,
+        SicknessService $sicknessService,
+    ): int {
+        $sicknesses = Sickness::query()
+            ->where(function ($query) {
+                $query->where('trigger_type', 'random')
+                    ->orWhere(function ($legacy) {
+                        $legacy->whereNull('trigger_type')->where('type', 'random');
+                    });
+            })
+            ->with('effects')
+            ->get();
 
-                // Vérifiez si la maladie est déjà active pour ce personnage
-                $existingSickness = DB::table('perso_has_sickness')
-                    ->where('perso_id', $perso->id)
-                    ->where('sickness_id', $sickness->id)
-                    ->first();
+        Lifer::active()
+            ->whereHas('gameState', function ($query) {
+                $query->whereNull('last_sickness_checked_on')
+                    ->orWhereDate('last_sickness_checked_on', '<', today());
+            })
+            ->each(function (Lifer $lifer) use ($sicknesses, $randomizer, $riskCalculator, $sicknessService) {
+                DB::transaction(function () use ($lifer, $sicknesses, $randomizer, $riskCalculator, $sicknessService) {
+                    $state = LiferGameState::query()->lockForUpdate()->findOrFail($lifer->id);
 
-                if (!$existingSickness && rand(1, 100) <= $sicknessChance && $perso->lifeGauge) {
-                    // Insérer la maladie pour le personnage
-                    DB::table('perso_has_sickness')->insert([
-                        'perso_id' => $perso->id,
-                        'sickness_id' => $sickness->id,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                    $this->info("Perso {$perso->first_name} has contracted {$sickness->name}");
-
-                    // Récupérer et appliquer les effets de la maladie
-                    $effects = DB::table('sickness_effects')
-                        ->where('sickness_id', $sickness->id)
-                        ->get();
-
-                    foreach ($effects as $effect) {
-                        $currentValue = $perso->lifeGauge->{$effect->gauge};
-                        $newValue = max(0, $currentValue + $effect->effect); // Assurez-vous que les jauges ne descendent pas en dessous de 0.
-                        $perso->lifeGauge->update([$effect->gauge => $newValue]);
+                    if ($state->last_sickness_checked_on?->isToday()) {
+                        return;
                     }
-                }
-            }
-        }
-    }
 
+                    $lifer->load('sicknesses');
+                    foreach ($sicknesses as $sickness) {
+                        if ($lifer->sicknesses->contains($sickness)) {
+                            continue;
+                        }
 
-    private function getAgeRange($age)
-    {
-        if ($age >= 80) return '80+';
-        if ($age >= 60) return '60-79';
-        if ($age >= 35) return '35-59';
-        return '18-34';
+                        $chance = $riskCalculator->dailyChance($lifer, $sickness);
+
+                        if ($chance <= 0 || ! $randomizer->succeeds($chance)) {
+                            continue;
+                        }
+
+                        $sicknessService->contract($lifer, $sickness);
+                    }
+
+                    $state->update(['last_sickness_checked_on' => today()]);
+                });
+            });
+
+        return self::SUCCESS;
     }
 }

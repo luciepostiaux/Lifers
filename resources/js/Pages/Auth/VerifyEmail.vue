@@ -1,62 +1,50 @@
 <script setup>
-import { computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { computed } from "vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import SiteHeader from "@/Components/SiteHeader.vue";
 
-const props = defineProps({
-    status: String,
-});
-
+const props = defineProps({ status: String });
 const form = useForm({});
+const verificationLinkSent = computed(() => props.status === "verification-link-sent");
 
 const submit = () => {
-    form.post(route('verification.send'));
+    form.post(route("verification.send"));
 };
-
-const verificationLinkSent = computed(() => props.status === 'verification-link-sent');
 </script>
 
 <template>
-    <Head title="Email Verification" />
+    <Head title="Lifers — Vérifier mon adresse e-mail">
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:700,800|dm-sans:400,500,600,700&display=swap" rel="stylesheet" />
+    </Head>
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+    <div class="lifers-auth-page">
+        <SiteHeader :can-login="false" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.
-        </div>
+        <main class="lifers-auth-main">
+            <section class="lifers-auth-card" aria-labelledby="verify-email-title">
+                <h1 id="verify-email-title" class="lifers-auth-title">Vérifie ton adresse e-mail</h1>
+                <div class="lifers-auth-accent" aria-hidden="true"></div>
 
-        <div v-if="verificationLinkSent" class="mb-4 font-medium text-sm text-green-600">
-            A new verification link has been sent to the email address you provided in your profile settings.
-        </div>
+                <p>
+                    Nous venons de t’envoyer un lien de vérification. Ouvre-le pour confirmer que cette adresse t’appartient avant d’accéder à Lifers.
+                </p>
 
-        <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Resend Verification Email
-                </PrimaryButton>
-
-                <div>
-                    <Link
-                        :href="route('profile.show')"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Edit Profile</Link>
-
-                    <Link
-                        :href="route('logout')"
-                        method="post"
-                        as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ms-2"
-                    >
-                        Log Out
-                    </Link>
+                <div v-if="verificationLinkSent" class="lifers-auth-status" role="status">
+                    Un nouveau lien de vérification vient de t’être envoyé.
                 </div>
-            </div>
-        </form>
-    </AuthenticationCard>
+
+                <form class="lifers-auth-form" @submit.prevent="submit">
+                    <button type="submit" class="lifers-auth-submit" :disabled="form.processing">
+                        {{ form.processing ? "Envoi…" : "Renvoyer le lien" }}
+                    </button>
+
+                    <div class="lifers-auth-actions">
+                        <Link :href="route('profile.show')" class="lifers-auth-link">Modifier mon adresse</Link>
+                        <Link :href="route('logout')" method="post" as="button" class="lifers-auth-link">Se déconnecter</Link>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
 </template>
