@@ -24,7 +24,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::before(function (User $user): ?bool {
+        Gate::before(function (User $user, string $ability, array $arguments): ?bool {
+            if (($arguments[0] ?? null) instanceof Conversation) {
+                return null;
+            }
+
             return $user->isAdmin() ? true : null;
         });
 

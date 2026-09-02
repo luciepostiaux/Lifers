@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { ref } from "vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
@@ -20,14 +20,6 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    lifers: {
-        type: Array,
-        required: true,
-    },
-    diplomas: {
-        type: Array,
-        required: true,
-    },
     bans: {
         type: Array,
         required: true,
@@ -40,45 +32,11 @@ const props = defineProps({
 
 const search = ref(props.filters.q ?? "");
 const roleFilter = ref(props.filters.role ?? "all");
-const selectedLiferId = ref(props.lifers[0]?.id ?? "");
-
-const selectedLifer = computed(() =>
-    props.lifers.find((lifer) => Number(lifer.id) === Number(selectedLiferId.value)),
-);
-
-const ownedDiplomas = computed(() => {
-    const ownedIds = selectedLifer.value?.diploma_ids ?? [];
-
-    return props.diplomas.filter((diploma) => ownedIds.includes(diploma.id));
-});
-
-const availableDiplomas = computed(() => {
-    const ownedIds = selectedLifer.value?.diploma_ids ?? [];
-
-    return props.diplomas.filter((diploma) => !ownedIds.includes(diploma.id));
-});
-
-const grantForm = useForm({
-    liferId: selectedLiferId.value,
-    diplomaId: "",
-});
-
-const removeForm = useForm({
-    liferId: selectedLiferId.value,
-    diplomaId: "",
-});
 
 const banForm = useForm({
     email: "",
     reason: "",
     block_known_ip_addresses: false,
-});
-
-watch(selectedLiferId, (liferId) => {
-    grantForm.liferId = liferId;
-    grantForm.diplomaId = "";
-    removeForm.liferId = liferId;
-    removeForm.diplomaId = "";
 });
 
 const applyFilters = () => {
@@ -131,22 +89,6 @@ const updateRole = (user, event) => {
             },
         },
     );
-};
-
-const grantDiploma = () => {
-    grantForm.post(route("admin.grantDiploma"), {
-        preserveScroll: true,
-        onSuccess: () => grantForm.reset("diplomaId"),
-    });
-};
-
-const removeDiploma = () => {
-    if (!window.confirm("Retirer ce diplôme du Lifer sélectionné ?")) return;
-
-    removeForm.post(route("admin.removeDiploma"), {
-        preserveScroll: true,
-        onSuccess: () => removeForm.reset("diplomaId"),
-    });
 };
 
 const banEmail = () => {
@@ -504,131 +446,34 @@ const auditDescription = (log) => {
                 <p v-else class="admin-empty">Aucun bannissement actif.</p>
             </section>
 
-            <div class="admin-columns">
-                <section class="admin-panel" aria-labelledby="diplomas-title">
-                    <div class="admin-section-heading admin-section-heading--stacked">
-                        <div>
-                            <p class="admin-eyebrow">Progression exceptionnelle</p>
-                            <h2 id="diplomas-title">Gestion des diplômes</h2>
-                        </div>
-                        <p>
-                            Ces actions contournent le parcours d’étude normal et
-                            sont donc consignées dans l’historique.
-                        </p>
+            <section class="admin-panel" aria-labelledby="audit-title">
+                <div class="admin-section-heading admin-section-heading--stacked">
+                    <div>
+                        <p class="admin-eyebrow">Traçabilité</p>
+                        <h2 id="audit-title">Dernières actions sensibles</h2>
                     </div>
+                    <p>Les dix opérations administratives les plus récentes.</p>
+                </div>
 
-                    <label class="admin-field">
-                        <span>Choisir un Lifer actif</span>
-                        <select v-model.number="selectedLiferId">
-                            <option v-if="!lifers.length" value="">
-                                Aucun Lifer actif
-                            </option>
-                            <option
-                                v-for="lifer in lifers"
-                                :key="lifer.id"
-                                :value="lifer.id"
-                            >
-                                {{ lifer.name }}
-                            </option>
-                        </select>
-                    </label>
-
-                    <form class="admin-diploma-action" @submit.prevent="grantDiploma">
-                        <label class="admin-field">
-                            <span>Diplôme à attribuer</span>
-                            <select
-                                v-model.number="grantForm.diplomaId"
-                                :disabled="!availableDiplomas.length"
-                                required
-                            >
-                                <option value="" disabled>
-                                    {{
-                                        availableDiplomas.length
-                                            ? "Sélectionner un diplôme"
-                                            : "Tous les diplômes sont acquis"
-                                    }}
-                                </option>
-                                <option
-                                    v-for="diploma in availableDiplomas"
-                                    :key="diploma.id"
-                                    :value="diploma.id"
-                                >
-                                    {{ diploma.name }}
-                                </option>
-                            </select>
-                        </label>
-                        <button
-                            type="submit"
-                            class="admin-button admin-button--primary"
-                            :disabled="grantForm.processing || !grantForm.diplomaId"
-                        >
-                            Attribuer
-                        </button>
-                    </form>
-
-                    <form class="admin-diploma-action" @submit.prevent="removeDiploma">
-                        <label class="admin-field">
-                            <span>Diplôme à retirer</span>
-                            <select
-                                v-model.number="removeForm.diplomaId"
-                                :disabled="!ownedDiplomas.length"
-                                required
-                            >
-                                <option value="" disabled>
-                                    {{
-                                        ownedDiplomas.length
-                                            ? "Sélectionner un diplôme acquis"
-                                            : "Aucun diplôme acquis"
-                                    }}
-                                </option>
-                                <option
-                                    v-for="diploma in ownedDiplomas"
-                                    :key="diploma.id"
-                                    :value="diploma.id"
-                                >
-                                    {{ diploma.name }}
-                                </option>
-                            </select>
-                        </label>
-                        <button
-                            type="submit"
-                            class="admin-button admin-button--danger"
-                            :disabled="removeForm.processing || !removeForm.diplomaId"
-                        >
-                            Retirer
-                        </button>
-                    </form>
-                </section>
-
-                <section class="admin-panel" aria-labelledby="audit-title">
-                    <div class="admin-section-heading admin-section-heading--stacked">
+                <ol v-if="auditLogs.length" class="admin-audit-list">
+                    <li v-for="log in auditLogs" :key="log.id">
+                        <span class="admin-audit-list__marker" aria-hidden="true"></span>
                         <div>
-                            <p class="admin-eyebrow">Traçabilité</p>
-                            <h2 id="audit-title">Dernières actions sensibles</h2>
+                            <strong>{{ auditDescription(log) }}</strong>
+                            <small>
+                                Par {{ log.actor }}
+                                <template v-if="log.target">
+                                    · compte {{ log.target }}
+                                </template>
+                                · {{ formatDate(log.created_at, true) }}
+                            </small>
                         </div>
-                        <p>Les dix opérations administratives les plus récentes.</p>
-                    </div>
-
-                    <ol v-if="auditLogs.length" class="admin-audit-list">
-                        <li v-for="log in auditLogs" :key="log.id">
-                            <span class="admin-audit-list__marker" aria-hidden="true"></span>
-                            <div>
-                                <strong>{{ auditDescription(log) }}</strong>
-                                <small>
-                                    Par {{ log.actor }}
-                                    <template v-if="log.target">
-                                        · compte {{ log.target }}
-                                    </template>
-                                    · {{ formatDate(log.created_at, true) }}
-                                </small>
-                            </div>
-                        </li>
-                    </ol>
-                    <p v-else class="admin-empty">
-                        Aucune action sensible n’a encore été enregistrée.
-                    </p>
-                </section>
-            </div>
+                    </li>
+                </ol>
+                <p v-else class="admin-empty">
+                    Aucune action sensible n’a encore été enregistrée.
+                </p>
+            </section>
         </div>
     </AppLayout>
 </template>
@@ -912,6 +757,11 @@ const auditDescription = (log) => {
 
 .admin-user-list {
     display: grid;
+    max-height: 480px;
+    padding-right: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
     gap: 10px;
 }
 
@@ -1085,25 +935,6 @@ const auditDescription = (log) => {
     pointer-events: none;
 }
 
-.admin-columns {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-}
-
-.admin-diploma-action {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    margin-top: 18px;
-    align-items: end;
-    gap: 12px;
-}
-
-.admin-diploma-action + .admin-diploma-action {
-    padding-top: 18px;
-    border-top: 1px solid rgb(70 50 78 / 9%);
-}
-
 .admin-audit-list {
     display: grid;
     margin: 0;
@@ -1170,10 +1001,6 @@ const auditDescription = (log) => {
         display: none;
     }
 
-    .admin-columns {
-        grid-template-columns: 1fr;
-    }
-
     .admin-ban-form {
         grid-template-columns: minmax(220px, 0.8fr) minmax(300px, 1.2fr);
     }
@@ -1228,8 +1055,7 @@ const auditDescription = (log) => {
 
     .admin-stats,
     .admin-filters,
-    .admin-user,
-    .admin-diploma-action {
+    .admin-user {
         grid-template-columns: 1fr;
     }
 

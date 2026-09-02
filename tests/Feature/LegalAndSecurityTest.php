@@ -14,7 +14,7 @@ class LegalAndSecurityTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('TermsOfService')
                 ->where('terms', fn (string $terms): bool => str_contains($terms, 'Conditions d’utilisation de Lifers')
-                    && str_contains($terms, 'Version du 1er septembre 2026')));
+                    && str_contains($terms, 'Version du 2 septembre 2026')));
 
         $this->get('/privacy-policy')
             ->assertOk()

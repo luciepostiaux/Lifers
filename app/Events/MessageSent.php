@@ -3,12 +3,12 @@
 namespace App\Events;
 
 use App\Models\Message;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -20,7 +20,7 @@ class MessageSent implements ShouldBroadcast
     {
         $this->message = $message;
     }
-    
+
     public function broadcastOn(): array
     {
         $conversation = $this->message->conversation()
@@ -47,7 +47,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message->loadMissing('sender'),
+            'message' => $this->message->communityPayload(),
             'conversation_type' => $this->message->conversation()->value('type'),
         ];
     }

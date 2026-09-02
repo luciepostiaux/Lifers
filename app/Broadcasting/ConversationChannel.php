@@ -18,6 +18,7 @@ class ConversationChannel
         return $lifer ? [
             'id' => $lifer->id,
             'name' => $lifer->first_name.' '.$lifer->last_name,
+            'staff_role' => $lifer->staffRole(),
         ] : false;
     }
 }

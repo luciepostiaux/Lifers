@@ -15,6 +15,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\LifeGaugesController;
 use App\Http\Controllers\LiferProfileImageController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\ModerationController;
 use App\Http\Controllers\OrphanageController;
 use App\Http\Controllers\ProfileCommentController;
 use App\Http\Controllers\ProfilPersoController;
@@ -65,6 +66,14 @@ XML;
 
     return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
 })->name('sitemap');
+
+Route::post('/session/keep-alive', fn () => response()->noContent())
+    ->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+    ])
+    ->name('session.keep-alive');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -190,4 +199,18 @@ Route::middleware([
     Route::post('/lifers/{lifer}/kill', [AdminLiferController::class, 'kill'])->name('lifers.kill');
     Route::post('/grant-diploma', [AdminController::class, 'grantDiploma'])->name('grantDiploma');
     Route::post('/remove-diploma', [AdminController::class, 'removeDiploma'])->name('removeDiploma');
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'ensure-lifer',
+    'can:moderate',
+])->prefix('moderation')->name('moderation.')->group(function () {
+    Route::get('/', [ModerationController::class, 'index'])->name('dashboard');
+    Route::patch('/lifers/{lifer}/profile', [ModerationController::class, 'updateProfile'])->name('profiles.update');
+    Route::delete('/profile-images/{image}', [ModerationController::class, 'destroyProfileImage'])->name('profile-images.destroy');
+    Route::delete('/comments/{comment}', [ModerationController::class, 'destroyComment'])->name('comments.destroy');
+    Route::delete('/messages/{message}', [ModerationController::class, 'destroyMessage'])->name('messages.destroy');
 });

@@ -47,8 +47,8 @@ class AdminAuthorizationTest extends TestCase
                 ->where('stats.users', 1)
                 ->where('permissions.admin', true)
                 ->has('users.data', 1)
-                ->has('lifers')
-                ->has('diplomas')
+                ->missing('lifers')
+                ->missing('diplomas')
                 ->has('auditLogs'));
     }
 

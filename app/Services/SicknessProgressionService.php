@@ -19,11 +19,11 @@ class SicknessProgressionService
 
         Lifer::active()
             ->whereHas('sicknesses')
-            ->with(['sicknesses.effects'])
+            ->with(['sicknesses.effects', 'user.roles'])
             ->pluck('id')
             ->each(function (int $liferId) use (&$result) {
                 DB::transaction(function () use ($liferId, &$result) {
-                    $lifer = Lifer::active()->lockForUpdate()->find($liferId);
+                    $lifer = Lifer::active()->with('user.roles')->lockForUpdate()->find($liferId);
                     if (! $lifer || ! $lifer->gameState()->exists()) {
                         return;
                     }
@@ -31,7 +31,7 @@ class SicknessProgressionService
                     $lifer->load(['sicknesses.effects']);
                     foreach ($lifer->sicknesses as $sickness) {
                         $fatalAt = $sickness->pivot->fatal_at;
-                        if ($fatalAt && now()->gte($fatalAt)) {
+                        if ($fatalAt && now()->gte($fatalAt) && ! $lifer->isDeathProtected()) {
                             $this->lifecycle->die($lifer, $sickness->name.' non traité');
                             $result['deaths']++;
 

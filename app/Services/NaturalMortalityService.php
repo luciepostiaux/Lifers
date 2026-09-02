@@ -59,7 +59,7 @@ class NaturalMortalityService
     private function processOne(int $liferId): ?string
     {
         return DB::transaction(function () use ($liferId) {
-            $lifer = Lifer::active()->lockForUpdate()->find($liferId);
+            $lifer = Lifer::active()->with('user.roles')->lockForUpdate()->find($liferId);
             if (! $lifer) {
                 return null;
             }
@@ -80,6 +80,10 @@ class NaturalMortalityService
                 : 0;
             $state->last_mortality_checked_on = today();
             $state->save();
+
+            if ($lifer->isDeathProtected()) {
+                return 'protected';
+            }
 
             if ($allRed && $state->vital_red_since?->lte(today()->subDays(self::NEGLECT_DAYS))) {
                 $this->lifecycle->die($lifer, 'Négligence des besoins vitaux');

@@ -1,6 +1,6 @@
 # Conditions d’utilisation de Lifers
 
-**Version du 1er septembre 2026**
+**Version du 2 septembre 2026**
 
 Les présentes conditions encadrent l’accès à **Lifers**, un projet personnel de simulation de vie communautaire édité par **Lucie Postiaux**. Pour toute question, tu peux écrire à [privacy@luciepostiaux.com](mailto:privacy@luciepostiaux.com).
 
@@ -32,11 +32,13 @@ Les interactions et mécaniques du jeu restent fictives. Elles ne constituent ni
 
 Tu restes responsable des textes et images que tu publies sur ton profil, dans les commentaires, messages ou espaces communautaires. Tu dois disposer des droits et autorisations nécessaires.
 
-Tu accordes à Lifers une autorisation non exclusive, gratuite et limitée à ce qui est nécessaire pour héberger, afficher, transmettre, redimensionner et modérer ces contenus dans le cadre du service. Cette autorisation prend fin lorsque le contenu ou le compte est supprimé, sous réserve des copies techniques temporaires et des obligations de sécurité ou légales.
+Tu accordes à Lifers une autorisation non exclusive, gratuite et limitée à ce qui est nécessaire pour héberger, afficher, transmettre, redimensionner et, pour les contenus publics, modérer ces contenus dans le cadre du service. Cette autorisation prend fin lorsque le contenu ou le compte est supprimé, sous réserve des copies techniques temporaires et des obligations de sécurité ou légales.
 
 ## 5. Modération et sécurité
 
 Pour protéger la communauté et le service, un contenu peut être masqué ou supprimé et un compte peut être limité, suspendu ou banni en cas de violation de ces conditions, de risque de sécurité ou d’obligation légale. Une adresse e-mail associée à un bannissement peut être conservée afin d’empêcher une réinscription abusive.
+
+La modération courante porte sur les profils, commentaires et messages du salon général. Les messages privés et les groupes personnalisés ne sont pas présentés aux modérateurs ni dans l’administration. Un futur mécanisme de signalement pourra permettre à un participant de transmettre volontairement un message précis à l’équipe, sans ouvrir l’ensemble de la conversation.
 
 Lorsque la situation le permet, tu peux demander des explications ou contester une mesure en écrivant à l’adresse de contact.
 

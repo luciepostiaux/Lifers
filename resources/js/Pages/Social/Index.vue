@@ -82,6 +82,20 @@ function messageAuthor(message) {
     return fullName(message.sender ?? { id: message.sender_lifer_id });
 }
 
+function staffRole(person) {
+    return person?.staff_role || props.allPerso?.[person?.id]?.staff_role || null;
+}
+
+function staffRoleLabel(role) {
+    if (role === "admin") return "Administratrice";
+    if (role === "moderator") return "Modérateur";
+    return "";
+}
+
+function otherConversationLifer(conversation) {
+    return conversation?.lifers?.find(({ id }) => id !== props.currentLifer.id) ?? null;
+}
+
 function isOwnMessage(message) {
     return Number(message.sender?.id ?? message.sender_lifer_id) === Number(props.currentLifer.id);
 }
@@ -141,6 +155,9 @@ function joinConversation(conversationId) {
             if (!isOwnMessage(message) && selectedConversation.value?.type === "private") {
                 axios.post(`/conversations/${conversationId}/read`).catch(() => {});
             }
+        })
+        .listen("MessageDeleted", ({ message_id: messageId }) => {
+            messages.value = messages.value.filter(({ id }) => Number(id) !== Number(messageId));
         });
 }
 
@@ -307,7 +324,7 @@ onBeforeUnmount(() => {
                                     {{ initials(conversation.display_name) }}
                                     <i v-if="isLiferOnline(conversation.lifers?.find((member) => member.id !== currentLifer.id)?.id)" aria-label="En ligne"></i>
                                 </span>
-                                <span class="conversation-entry__content"><strong>{{ conversation.display_name }}</strong><small>{{ conversationPreview(conversation) }}</small></span>
+                                <span class="conversation-entry__content"><strong :class="{ 'is-staff': staffRole(otherConversationLifer(conversation)) }">{{ conversation.display_name }}</strong><small>{{ conversationPreview(conversation) }}</small></span>
                             </Link>
                         </section>
 
@@ -344,7 +361,11 @@ onBeforeUnmount(() => {
                         <article v-for="message in messages" :key="message.id" class="community-message" :class="{ 'community-message--own': isOwnMessage(message) }">
                             <span class="community-message__avatar" aria-hidden="true">{{ initials(messageAuthor(message)) }}</span>
                             <div class="community-message__body">
-                                <div class="community-message__meta"><Link :href="isOwnMessage(message) ? route('profil') : route('lifers.profile.show', message.sender?.id ?? message.sender_lifer_id)">{{ isOwnMessage(message) ? "Toi" : messageAuthor(message) }}</Link><time :datetime="message.created_at">{{ formatMessageTime(message.created_at) }}</time></div>
+                                <div class="community-message__meta">
+                                    <Link :href="isOwnMessage(message) ? route('profil') : route('lifers.profile.show', message.sender?.id ?? message.sender_lifer_id)" :class="{ 'is-staff': staffRole(message.sender) }">{{ isOwnMessage(message) ? "Toi" : messageAuthor(message) }}</Link>
+                                    <span v-if="staffRole(message.sender)" class="community-staff-badge">{{ staffRoleLabel(staffRole(message.sender)) }}</span>
+                                    <time :datetime="message.created_at">{{ formatMessageTime(message.created_at) }}</time>
+                                </div>
                                 <p>{{ message.content }}</p>
                             </div>
                         </article>
@@ -364,7 +385,7 @@ onBeforeUnmount(() => {
                         <ul class="community-lifer-list">
                             <li v-for="member in conversationMembers" :key="member.id">
                                 <span class="community-lifer-avatar">{{ initials(member) }}</span>
-                                <Link :href="member.id === currentLifer.id ? route('profil') : route('lifers.profile.show', member.id)" class="community-lifer-name"><strong>{{ member.id === currentLifer.id ? "Toi" : fullName(member) }}</strong><small>{{ isLiferOnline(member.id) ? "En ligne" : "Membre" }}</small></Link>
+                                <Link :href="member.id === currentLifer.id ? route('profil') : route('lifers.profile.show', member.id)" class="community-lifer-name"><strong :class="{ 'is-staff': staffRole(member) }">{{ member.id === currentLifer.id ? "Toi" : fullName(member) }}</strong><small>{{ staffRole(member) ? staffRoleLabel(staffRole(member)) : isLiferOnline(member.id) ? "En ligne" : "Membre" }}</small></Link>
                             </li>
                         </ul>
                     </section>
@@ -375,7 +396,7 @@ onBeforeUnmount(() => {
                         <ul class="community-lifer-list">
                             <li v-for="lifer in otherLifers" :key="lifer.id" @contextmenu.prevent="startPrivateConversation(lifer)">
                                 <span class="community-lifer-avatar">{{ initials(lifer.persoName) }}<i v-if="isLiferOnline(lifer.id)" aria-label="En ligne"></i></span>
-                                <Link :href="route('lifers.profile.show', lifer.id)" class="community-lifer-name"><strong>{{ lifer.persoName }}</strong><small>{{ isLiferOnline(lifer.id) ? "En ligne" : "Hors ligne" }}</small></Link>
+                                <Link :href="route('lifers.profile.show', lifer.id)" class="community-lifer-name"><strong :class="{ 'is-staff': lifer.staff_role }">{{ lifer.persoName }}</strong><small>{{ lifer.staff_role ? staffRoleLabel(lifer.staff_role) : isLiferOnline(lifer.id) ? "En ligne" : "Hors ligne" }}</small></Link>
                                 <button type="button" :disabled="openingPrivateConversationFor === lifer.id" :aria-label="`Écrire à ${lifer.persoName}`" @click="startPrivateConversation(lifer)">{{ openingPrivateConversationFor === lifer.id ? "…" : "Écrire" }}</button>
                             </li>
                         </ul>
@@ -441,6 +462,7 @@ onBeforeUnmount(() => {
 .community-action-button{min-height:38px;padding:7px 12px;border:1px solid rgb(70 50 78/9%);border-radius:10px;color:#46324e;background:rgb(214 168 74/24%);font-size:11px;font-weight:800}.community-action-button--quiet{color:#743344;background:rgb(217 142 155/12%)}
 .community-messages{display:flex;padding:24px clamp(16px,3vw,34px);flex-direction:column;gap:14px;background:radial-gradient(circle at 90% 10%,rgb(214 168 74/8%),transparent 30%),#fcf8f2}.community-messages__empty{display:grid;max-width:320px;margin:auto;justify-items:center;color:rgb(70 50 78/66%);text-align:center}.conversation-avatar--empty{width:58px;height:58px;margin-bottom:10px}.community-messages__empty h3{color:#46324e;font-size:19px}.community-messages__empty p{margin:6px 0 0;font-size:12px}
 .community-message{display:flex;max-width:min(78%,620px);align-self:flex-start;align-items:flex-end;gap:9px}.community-message--own{align-self:flex-end;flex-direction:row-reverse}.community-message__avatar{width:30px;height:30px;margin-bottom:2px;font-size:9px}.community-message--own .community-message__avatar{color:#5c4211;background:rgb(214 168 74/32%)}.community-message__body{min-width:0;padding:10px 13px;border:1px solid rgb(70 50 78/7%);border-radius:14px 14px 14px 4px;background:#f4eee5;box-shadow:0 4px 11px rgb(70 50 78/5%)}.community-message--own .community-message__body{border-radius:14px 14px 4px;background:rgb(214 168 74/25%)}.community-message__meta{display:flex;margin-bottom:4px;align-items:baseline;gap:8px}.community-message__meta a{color:#46324e;font-size:10px;font-weight:700;text-decoration:none}.community-message__meta a:hover{text-decoration:underline}.community-message__meta time{color:rgb(70 50 78/48%);font-size:9px}.community-message__body p{margin:0;overflow-wrap:anywhere;font-size:13px;line-height:1.45;white-space:pre-wrap}
+.conversation-entry__content strong.is-staff,.community-message__meta a.is-staff,.community-lifer-name strong.is-staff{color:#8e344b}.community-staff-badge{padding:2px 5px;border-radius:999px;color:#8e344b;background:rgb(142 52 75/9%);font-size:7px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
 .community-composer{display:grid;padding:14px 18px 16px;border-top:1px solid rgb(70 50 78/8%);grid-template-columns:minmax(0,1fr) auto;gap:10px;background:#fcf8f2}.community-composer textarea{min-height:48px;max-height:120px;padding:13px 15px;resize:vertical;border:1px solid rgb(70 50 78/16%);border-radius:13px;color:#46324e;background:#fffaf4;font:inherit;font-size:13px;line-height:1.45}.community-composer button,.community-modal__submit{min-height:48px;padding:10px 18px;border:0;border-radius:13px;color:#46324e;background:#d6a84a;box-shadow:0 7px 16px rgb(70 50 78/10%);font-size:12px;font-weight:800}.community-composer p{margin:0;grid-column:1/-1;color:#8b3f51;font-size:11px}
 .community-directory{border-left:1px solid rgb(70 50 78/9%);padding:18px 14px}.community-directory__section+.community-directory__section{margin-top:24px;padding-top:22px;border-top:1px solid rgb(70 50 78/9%)}.community-directory__heading{display:flex;padding:0 4px;align-items:center;justify-content:space-between;gap:10px}.community-directory__heading h2{font-size:18px}.community-directory__heading>span{display:inline-grid;min-width:28px;height:28px;padding:0 7px;border-radius:999px;place-items:center;color:#385443;background:rgb(111 146 123/18%);font-size:10px;font-weight:800}.community-directory__hint{margin:12px 4px;color:rgb(70 50 78/58%);font-size:10px;line-height:1.45}
 .community-lifer-list{display:grid;margin:12px 0 0;padding:0;gap:4px;list-style:none}.community-lifer-list li{display:flex;min-width:0;min-height:50px;padding:6px 5px;border-radius:11px;align-items:center;gap:9px}.community-lifer-list li:hover{background:rgb(252 248 242/75%)}.community-lifer-avatar{width:34px;height:34px;font-size:9px}.community-lifer-name{display:grid;min-width:0;flex:1 1 auto;gap:2px;color:#46324e;text-decoration:none}.community-lifer-name:hover strong{text-decoration:underline}.community-lifer-name strong{overflow:hidden;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.community-lifer-list button{min-height:34px;padding:6px 8px;border:0;border-radius:9px;color:#46324e;background:rgb(214 168 74/22%);font-size:9px;font-weight:800}

@@ -29,7 +29,11 @@ class ConversationController extends Controller
         $conversation->load('lifers');
         $conversation->setRelation(
             'messages',
-            $conversation->messagesVisibleTo($lifer)->with('sender')->oldest()->get(),
+            $conversation->messagesVisibleTo($lifer)
+                ->with('sender.user.roles')
+                ->oldest()
+                ->get()
+                ->map(fn ($message) => $message->communityPayload()),
         );
 
         return response()->json($conversation);
@@ -162,10 +166,9 @@ class ConversationController extends Controller
             'content' => $validated['content'],
         ]);
 
-        $message->load('sender');
         broadcast(new MessageSent($message))->toOthers();
 
-        return response()->json($message);
+        return response()->json($message->communityPayload());
     }
 
     public function fetchMessages(Conversation $conversation)
@@ -177,9 +180,10 @@ class ConversationController extends Controller
 
         return response()->json(
             $conversation->messagesVisibleTo($lifer)
-                ->with('sender')
+                ->with('sender.user.roles')
                 ->oldest()
-                ->get(),
+                ->get()
+                ->map(fn ($message) => $message->communityPayload()),
         );
     }
 

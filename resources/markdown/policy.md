@@ -1,6 +1,6 @@
 # Politique de confidentialité de Lifers
 
-**Version du 1er septembre 2026**
+**Version du 2 septembre 2026**
 
 Cette politique explique comment les données personnelles sont utilisées dans **Lifers**.
 
@@ -36,7 +36,9 @@ Lifers ne propose actuellement ni publicité ciblée ni newsletter et n’utilis
 
 ## 4. Destinataires et prestataires
 
-Les données sont accessibles uniquement à l’éditrice et, lorsque cela est nécessaire, aux personnes disposant d’un rôle d’administration ou de modération. Elles peuvent également être traitées par les prestataires techniques indispensables au service, notamment l’hébergeur OVHcloud et le prestataire d’envoi d’e-mails qui sera configuré pour la mise en ligne.
+Les données sont accessibles uniquement à l’éditrice et, lorsque cela est nécessaire, aux personnes disposant d’un rôle d’administration ou de modération. Cet accès est limité à leurs missions : les modérateurs consultent les profils, commentaires et messages du salon général, mais n’accèdent ni aux messages privés ni aux groupes personnalisés. L’éditrice ne dispose pas non plus d’un accès courant à ces conversations privées dans l’interface d’administration. Une intervention technique ciblée ne pourrait être envisagée qu’en cas de nécessité de sécurité, de demande légalement valable ou, lorsqu’un outil dédié existera, de signalement volontaire par un participant.
+
+Les données peuvent également être traitées par les prestataires techniques indispensables au service, notamment l’hébergeur OVHcloud, Pusher pour la transmission instantanée des messages et le prestataire d’envoi d’e-mails qui sera configuré pour la mise en ligne.
 
 Les polices du site sont actuellement distribuées par **Bunny Fonts**. Le navigateur contacte ce service pour les charger et lui transmet donc des données techniques, dont l’adresse IP. Cette dépendance pourra être remplacée par un hébergement local des polices.
 

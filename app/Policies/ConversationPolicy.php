@@ -9,6 +9,10 @@ class ConversationPolicy
 {
     public function view(User $user, Conversation $conversation): bool
     {
+        if ($conversation->isStaffConversation() && ! $user->canModerate()) {
+            return false;
+        }
+
         $liferId = $user->activeLifer()->value('id');
 
         return $liferId !== null && $conversation->lifers()->whereKey($liferId)->exists();
@@ -22,6 +26,7 @@ class ConversationPolicy
     public function manageMembers(User $user, Conversation $conversation): bool
     {
         return $conversation->type === Conversation::TYPE_GROUP
+            && ! $conversation->isStaffConversation()
             && $this->view($user, $conversation);
     }
 

@@ -93,6 +93,15 @@ const navigationItems = computed(() => [
         route: "social",
         active: ["social"],
     },
+    ...(page.props.permissions?.moderate
+        ? [
+              {
+                  label: "Modération",
+                  route: "moderation.dashboard",
+                  active: ["moderation.*"],
+              },
+          ]
+        : []),
     ...(page.props.permissions?.admin
         ? [
               {

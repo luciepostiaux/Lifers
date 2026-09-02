@@ -224,4 +224,23 @@ class Lifer extends Model
 
         return 18 + intdiv($days, 3);
     }
+
+    public function staffRole(): ?string
+    {
+        $user = $this->relationLoaded('user')
+            ? $this->user
+            : $this->user()->with('roles')->first();
+        $role = $user?->displayRole();
+
+        return in_array($role, [Role::ADMIN, Role::MODERATOR], true) ? $role : null;
+    }
+
+    public function isDeathProtected(): bool
+    {
+        $user = $this->relationLoaded('user')
+            ? $this->user
+            : $this->user()->with('roles')->first();
+
+        return $user?->isAdmin() ?? false;
+    }
 }

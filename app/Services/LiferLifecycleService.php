@@ -104,11 +104,20 @@ class LiferLifecycleService
         }
 
         return DB::transaction(function () use ($lifer, $cause) {
-            $lockedLifer = Lifer::query()->lockForUpdate()->findOrFail($lifer->id);
+            $lockedLifer = Lifer::query()
+                ->with('user.roles')
+                ->lockForUpdate()
+                ->findOrFail($lifer->id);
 
             if ($lockedLifer->status !== Lifer::STATUS_ACTIVE) {
                 throw ValidationException::withMessages([
                     'lifer' => 'Ce Lifer est déjà mort.',
+                ]);
+            }
+
+            if ($lockedLifer->isDeathProtected()) {
+                throw ValidationException::withMessages([
+                    'lifer' => 'Le Lifer du compte administrateur principal ne peut pas mourir.',
                 ]);
             }
 

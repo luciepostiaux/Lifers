@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminAuditLog;
 use App\Models\AccountBan;
+use App\Models\AdminAuditLog;
 use App\Models\Diploma;
 use App\Models\Lifer;
 use App\Models\ProfileComment;
@@ -85,18 +85,6 @@ class AdminController extends Controller
             'created_at' => $user->created_at?->toIso8601String(),
         ]);
 
-        $lifers = Lifer::query()
-            ->active()
-            ->with('diplomas:id,name')
-            ->orderBy('first_name')
-            ->orderBy('last_name')
-            ->get(['id', 'user_id', 'first_name', 'last_name'])
-            ->map(fn (Lifer $lifer) => [
-                'id' => $lifer->id,
-                'name' => "{$lifer->first_name} {$lifer->last_name}",
-                'diploma_ids' => $lifer->diplomas->pluck('id')->values(),
-            ]);
-
         return Inertia::render('Admin/Dashboard', [
             'lifer' => $adminLifer ? [
                 'id' => $adminLifer->id,
@@ -120,8 +108,6 @@ class AdminController extends Controller
                 'q' => $search,
                 'role' => $roleFilter,
             ],
-            'lifers' => $lifers,
-            'diplomas' => Diploma::query()->orderBy('name')->get(['id', 'name']),
             'bans' => AccountBan::query()
                 ->active()
                 ->with([

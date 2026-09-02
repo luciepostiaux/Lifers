@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'terms_version' => '2026-09-01',
-    'privacy_version' => '2026-09-01',
+    'terms_version' => '2026-09-02',
+    'privacy_version' => '2026-09-02',
 
     'editor_name' => env('LEGAL_EDITOR_NAME', 'Lucie Postiaux'),
     'contact_email' => env('LEGAL_CONTACT_EMAIL', 'privacy@luciepostiaux.com'),

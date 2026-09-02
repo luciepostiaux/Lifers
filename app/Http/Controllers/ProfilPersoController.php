@@ -26,6 +26,7 @@ class ProfilPersoController extends Controller
         abort_unless($lifer->status === Lifer::STATUS_ACTIVE && $lifer->gameState()->exists(), 404);
 
         $lifer->load([
+            'user.roles',
             'gameState.bodyType',
             'employment.job',
             'diplomas',
@@ -65,7 +66,7 @@ class ProfilPersoController extends Controller
                     ->where('status', ProfileComment::STATUS_APPROVED)
                     ->orWhere('author_lifer_id', $viewer->id);
             }))
-            ->with('author:id,first_name,last_name')
+            ->with('author.user.roles')
             ->latest()
             ->get()
             ->map(fn (ProfileComment $comment) => [
@@ -76,6 +77,7 @@ class ProfilPersoController extends Controller
                 'author' => [
                     'id' => $comment->author->id,
                     'name' => $comment->author->first_name.' '.$comment->author->last_name,
+                    'staff_role' => $comment->author->staffRole(),
                 ],
                 'can_moderate' => $isOwner && $comment->status === ProfileComment::STATUS_PENDING,
                 'can_delete' => $isOwner || $comment->author_lifer_id === $viewer->id,
@@ -95,6 +97,7 @@ class ProfilPersoController extends Controller
             'profileLifer' => [
                 'id' => $lifer->id,
                 'name' => $lifer->first_name.' '.$lifer->last_name,
+                'staff_role' => $lifer->staffRole(),
                 'age' => $lifer->calculateAge(),
                 'body_image_url' => $lifer->gameState?->bodyType?->image_path,
                 'job' => $lifer->employment?->job?->name,

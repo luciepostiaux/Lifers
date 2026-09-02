@@ -6,6 +6,7 @@ import { emptyProfileDocument, profileEditorExtensions } from "./profileEditorEx
 
 const props = defineProps({
     modelValue: { type: Object, default: null },
+    allowImages: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -59,6 +60,12 @@ function handleImageTransfer(event, transfer, position = null) {
     );
 
     if (file) {
+        if (!props.allowImages) {
+            event.preventDefault();
+            uploadError.value = "La modération peut retirer des images, mais pas en ajouter.";
+            return true;
+        }
+
         event.preventDefault();
         void uploadFile(file, position);
         return true;
@@ -179,8 +186,8 @@ function setFontSize(event) {
 
             <button type="button" :class="{ 'is-active': editor.isActive('bulletList') }" aria-label="Liste à puces" title="Liste à puces" @click="editor.chain().focus().toggleBulletList().run()">• Liste</button>
             <button type="button" :class="{ 'is-active': editor.isActive('blockquote') }" aria-label="Citation" title="Citation" @click="editor.chain().focus().toggleBlockquote().run()">“ ”</button>
-            <button type="button" :disabled="uploadingImage" @click="chooseImage">{{ uploadingImage ? "Ajout…" : "Image" }}</button>
-            <input ref="imageInput" type="file" class="sr-only" accept="image/jpeg,image/png,image/webp" @change="uploadImage" />
+            <button v-if="allowImages" type="button" :disabled="uploadingImage" @click="chooseImage">{{ uploadingImage ? "Ajout…" : "Image" }}</button>
+            <input v-if="allowImages" ref="imageInput" type="file" class="sr-only" accept="image/jpeg,image/png,image/webp" @change="uploadImage" />
         </div>
 
         <EditorContent :editor="editor" class="profile-editor__content profile-rich-content" />

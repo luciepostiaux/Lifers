@@ -12,10 +12,19 @@ class Conversation extends Model
     use HasFactory;
 
     public const TYPE_GENERAL = 'general';
+
     public const TYPE_PRIVATE = 'private';
+
     public const TYPE_GROUP = 'group';
 
+    public const KEY_STAFF = 'staff';
+
     protected $fillable = ['name', 'type', 'key'];
+
+    public function isStaffConversation(): bool
+    {
+        return $this->key === self::KEY_STAFF;
+    }
 
     public static function privateKey(int $firstLiferId, int $secondLiferId): string
     {

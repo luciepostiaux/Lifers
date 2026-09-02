@@ -38,6 +38,9 @@ class HandleInertiaRequests extends Middleware
                 'admin' => $request->user()?->isAdmin() ?? false,
                 'moderate' => $request->user()?->canModerate() ?? false,
             ],
+            'security' => [
+                'idle_timeout_minutes' => (int) config('session.lifetime'),
+            ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

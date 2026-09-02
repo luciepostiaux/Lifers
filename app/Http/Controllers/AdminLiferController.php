@@ -196,6 +196,12 @@ class AdminLiferController extends Controller
             'reason' => ['required', 'string', 'min:3', 'max:1000'],
         ]);
 
+        if ($lifer->loadMissing('user.roles')->isDeathProtected()) {
+            throw ValidationException::withMessages([
+                'lifer' => 'Le Lifer du compte administrateur principal ne peut pas mourir.',
+            ]);
+        }
+
         DB::transaction(function () use ($request, $lifer, $lifecycle, $validated): void {
             $lifecycle->die($lifer, $validated['cause']);
             $this->audit($request, 'lifer.killed', $lifer, [

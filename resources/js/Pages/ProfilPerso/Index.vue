@@ -49,6 +49,12 @@ const publicDiplomas = computed(() => props.diplomas.filter(({ is_public }) => i
 const pendingCount = computed(() => props.comments.filter(({ status }) => status === "pending").length);
 const firstName = computed(() => props.profileLifer.name.split(" ")[0]);
 
+function staffRoleLabel(role) {
+    if (role === "admin") return "Administratrice";
+    if (role === "moderator") return "Modérateur";
+    return "";
+}
+
 watch(
     () => props.profileLifer,
     (profile) => {
@@ -148,7 +154,10 @@ function formatDate(value) {
 
                 <div class="lifer-profile-hero__identity">
                     <span class="lifer-profile-kicker">{{ isOwner ? "Ton profil public" : "Profil public" }}</span>
-                    <h1 id="profile-name">{{ profileLifer.name }}</h1>
+                    <div class="lifer-profile-hero__name-row">
+                        <h1 id="profile-name" :class="{ 'is-staff': profileLifer.staff_role }">{{ profileLifer.name }}</h1>
+                        <span v-if="profileLifer.staff_role" class="lifer-staff-badge">{{ staffRoleLabel(profileLifer.staff_role) }}</span>
+                    </div>
                     <p v-if="profileLifer.job" class="lifer-profile-hero__job">{{ profileLifer.job }}</p>
                     <p v-else class="lifer-profile-hero__job lifer-profile-hero__job--muted">Aucun métier actuellement</p>
 
@@ -275,7 +284,10 @@ function formatDate(value) {
                                 <div class="lifer-profile-comment__body">
                                     <div class="lifer-profile-comment__heading">
                                         <div>
-                                            <Link :href="route('lifers.profile.show', comment.author.id)">{{ comment.author.name }}</Link>
+                                            <span class="lifer-profile-comment__author">
+                                                <Link :href="route('lifers.profile.show', comment.author.id)" :class="{ 'is-staff': comment.author.staff_role }">{{ comment.author.name }}</Link>
+                                                <small v-if="comment.author.staff_role" class="lifer-staff-badge">{{ staffRoleLabel(comment.author.staff_role) }}</small>
+                                            </span>
                                             <time :datetime="comment.created_at">{{ formatDate(comment.created_at) }}</time>
                                         </div>
                                         <span v-if="comment.status === 'pending'">En attente</span>
@@ -326,6 +338,9 @@ function formatDate(value) {
 .lifer-profile-kicker { color: #6f927b; font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: 0.11em; text-transform: uppercase; }
 .lifer-profile-hero h1, .lifer-profile-section-heading h2, .lifer-profile-sidebar h2 { color: #46324e; font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.035em; }
 .lifer-profile-hero h1 { max-width: 800px; margin: 9px 0 0; font-size: clamp(42px, 5vw, 72px); line-height: 0.94; overflow-wrap: anywhere; }
+.lifer-profile-hero__name-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 11px; }
+.lifer-profile-hero h1.is-staff, .lifer-profile-comment__heading a.is-staff { color: #8e344b; }
+.lifer-staff-badge { display: inline-flex; width: fit-content; padding: 4px 8px; border: 1px solid rgb(142 52 75 / 20%); border-radius: 999px; align-items: center; color: #8e344b; background: rgb(142 52 75 / 8%); font-size: 9px; font-weight: 800; letter-spacing: .05em; line-height: 1.2; text-transform: uppercase; }
 .lifer-profile-hero__job { margin: 16px 0 0; color: #6f5d74; font-size: 18px; font-weight: 600; }
 .lifer-profile-hero__job--muted { color: rgb(70 50 78 / 54%); }
 .lifer-profile-hero__facts { display: flex; margin-top: 18px; flex-wrap: wrap; gap: 8px; }
@@ -382,6 +397,7 @@ function formatDate(value) {
 .lifer-profile-comment__avatar { display: flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; color: #f8f3ec; background: #6f927b; font-size: 12px; font-weight: 800; text-transform: uppercase; }
 .lifer-profile-comment__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .lifer-profile-comment__heading > div { display: grid; gap: 2px; }
+.lifer-profile-comment__author { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
 .lifer-profile-comment__heading a { color: #46324e; font-size: 14px; font-weight: 750; text-decoration: none; }
 .lifer-profile-comment__heading a:hover { text-decoration: underline; }
 .lifer-profile-comment__heading time { color: #8a7b8f; font-size: 11px; }

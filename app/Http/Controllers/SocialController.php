@@ -20,8 +20,9 @@ class SocialController extends Controller
         $generalConversation->joinGeneralWithoutPastHistory($lifer);
 
         $conversations = $lifer->conversations()
+            ->where('conversations.key', '<>', Conversation::KEY_STAFF)
             ->with([
-                'lifers:id,first_name,last_name',
+                'lifers.user.roles',
                 'latestMessage.sender:id,first_name,last_name',
             ])
             ->withCount('lifers')
@@ -30,6 +31,11 @@ class SocialController extends Controller
             ->get();
 
         $conversations->each(function (Conversation $conversation) use ($lifer) {
+            $conversation->lifers->each(function (Lifer $member): void {
+                $member->setAttribute('staff_role', $member->staffRole());
+                $member->unsetRelation('user');
+            });
+
             if ($conversation->type === Conversation::TYPE_GENERAL) {
                 $conversation->setAttribute('display_name', 'Général');
 
@@ -58,24 +64,32 @@ class SocialController extends Controller
         $currentConversation->markReceivedMessagesAsReadBy($lifer);
 
         $allLifers = Lifer::active()
-            ->with('user:id,is_online')
+            ->with('user.roles')
             ->get()
             ->mapWithKeys(fn (Lifer $member) => [
                 $member->id => [
                     'id' => $member->id,
                     'persoName' => $member->first_name.' '.$member->last_name,
                     'isOnline' => (bool) $member->user->is_online,
+                    'staff_role' => $member->staffRole(),
                 ],
             ]);
 
+        $messages = $currentConversation->messagesVisibleTo($lifer)
+            ->with('sender.user.roles')
+            ->oldest()
+            ->get()
+            ->map(fn ($message) => $message->communityPayload());
+
         return Inertia::render('Social/Index', [
             'conversations' => $conversations,
-            'messages' => $currentConversation->messagesVisibleTo($lifer)->with('sender')->oldest()->get(),
+            'messages' => $messages,
             'currentConversationId' => $currentConversation->id,
             'allPerso' => $allLifers,
             'currentLifer' => [
                 'id' => $lifer->id,
                 'name' => $lifer->first_name.' '.$lifer->last_name,
+                'staff_role' => $lifer->loadMissing('user.roles')->staffRole(),
             ],
             'money' => $lifer->gameState?->money,
         ]);
