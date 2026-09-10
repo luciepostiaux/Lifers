@@ -14,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
-    public const TRUSTED_ADMIN_EMAIL = 'admin@admin.com';
+    public const TRUSTED_ADMIN_EMAIL = 'luciepostiaux@gmail.com';
 
     use HasApiTokens;
     use HasFactory;
