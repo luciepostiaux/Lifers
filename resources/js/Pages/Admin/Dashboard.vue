@@ -509,7 +509,7 @@ const auditDescription = (log) => {
 
 .admin-eyebrow {
     margin: 0 0 10px;
-    color: #6f927b;
+    color: #486852;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.16em;
@@ -599,7 +599,7 @@ const auditDescription = (log) => {
 .admin-user__role > span:first-child,
 .admin-field > span,
 .admin-filters label > span {
-    color: #8d7f90;
+    color: #6f6073;
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -614,7 +614,7 @@ const auditDescription = (log) => {
 }
 
 .admin-stats small {
-    color: #8d7f90;
+    color: #6f6073;
     font-size: 13px;
 }
 
@@ -645,7 +645,7 @@ const auditDescription = (log) => {
 .admin-section-heading > p {
     max-width: 540px;
     margin: 0;
-    color: #8d7f90;
+    color: #6f6073;
     line-height: 1.55;
 }
 
@@ -749,7 +749,7 @@ const auditDescription = (log) => {
 }
 
 .admin-button--small {
-    min-height: 38px;
+    min-height: 44px;
     padding: 8px 12px;
     font-size: 13px;
     text-decoration: none;
@@ -873,7 +873,7 @@ const auditDescription = (log) => {
 }
 
 .admin-ban-list strong { color: #46324e; }
-.admin-ban-list small { color: #8d7f90; }
+.admin-ban-list small { color: #6f6073; }
 .admin-ban-list p { margin: 3px 0; color: #6f5d72; }
 
 .admin-user__identity strong,
@@ -892,7 +892,7 @@ const auditDescription = (log) => {
 }
 
 .admin-user__identity small {
-    color: #8d7f90;
+    color: #6f6073;
     font-size: 13px;
 }
 
@@ -913,8 +913,8 @@ const auditDescription = (log) => {
 
 .admin-pagination a {
     display: inline-flex;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 8px 12px;
     border-radius: 11px;
     align-items: center;
@@ -975,7 +975,7 @@ const auditDescription = (log) => {
 }
 
 .admin-audit-list small {
-    color: #8d7f90;
+    color: #6f6073;
     line-height: 1.5;
 }
 
@@ -983,7 +983,7 @@ const auditDescription = (log) => {
     margin: 0;
     padding: 24px;
     border-radius: 16px;
-    color: #8d7f90;
+    color: #6f6073;
     background: #f3ede6;
     text-align: center;
 }

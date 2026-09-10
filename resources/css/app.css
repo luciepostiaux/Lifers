@@ -20,6 +20,27 @@
     background: #e8ca8a;
 }
 
+.lifers-auth-skip-link {
+    position: fixed;
+    z-index: 100;
+    top: 10px;
+    left: 10px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    color: #46324e;
+    background: #d6a84a;
+    box-shadow: 0 8px 24px rgb(47 32 53 / 20%);
+    font-weight: 800;
+    text-decoration: none;
+    transform: translateY(calc(-100% - 20px));
+}
+
+.lifers-auth-skip-link:focus {
+    outline: 3px solid #46324e;
+    outline-offset: 3px;
+    transform: translateY(0);
+}
+
 .lifers-auth-scene {
     position: fixed;
     z-index: 0;
@@ -100,6 +121,13 @@
     margin-top: 20px;
     border-radius: 999px;
     background: #d6a84a;
+}
+
+.lifers-auth-copy {
+    margin: 24px 0 0;
+    color: #6f6073;
+    font-size: 15px;
+    line-height: 1.65;
 }
 
 .lifers-auth-status {
@@ -491,7 +519,7 @@
 
 .path-kicker,
 .path-card__place {
-    color: #6f927b;
+    color: #486852;
     font-size: 11px;
     font-weight: 700;
     line-height: 1.2;
@@ -651,7 +679,7 @@
 }
 
 .path-badge--neutral {
-    color: rgb(70 50 78 / 68%);
+    color: rgb(70 50 78 / 78%);
     background: rgb(70 50 78 / 8%);
 }
 
@@ -732,7 +760,7 @@
 }
 
 .path-progress-block small {
-    color: rgb(70 50 78 / 62%);
+    color: rgb(70 50 78 / 78%);
     font-size: 11px;
 }
 
@@ -760,7 +788,7 @@
 .path-catalog__heading > p {
     width: min(100%, 430px);
     margin: 0;
-    color: rgb(70 50 78 / 62%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.5;
     text-align: right;
@@ -827,7 +855,7 @@
 
 .path-card__content > div:first-child > p {
     margin: 10px 0 0;
-    color: rgb(70 50 78 / 68%);
+    color: rgb(70 50 78 / 78%);
     font-size: 13px;
     line-height: 1.48;
 }
@@ -856,7 +884,7 @@
 .path-card__facts dt,
 .path-detail-facts dt,
 .path-dialog__facts dt {
-    color: rgb(70 50 78 / 55%);
+    color: rgb(70 50 78 / 78%);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -1070,7 +1098,7 @@
 }
 
 .path-employment-highlight span {
-    color: rgb(70 50 78 / 60%);
+    color: rgb(70 50 78 / 78%);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -1083,7 +1111,7 @@
 
 .path-employment-highlight small {
     margin-top: 3px;
-    color: rgb(70 50 78 / 62%);
+    color: rgb(70 50 78 / 78%);
     font-size: 11px;
     font-weight: 600;
 }
@@ -1360,7 +1388,7 @@
 
 .home-hero__character > span {
     margin: auto;
-    color: rgb(70 50 78 / 58%);
+    color: rgb(70 50 78 / 78%);
     font-size: 13px;
 }
 
@@ -1496,7 +1524,7 @@
 .home-sickness p,
 .home-health-empty p {
     margin: 7px 0 0;
-    color: rgb(70 50 78 / 68%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.48;
 }
@@ -1542,7 +1570,7 @@
 }
 
 .home-inventory__actions > span {
-    color: rgb(70 50 78 / 60%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     font-weight: 700;
 }
@@ -1685,7 +1713,7 @@
     border-radius: 10px;
     align-items: baseline;
     gap: 5px;
-    color: rgb(70 50 78 / 62%);
+    color: rgb(70 50 78 / 78%);
     background: #fcf8f2;
     font-size: 11px;
     font-weight: 600;
@@ -1699,7 +1727,7 @@
 .city-journal-button {
     display: inline-flex;
     width: fit-content;
-    min-height: 42px;
+    min-height: 44px;
     margin-top: 18px;
     padding: 9px 15px;
     border: 1px solid rgb(70 50 78 / 18%);
@@ -1716,7 +1744,7 @@
 }
 
 .city-journal-button small {
-    color: #8d7c8f;
+    color: #6f6073;
     font-size: 11px;
     font-weight: 700;
 }
@@ -1765,7 +1793,7 @@
 .city-directory__heading > p {
     width: min(100%, 420px);
     margin: 0;
-    color: rgb(70 50 78 / 60%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.5;
     text-align: right;
@@ -1855,7 +1883,7 @@
 
 .city-card__content > div:first-child > p {
     margin: 10px 0 0;
-    color: rgb(70 50 78 / 66%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.48;
 }
@@ -2072,7 +2100,7 @@
     border-radius: 10px;
     align-items: baseline;
     gap: 5px;
-    color: rgb(70 50 78 / 62%);
+    color: rgb(70 50 78 / 78%);
     background: rgb(252 248 242 / 84%);
     font-size: 11px;
     font-weight: 600;
@@ -2159,7 +2187,7 @@
 .service-catalog__heading > p {
     width: min(100%, 420px);
     margin: 0;
-    color: rgb(70 50 78 / 60%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.5;
     text-align: right;
@@ -2255,7 +2283,7 @@
 .service-card__content > div:first-child > p,
 .activity-card__content > div:first-child > p {
     margin: 9px 0 0;
-    color: rgb(70 50 78 / 66%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.48;
 }
@@ -2291,7 +2319,7 @@
 
 .service-purchase__price span,
 .service-purchase label > span {
-    color: rgb(70 50 78 / 55%);
+    color: rgb(70 50 78 / 78%);
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -2310,7 +2338,7 @@
 
 .service-purchase input {
     width: 100%;
-    min-height: 42px;
+    min-height: 44px;
     padding: 8px 10px;
     border: 1px solid rgb(70 50 78 / 20%);
     border-radius: 9px;
@@ -2342,7 +2370,7 @@
 .sport-status p {
     max-width: 720px;
     margin: 12px 0 0;
-    color: rgb(70 50 78 / 66%);
+    color: rgb(70 50 78 / 78%);
     font-size: 13px;
     line-height: 1.5;
 }
@@ -2401,7 +2429,7 @@
 .sport-card > div:first-child > p,
 .medical-empty p {
     margin: 10px 0 0;
-    color: rgb(70 50 78 / 66%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.48;
 }
@@ -2423,7 +2451,7 @@
 }
 
 .service-facts dt {
-    color: rgb(70 50 78 / 55%);
+    color: rgb(70 50 78 / 78%);
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -2611,5 +2639,16 @@
     .activity-card__footer {
         align-items: stretch;
         flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

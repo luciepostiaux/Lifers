@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import AccessibleDialog from "@/Components/AccessibleDialog.vue";
 
 const props = defineProps({
     jobDetails: { type: Object, required: true },
@@ -133,7 +134,7 @@ const resign = () => {
             @click.self="showResignDialog = false"
             @keydown.esc="showResignDialog = false"
         >
-            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="resign-job-title">
+            <AccessibleDialog class="path-dialog" labelledby="resign-job-title" @close="showResignDialog = false">
                 <span class="path-kicker">Attention</span>
                 <h2 id="resign-job-title">Démissionner de ce métier ?</h2>
                 <p>
@@ -145,7 +146,7 @@ const resign = () => {
                         {{ resignationPending ? "Démission…" : "Confirmer la démission" }}
                     </button>
                 </div>
-            </section>
+            </AccessibleDialog>
         </div>
     </AppLayout>
 </template>

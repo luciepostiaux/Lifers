@@ -35,6 +35,7 @@ const submit = () => {
     </Head>
 
     <div class="lifers-auth-page">
+        <a class="lifers-auth-skip-link" href="#contenu-principal">Aller au contenu</a>
         <div class="lifers-auth-scene" aria-hidden="true">
             <img
                 src="/images/landing/hero-lifers.png"
@@ -47,7 +48,7 @@ const submit = () => {
 
         <SiteHeader />
 
-        <main class="lifers-auth-main">
+        <main id="contenu-principal" class="lifers-auth-main" tabindex="-1">
             <section
                 class="lifers-auth-card"
                 aria-labelledby="login-title"

@@ -19,9 +19,10 @@ const submit = () => {
     </Head>
 
     <div class="lifers-auth-page">
+        <a class="lifers-auth-skip-link" href="#contenu-principal">Aller au contenu</a>
         <SiteHeader :can-login="false" />
 
-        <main class="lifers-auth-main">
+        <main id="contenu-principal" class="lifers-auth-main" tabindex="-1">
             <section class="lifers-auth-card" aria-labelledby="verify-email-title">
                 <h1 id="verify-email-title" class="lifers-auth-title">Vérifie ton adresse e-mail</h1>
                 <div class="lifers-auth-accent" aria-hidden="true"></div>

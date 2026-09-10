@@ -1,4 +1,5 @@
 <script setup>
+import { useId } from 'vue';
 import Modal from './Modal.vue';
 
 const emit = defineEmits(['close']);
@@ -21,6 +22,8 @@ defineProps({
 const close = () => {
     emit('close');
 };
+
+const titleId = useId();
 </script>
 
 <template>
@@ -28,10 +31,11 @@ const close = () => {
         :show="show"
         :max-width="maxWidth"
         :closeable="closeable"
+        :aria-labelledby="titleId"
         @close="close"
     >
         <div class="px-6 py-4">
-            <div class="text-lg font-medium text-gray-900">
+            <div :id="titleId" class="text-lg font-medium text-gray-900">
                 <slot name="title" />
             </div>
 

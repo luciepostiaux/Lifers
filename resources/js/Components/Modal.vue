@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps({
     show: {
@@ -14,17 +14,42 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    ariaLabelledby: {
+        type: String,
+        default: undefined,
+    },
 });
 
 const emit = defineEmits(["close"]);
+const dialogElement = ref(null);
+let previouslyFocusedElement = null;
+
+const focusableSelector = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])",
+].join(",");
 
 watch(
     () => props.show,
-    () => {
+    async () => {
         if (props.show) {
+            previouslyFocusedElement = document.activeElement;
             document.body.style.overflow = "hidden";
+            await nextTick();
+            const focusableElement = dialogElement.value?.querySelector(
+                "[autofocus], " + focusableSelector,
+            );
+            (focusableElement ?? dialogElement.value)?.focus();
         } else {
             document.body.style.overflow = null;
+
+            if (previouslyFocusedElement?.isConnected) {
+                previouslyFocusedElement.focus();
+            }
         }
     }
 );
@@ -38,6 +63,33 @@ const close = () => {
 const closeOnEscape = (e) => {
     if (e.key === "Escape" && props.show) {
         close();
+    }
+};
+
+const trapFocus = (event) => {
+    if (event.key !== "Tab" || !props.show) {
+        return;
+    }
+
+    const elements = Array.from(
+        dialogElement.value?.querySelectorAll(focusableSelector) ?? [],
+    ).filter((element) => element.getClientRects().length > 0);
+
+    if (elements.length === 0) {
+        event.preventDefault();
+        dialogElement.value?.focus();
+        return;
+    }
+
+    const firstElement = elements[0];
+    const lastElement = elements.at(-1);
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
     }
 };
 
@@ -93,9 +145,15 @@ const maxWidthClass = computed(() => {
                     leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <div
+                        ref="dialogElement"
                         v-show="show"
                         class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:mx-auto"
                         :class="maxWidthClass"
+                        role="dialog"
+                        aria-modal="true"
+                        :aria-labelledby="ariaLabelledby"
+                        tabindex="-1"
+                        @keydown="trapFocus"
                     >
                         <slot v-if="show" />
                     </div>

@@ -14,15 +14,15 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout title="Profile">
+    <AppLayout title="Paramètres du compte">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Profile
-            </h2>
+            <h1 class="font-['Bricolage_Grotesque'] text-3xl font-bold leading-tight text-[#46324e]">
+                Paramètres du compte
+            </h1>
         </template>
 
         <div>
-            <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
                 <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                     <UpdateProfileInformationForm :user="$page.props.auth.user" />
 

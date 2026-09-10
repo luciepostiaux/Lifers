@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import Banner from "@/Components/Banner.vue";
 
@@ -59,6 +59,14 @@ const navigationRevealed = ref(initialNavigationReveal());
 const navigationTransitioning = ref(false);
 const sidebarElement = ref(null);
 const sidebarRevealElement = ref(null);
+const sidebarCloseElement = ref(null);
+const menuButtonElement = ref(null);
+const isCompactNavigation = ref(
+    typeof window !== "undefined"
+        ? window.matchMedia("(max-width: 1023px)").matches
+        : false,
+);
+let compactNavigationMediaQuery = null;
 
 const navigationItems = computed(() => [
     {
@@ -154,8 +162,64 @@ const activeLiferInitials = computed(() =>
 const isActive = (patterns) =>
     patterns.some((pattern) => route().current(pattern));
 
-const closeNavigation = () => {
+const navigationIsAccessible = computed(() =>
+    isCompactNavigation.value
+        ? showingNavigation.value
+        : navigationPinned.value || navigationRevealed.value,
+);
+
+const openNavigation = async () => {
+    showingNavigation.value = true;
+    await nextTick();
+    sidebarCloseElement.value?.focus();
+};
+
+const closeNavigation = async (restoreFocus = true) => {
     showingNavigation.value = false;
+
+    if (restoreFocus && isCompactNavigation.value) {
+        await nextTick();
+        await new Promise((resolve) => window.requestAnimationFrame(resolve));
+        menuButtonElement.value?.focus();
+    }
+};
+
+const handleSidebarKeydown = (event) => {
+    if (!isCompactNavigation.value || !showingNavigation.value) {
+        return;
+    }
+
+    if (event.key === "Escape") {
+        event.preventDefault();
+        closeNavigation();
+        return;
+    }
+
+    if (event.key !== "Tab") {
+        return;
+    }
+
+    const focusableElements = Array.from(
+        sidebarElement.value?.querySelectorAll(
+            'a[href], button:not([disabled]), summary, input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+    ).filter((element) => element.getClientRects().length > 0);
+
+    if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements.at(-1);
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+    }
 };
 
 const clearPreservedNavigationReveal = () => {
@@ -229,7 +293,7 @@ const preserveNavigationReveal = () => {
 const handleNavigationSelection = () => {
     navigationTransitioning.value = true;
     preserveNavigationReveal();
-    closeNavigation();
+    closeNavigation(false);
 };
 
 const handleSidebarFocusOut = (event) => {
@@ -280,6 +344,18 @@ const listenForPrivateMessages = () => {
 };
 
 onMounted(() => {
+    compactNavigationMediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateNavigationMode = (event) => {
+        isCompactNavigation.value = event.matches;
+
+        if (!event.matches) {
+            showingNavigation.value = false;
+            document.body.classList.remove("game-navigation-open");
+        }
+    };
+
+    compactNavigationMediaQuery.addEventListener("change", updateNavigationMode);
+    compactNavigationMediaQuery._lifersListener = updateNavigationMode;
     window.addEventListener("pointermove", handlePointerMove, {
         passive: true,
     });
@@ -288,10 +364,25 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     window.removeEventListener("pointermove", handlePointerMove);
+    document.body.classList.remove("game-navigation-open");
+
+    if (compactNavigationMediaQuery?._lifersListener) {
+        compactNavigationMediaQuery.removeEventListener(
+            "change",
+            compactNavigationMediaQuery._lifersListener,
+        );
+    }
 
     if (window.Echo && privateMessageChannelName) {
         window.Echo.leave(privateMessageChannelName);
     }
+});
+
+watch([showingNavigation, isCompactNavigation], ([isOpen, isCompact]) => {
+    document.body.classList.toggle(
+        "game-navigation-open",
+        isOpen && isCompact,
+    );
 });
 
 const switchToTeam = (team) => {
@@ -328,12 +419,16 @@ const logout = () => {
 
         <Banner />
 
+        <a class="game-skip-link" href="#contenu-principal">
+            Aller au contenu principal
+        </a>
+
         <button
             v-if="showingNavigation"
             type="button"
             class="game-layout__overlay"
             aria-label="Fermer la navigation"
-            @click="closeNavigation"
+            @click="closeNavigation()"
         ></button>
 
         <button
@@ -358,11 +453,14 @@ const logout = () => {
                 'game-sidebar--unpinned': !navigationPinned,
                 'game-sidebar--revealed': navigationRevealed,
             }"
+            :aria-hidden="navigationIsAccessible ? undefined : 'true'"
+            :inert="navigationIsAccessible ? undefined : ''"
             aria-label="Navigation principale"
             @pointerenter="revealNavigation"
             @pointerleave="hideNavigation"
             @focusin="revealNavigation"
             @focusout="handleSidebarFocusOut"
+            @keydown="handleSidebarKeydown"
         >
             <div class="game-sidebar__brand-row">
                 <Link
@@ -405,10 +503,11 @@ const logout = () => {
                     </button>
 
                     <button
+                        ref="sidebarCloseElement"
                         type="button"
                         class="game-sidebar__close"
                         aria-label="Fermer la navigation"
-                        @click="closeNavigation"
+                        @click="closeNavigation()"
                     >
                         <span aria-hidden="true">×</span>
                     </button>
@@ -520,12 +619,13 @@ const logout = () => {
         <div class="game-workspace">
             <header class="game-topbar">
                 <button
+                    ref="menuButtonElement"
                     type="button"
                     class="game-topbar__menu"
                     :aria-expanded="showingNavigation"
                     aria-controls="game-navigation"
-                    aria-label="Ouvrir la navigation"
-                    @click="showingNavigation = true"
+                    :aria-label="showingNavigation ? 'Fermer la navigation' : 'Ouvrir la navigation'"
+                    @click="openNavigation"
                 >
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -549,9 +649,10 @@ const logout = () => {
                     <span
                         v-if="formattedMoney !== null"
                         class="game-topbar__money"
+                        :aria-label="`${formattedMoney} Lif’coins`"
                     >
-                        <strong>{{ formattedMoney }}</strong>
-                        <span>Lif’coins</span>
+                        <strong aria-hidden="true">{{ formattedMoney }}</strong>
+                        <span aria-hidden="true">Lif’coins</span>
                     </span>
                 </div>
             </header>
@@ -560,7 +661,7 @@ const logout = () => {
                 <slot name="header" />
             </div>
 
-            <main class="game-content">
+            <main id="contenu-principal" class="game-content" tabindex="-1">
                 <slot />
             </main>
         </div>
@@ -579,6 +680,31 @@ const logout = () => {
 .game-layout ::selection {
     color: #46324e;
     background: #e8ca8a;
+}
+
+:global(body.game-navigation-open) {
+    overflow: hidden;
+}
+
+.game-skip-link {
+    position: fixed;
+    z-index: 100;
+    top: 10px;
+    left: 10px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    color: #46324e;
+    background: #d6a84a;
+    box-shadow: 0 8px 24px rgb(47 32 53 / 20%);
+    font-weight: 800;
+    text-decoration: none;
+    transform: translateY(calc(-100% - 20px));
+}
+
+.game-skip-link:focus {
+    outline: 3px solid #46324e;
+    outline-offset: 3px;
+    transform: translateY(0);
 }
 
 .game-sidebar {
@@ -803,7 +929,7 @@ const logout = () => {
 .game-sidebar__logout,
 .game-sidebar__teams summary {
     display: flex;
-    min-height: 38px;
+    min-height: 44px;
     padding: 8px 10px;
     border: 0;
     border-radius: 9px;
@@ -833,6 +959,9 @@ const logout = () => {
 }
 
 .game-sidebar__legal-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
     color: rgb(248 243 236 / 58%);
     font-size: 10px;
     font-weight: 600;
@@ -917,7 +1046,7 @@ const logout = () => {
 
 .game-topbar__money {
     display: inline-flex;
-    min-height: 40px;
+    min-height: 44px;
     padding: 7px 13px;
     border: 1px solid rgb(214 168 74 / 34%);
     border-radius: 11px;
@@ -1097,7 +1226,7 @@ const logout = () => {
     }
 
     .game-topbar__money {
-        min-height: 38px;
+        min-height: 44px;
         padding: 6px 10px;
     }
 

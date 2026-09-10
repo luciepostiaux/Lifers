@@ -5,6 +5,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
+        "ext-gd": "*",
         "php": "^8.5",
         "guzzlehttp/guzzle": "^7.15.2",
         "inertiajs/inertia-laravel": "^3.0",

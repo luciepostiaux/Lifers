@@ -46,4 +46,69 @@ class SharedHostingCompatibilityTest extends TestCase
             realpath(base_path('cron/lifers-shared-hosting.php')),
         );
     }
+
+    public function test_ovh_runtime_uses_the_supported_production_php_environment(): void
+    {
+        $configuration = file_get_contents(base_path('.ovhconfig'));
+
+        $this->assertStringContainsString('app.engine=php', $configuration);
+        $this->assertStringContainsString('app.engine.version=8.5', $configuration);
+        $this->assertStringContainsString('environment=production', $configuration);
+        $this->assertStringContainsString('container.image=stable64', $configuration);
+    }
+
+    public function test_production_environment_template_has_secure_defaults_without_secrets(): void
+    {
+        $template = file_get_contents(base_path('.env.production.example'));
+
+        $this->assertStringContainsString('APP_ENV=production', $template);
+        $this->assertStringContainsString('APP_DEBUG=false', $template);
+        $this->assertStringContainsString('SESSION_SECURE_COOKIE=true', $template);
+        $this->assertStringContainsString('LIFERS_HOSTING_BOOTSTRAP_ENABLED=false', $template);
+        $this->assertMatchesRegularExpression('/^APP_KEY=$/m', $template);
+        $this->assertMatchesRegularExpression('/^DB_PASSWORD=$/m', $template);
+        $this->assertMatchesRegularExpression('/^MAIL_PASSWORD=$/m', $template);
+        $this->assertMatchesRegularExpression('/^PUSHER_APP_SECRET=$/m', $template);
+    }
+
+    public function test_one_time_bootstrap_is_cli_only_outside_public_and_disabled_by_default(): void
+    {
+        $path = base_path('cron/lifers-bootstrap.php');
+        $launcher = file_get_contents($path);
+
+        $this->assertFileExists($path);
+        $this->assertStringNotContainsString(public_path(), realpath($path));
+        $this->assertStringContainsString("PHP_SAPI !== 'cli'", $launcher);
+        $this->assertStringContainsString("environment('production')", $launcher);
+        $this->assertStringContainsString("config('hosting.bootstrap_enabled')", $launcher);
+        $this->assertFalse(config('hosting.bootstrap_enabled'));
+    }
+
+    public function test_deployment_package_builder_excludes_private_and_development_files(): void
+    {
+        $script = file_get_contents(base_path('scripts/build-ovh-package.sh'));
+
+        foreach ([
+            '.env',
+            '.env.example',
+            'AGENTS.md',
+            'README.md',
+            'database/factories/',
+            'database/seeders/DemoSeeder.php',
+            'docs/',
+            'node_modules/',
+            'package.json',
+            'phpunit.xml',
+            'resources/css/',
+            'resources/js/',
+            'tests/',
+            'tmp/',
+            'vendor/',
+        ] as $excluded) {
+            $this->assertStringContainsString("--exclude='{$excluded}'", $script);
+        }
+
+        $this->assertStringContainsString('--no-dev', $script);
+        $this->assertStringContainsString('--optimize-autoloader', $script);
+    }
 }

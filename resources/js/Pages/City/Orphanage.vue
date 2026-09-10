@@ -41,7 +41,7 @@ function adopt(child) {
 
 <template>
     <AppLayout title="Orphelinat" :money="money">
-        <main class="path-page service-page">
+        <div class="path-page service-page">
             <Link :href="route('city')" class="path-back-link">
                 <span aria-hidden="true">←</span> Retour à la ville
             </Link>
@@ -113,12 +113,12 @@ function adopt(child) {
                     </div>
                 </div>
             </section>
-        </main>
+        </div>
     </AppLayout>
 </template>
 
 <style scoped>
-.orphanage-panel{padding:clamp(25px,3.5vw,46px);border:1px solid rgb(70 50 78/8%);border-radius:24px;background:#f8f3ec;box-shadow:0 14px 34px rgb(70 50 78/8%)}.orphanage-panel>header{display:flex;margin-bottom:28px;align-items:flex-end;justify-content:space-between;gap:25px}.orphanage-kicker{color:#6f927b;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.orphanage-panel h2,.orphanage-card h3,.orphanage-empty h3{font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.035em}.orphanage-panel h2{margin:6px 0 0;font-size:clamp(31px,4vw,47px);line-height:1}.orphanage-panel>header>p{max-width:420px;margin:0;color:#8d7c8f;line-height:1.5}.orphanage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.orphanage-card{display:grid;padding:22px;border-radius:19px;gap:16px;background:#f2e5e3}.orphanage-avatar{display:grid;width:52px;height:52px;border-radius:17px;place-items:center;color:#fff;background:#6f927b;font-family:"Bricolage Grotesque",sans-serif;font-size:23px;font-weight:800}.orphanage-card h3{margin:0;font-size:25px}.orphanage-card p{margin:3px 0 0;color:#8d7c8f}.orphanage-needs{display:grid;gap:7px}.orphanage-needs span{display:flex;padding:8px 10px;border-radius:9px;justify-content:space-between;background:rgb(255 250 244/62%);font-size:12px}.orphanage-card button{min-height:45px;border:0;border-radius:12px;color:#46324e;background:#d6a84a;font-weight:800;cursor:pointer}.orphanage-card button:disabled{cursor:not-allowed;opacity:.5}.orphanage-empty{display:flex;min-height:150px;padding:28px;border:1px dashed rgb(70 50 78/18%);border-radius:18px;align-items:center;gap:20px;background:#fffaf4}.orphanage-empty>span{color:#d6a84a;font-size:38px}.orphanage-empty h3{margin:0 0 5px;font-size:25px}.orphanage-empty p{margin:0;color:#8d7c8f}.orphanage-card button:focus-visible{outline:3px solid rgb(111 146 123/45%);outline-offset:3px}
+.orphanage-panel{padding:clamp(25px,3.5vw,46px);border:1px solid rgb(70 50 78/8%);border-radius:24px;background:#f8f3ec;box-shadow:0 14px 34px rgb(70 50 78/8%)}.orphanage-panel>header{display:flex;margin-bottom:28px;align-items:flex-end;justify-content:space-between;gap:25px}.orphanage-kicker{color:#486852;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.orphanage-panel h2,.orphanage-card h3,.orphanage-empty h3{font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.035em}.orphanage-panel h2{margin:6px 0 0;font-size:clamp(31px,4vw,47px);line-height:1}.orphanage-panel>header>p{max-width:420px;margin:0;color:#6f6073;line-height:1.5}.orphanage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.orphanage-card{display:grid;padding:22px;border-radius:19px;gap:16px;background:#f2e5e3}.orphanage-avatar{display:grid;width:52px;height:52px;border-radius:17px;place-items:center;color:#fff;background:#6f927b;font-family:"Bricolage Grotesque",sans-serif;font-size:23px;font-weight:800}.orphanage-card h3{margin:0;font-size:25px}.orphanage-card p{margin:3px 0 0;color:#6f6073}.orphanage-needs{display:grid;gap:7px}.orphanage-needs span{display:flex;padding:8px 10px;border-radius:9px;justify-content:space-between;background:rgb(255 250 244/62%);font-size:12px}.orphanage-card button{min-height:45px;border:0;border-radius:12px;color:#46324e;background:#d6a84a;font-weight:800;cursor:pointer}.orphanage-card button:disabled{cursor:not-allowed;opacity:.5}.orphanage-empty{display:flex;min-height:150px;padding:28px;border:1px dashed rgb(70 50 78/18%);border-radius:18px;align-items:center;gap:20px;background:#fffaf4}.orphanage-empty>span{color:#d6a84a;font-size:38px}.orphanage-empty h3{margin:0 0 5px;font-size:25px}.orphanage-empty p{margin:0;color:#6f6073}.orphanage-card button:focus-visible{outline:3px solid rgb(111 146 123/45%);outline-offset:3px}
 @media(max-width:980px){.orphanage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.orphanage-panel>header{align-items:flex-start;flex-direction:column}}
 @media(max-width:680px){.orphanage-grid{grid-template-columns:1fr}.orphanage-panel{border-radius:19px}}
 </style>

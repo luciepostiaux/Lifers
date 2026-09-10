@@ -185,7 +185,7 @@ function formatDate(value) {
             </section>
 
             <div class="lifer-profile-grid">
-                <main class="lifer-profile-main">
+                <div class="lifer-profile-main">
                     <section class="lifer-profile-card" aria-labelledby="presentation-title">
                         <div class="lifer-profile-section-heading">
                             <div>
@@ -302,7 +302,7 @@ function formatDate(value) {
                         </div>
                         <p v-else class="lifer-profile-empty lifer-profile-empty--comments">Aucun commentaire visible pour le moment.</p>
                     </section>
-                </main>
+                </div>
 
                 <aside class="lifer-profile-sidebar" aria-label="Informations complémentaires">
                     <section class="lifer-profile-card lifer-profile-diplomas">
@@ -333,9 +333,9 @@ function formatDate(value) {
 .lifer-profile-hero { display: grid; min-height: 330px; border-radius: 22px; grid-template-columns: minmax(240px, 0.42fr) minmax(300px, 0.58fr); overflow: hidden; background: radial-gradient(circle at 12% 16%, rgb(214 168 74 / 18%), transparent 38%), linear-gradient(145deg, rgb(111 146 123 / 14%), transparent 66%), #f8f3ec; }
 .lifer-profile-hero__portrait { display: flex; min-height: 330px; padding: 20px 30px 0; align-items: flex-end; justify-content: center; }
 .lifer-profile-hero__portrait img { display: block; width: 100%; height: 310px; object-fit: contain; object-position: center bottom; }
-.lifer-profile-hero__portrait span { margin: auto; color: rgb(70 50 78 / 55%); font-size: 14px; }
+.lifer-profile-hero__portrait span { margin: auto; color: rgb(70 50 78 / 78%); font-size: 14px; }
 .lifer-profile-hero__identity { display: flex; min-width: 0; padding: clamp(34px, 4vw, 62px); flex-direction: column; align-items: flex-start; justify-content: center; }
-.lifer-profile-kicker { color: #6f927b; font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: 0.11em; text-transform: uppercase; }
+.lifer-profile-kicker { color: #486852; font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: 0.11em; text-transform: uppercase; }
 .lifer-profile-hero h1, .lifer-profile-section-heading h2, .lifer-profile-sidebar h2 { color: #46324e; font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.035em; }
 .lifer-profile-hero h1 { max-width: 800px; margin: 9px 0 0; font-size: clamp(42px, 5vw, 72px); line-height: 0.94; overflow-wrap: anywhere; }
 .lifer-profile-hero__name-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 11px; }
@@ -370,14 +370,14 @@ function formatDate(value) {
 .lifer-profile-visibility legend { padding-inline: 5px; color: #46324e; font-size: 14px; font-weight: 700; }
 .lifer-profile-relationship-field { display: grid; padding-bottom: 15px; border-bottom: 1px solid rgb(70 50 78 / 10%); gap: 7px; color: #46324e; font-size: 14px; font-weight: 700; }
 .lifer-profile-relationship-field select { width: 100%; min-height: 44px; padding: 0 40px 0 12px; border: 1px solid rgb(70 50 78 / 20%); border-radius: 10px; color: #46324e; background: #fffaf4; font: inherit; }
-.lifer-profile-relationship-field small { color: #817286; font-size: 12px; font-weight: 400; }
+.lifer-profile-relationship-field small { color: #6f6073; font-size: 12px; font-weight: 400; }
 .lifer-profile-toggle { display: flex; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 10px; align-items: flex-start; gap: 11px; color: #46324e; background: transparent; font: inherit; text-align: left; cursor: pointer; }
 .lifer-profile-toggle:hover, .lifer-profile-toggle.is-selected { border-color: rgb(111 146 123 / 24%); background: rgb(111 146 123 / 8%); }
 .lifer-profile-toggle > span:last-child { display: grid; gap: 2px; }
 .lifer-profile-choice-box { display: inline-grid; width: 21px; height: 21px; flex: 0 0 21px; margin-top: 1px; border: 1px solid rgb(70 50 78 / 35%); border-radius: 6px; place-items: center; color: #f8f3ec; background: #fffaf4; font-size: 13px; font-weight: 800; line-height: 1; }
 .is-selected > .lifer-profile-choice-box { border-color: #6f927b; background: #6f927b; }
 .lifer-profile-toggle strong, .lifer-profile-diploma-options > span { color: #46324e; font-size: 14px; }
-.lifer-profile-toggle small { color: #817286; font-size: 12px; }
+.lifer-profile-toggle small { color: #6f6073; font-size: 12px; }
 .lifer-profile-diploma-options { display: grid; padding-top: 15px; border-top: 1px solid rgb(70 50 78 / 10%); gap: 9px; }
 .lifer-profile-diploma-option { display: flex; width: 100%; min-height: 42px; padding: 9px 10px; border: 1px solid transparent; border-radius: 10px; align-items: center; gap: 9px; color: #5b4962; background: transparent; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
 .lifer-profile-diploma-option:hover, .lifer-profile-diploma-option.is-selected { border-color: rgb(111 146 123 / 24%); background: rgb(111 146 123 / 8%); }
@@ -390,7 +390,7 @@ function formatDate(value) {
 .lifer-profile-comment-form textarea { width: 100%; resize: vertical; padding: 13px 14px; border: 1px solid rgb(70 50 78 / 22%); border-radius: 11px; color: #46324e; background: #fcf8f2; font: inherit; line-height: 1.5; }
 .lifer-profile-comment-form textarea:focus { border-color: #46324e; outline: 3px solid rgb(70 50 78 / 17%); outline-offset: 2px; box-shadow: none; }
 .lifer-profile-comment-form__footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-.lifer-profile-comment-form__footer p { margin: 0; color: #817286; font-size: 12px; line-height: 1.45; }
+.lifer-profile-comment-form__footer p { margin: 0; color: #6f6073; font-size: 12px; line-height: 1.45; }
 .lifer-profile-comment-list { display: grid; margin-top: 24px; gap: 12px; }
 .lifer-profile-comment { display: grid; padding: 17px; border: 1px solid rgb(70 50 78 / 9%); border-radius: 14px; grid-template-columns: 42px minmax(0, 1fr); gap: 13px; background: #fcf8f2; }
 .lifer-profile-comment--pending { border-color: rgb(214 168 74 / 30%); background: rgb(214 168 74 / 7%); }
@@ -400,7 +400,7 @@ function formatDate(value) {
 .lifer-profile-comment__author { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
 .lifer-profile-comment__heading a { color: #46324e; font-size: 14px; font-weight: 750; text-decoration: none; }
 .lifer-profile-comment__heading a:hover { text-decoration: underline; }
-.lifer-profile-comment__heading time { color: #8a7b8f; font-size: 11px; }
+.lifer-profile-comment__heading time { color: #6f6073; font-size: 11px; }
 .lifer-profile-comment__heading > span { padding: 4px 8px; border-radius: 999px; color: #765926; background: rgb(214 168 74 / 18%); font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
 .lifer-profile-comment__body > p { margin: 11px 0 0; color: #5b4962; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 .lifer-profile-comment__actions { display: flex; margin-top: 10px; gap: 14px; }
@@ -410,7 +410,7 @@ function formatDate(value) {
 .lifer-profile-sidebar h2 { font-size: 30px; }
 .lifer-profile-diplomas ul { display: grid; margin: 22px 0 0; padding: 0; gap: 10px; list-style: none; }
 .lifer-profile-diplomas li { display: flex; padding: 11px 12px; border-radius: 10px; align-items: flex-start; gap: 9px; color: #55435c; background: #fcf8f2; font-size: 14px; line-height: 1.45; }
-.lifer-profile-diplomas li span { color: #6f927b; font-weight: 800; }
+.lifer-profile-diplomas li span { color: #486852; font-weight: 800; }
 .lifer-profile-diplomas > p, .lifer-profile-contact p { margin: 18px 0 0; color: #78697e; font-size: 14px; line-height: 1.6; }
 .lifer-profile-diplomas .lifer-profile-text-button, .lifer-profile-contact .lifer-profile-button { margin-top: 17px; }
 
@@ -435,5 +435,11 @@ function formatDate(value) {
 
 @media (prefers-reduced-motion: reduce) {
     .lifer-profile-button { transition: none; }
+}
+
+.lifer-profile-text-button,
+.lifer-profile-diploma-option,
+.lifer-profile-comment__actions button {
+    min-height: 44px;
 }
 </style>

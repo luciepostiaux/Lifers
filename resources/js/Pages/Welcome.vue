@@ -13,14 +13,7 @@ const props = defineProps({
 });
 
 const currentYear = new Date().getFullYear();
-const structuredData = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Lifers",
-    url: props.seo.canonicalUrl,
-    description: props.seo.description,
-    inLanguage: "fr",
-});
+const structuredData = JSON.stringify(props.seo.structuredData);
 const StructuredData = () => h(
     "script",
     { type: "application/ld+json", "head-key": "website-structured-data" },
@@ -64,24 +57,31 @@ const cityPlaces = [
 <template>
     <Head :title="seo.title">
         <meta head-key="description" name="description" :content="seo.description" />
+        <meta head-key="author" name="author" :content="seo.author" />
         <meta head-key="robots" name="robots" content="index, follow, max-image-preview:large" />
         <link head-key="canonical" rel="canonical" :href="seo.canonicalUrl" />
+        <link head-key="alternate-fr" rel="alternate" hreflang="fr" :href="seo.canonicalUrl" />
+        <link head-key="alternate-default" rel="alternate" hreflang="x-default" :href="seo.canonicalUrl" />
 
         <meta head-key="og:type" property="og:type" content="website" />
-        <meta head-key="og:locale" property="og:locale" content="fr_BE" />
+        <meta head-key="og:locale" property="og:locale" :content="seo.locale" />
+        <meta head-key="og:locale:alternate" property="og:locale:alternate" :content="seo.alternateLocale" />
         <meta head-key="og:site_name" property="og:site_name" content="Lifers" />
         <meta head-key="og:title" property="og:title" :content="seo.title" />
         <meta head-key="og:description" property="og:description" :content="seo.description" />
         <meta head-key="og:url" property="og:url" :content="seo.canonicalUrl" />
         <meta head-key="og:image" property="og:image" :content="seo.socialImageUrl" />
+        <meta head-key="og:image:secure_url" property="og:image:secure_url" :content="seo.socialImageUrl" />
+        <meta head-key="og:image:type" property="og:image:type" content="image/png" />
         <meta head-key="og:image:width" property="og:image:width" content="1672" />
         <meta head-key="og:image:height" property="og:image:height" content="941" />
-        <meta head-key="og:image:alt" property="og:image:alt" content="Deux Lifers dans une ville illustrée et chaleureuse" />
+        <meta head-key="og:image:alt" property="og:image:alt" :content="seo.socialImageAlt" />
 
         <meta head-key="twitter:card" name="twitter:card" content="summary_large_image" />
         <meta head-key="twitter:title" name="twitter:title" :content="seo.title" />
         <meta head-key="twitter:description" name="twitter:description" :content="seo.description" />
         <meta head-key="twitter:image" name="twitter:image" :content="seo.socialImageUrl" />
+        <meta head-key="twitter:image:alt" name="twitter:image:alt" :content="seo.socialImageAlt" />
 
         <StructuredData />
     </Head>
@@ -323,7 +323,7 @@ const cityPlaces = [
     --cream: #f4eee5;
     --cream-light: #faf6ef;
     --plum: #46324e;
-    --sage: #6f927b;
+    --sage-ink: #486852;
     --gold: #d6a84a;
     --rose: #d98e9b;
     min-width: 320px;
@@ -527,7 +527,7 @@ const cityPlaces = [
 .city-card > span,
 .community-panel__eyebrow,
 .newspaper__note {
-    color: var(--sage);
+    color: var(--sage-ink);
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.14em;
@@ -544,7 +544,7 @@ const cityPlaces = [
 .section-heading p,
 .final-cta p {
     margin: 0;
-    color: #77677a;
+    color: #6f6073;
     font-size: clamp(18px, 1.55vw, 22px);
     line-height: 1.65;
 }
@@ -596,7 +596,7 @@ const cityPlaces = [
 .city-card p,
 .newspaper p {
     margin: 0;
-    color: #77677a;
+    color: #6f6073;
     font-size: 17px;
     line-height: 1.6;
 }
@@ -636,7 +636,7 @@ const cityPlaces = [
 
 .choice-facts dd {
     margin: 0;
-    color: #77677a;
+    color: #6f6073;
     font-size: 17px;
     line-height: 1.5;
 }

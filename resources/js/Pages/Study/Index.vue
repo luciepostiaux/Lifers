@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import AccessibleDialog from "@/Components/AccessibleDialog.vue";
 
 const props = defineProps({
     studies: { type: Array, default: () => [] },
@@ -266,7 +267,7 @@ const confirmEnrollment = () => {
             @click.self="closeEnrollmentDialog"
             @keydown.esc="closeEnrollmentDialog"
         >
-            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="study-dialog-title">
+            <AccessibleDialog class="path-dialog" labelledby="study-dialog-title" @close="closeEnrollmentDialog">
                 <span class="path-kicker">Confirmation</span>
                 <h2 id="study-dialog-title">{{ currentStudy ? "Changer d’étude ?" : "Commencer cette étude ?" }}</h2>
                 <p>
@@ -282,7 +283,7 @@ const confirmEnrollment = () => {
                         {{ enrollmentPending ? "Inscription…" : "Confirmer" }}
                     </button>
                 </div>
-            </section>
+            </AccessibleDialog>
         </div>
     </AppLayout>
 </template>

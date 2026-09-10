@@ -106,6 +106,7 @@ defineExpose({
 .lifers-password-input__control {
     display: block;
     width: 100%;
+    min-height: 44px;
     padding-inline-end: 3.25rem !important;
 }
 
@@ -114,8 +115,8 @@ defineExpose({
     top: 50%;
     right: 0.45rem;
     display: inline-flex;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     align-items: center;
     justify-content: center;
     padding: 0;

@@ -1,12 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PasswordInput from '@/Components/PasswordInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SiteHeader from '@/Components/SiteHeader.vue';
 
 const form = useForm({
     password: '',
@@ -26,37 +23,30 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Secure Area" />
+    <Head title="Lifers — Confirmer mon mot de passe">
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:700,800|dm-sans:400,500,600,700&display=swap" rel="stylesheet" />
+    </Head>
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+    <div class="lifers-auth-page">
+        <a class="lifers-auth-skip-link" href="#contenu-principal">Aller au contenu</a>
+        <SiteHeader />
+        <main id="contenu-principal" class="lifers-auth-main" tabindex="-1">
+            <section class="lifers-auth-card" aria-labelledby="confirm-password-title">
+                <h1 id="confirm-password-title" class="lifers-auth-title">Zone sécurisée</h1>
+                <div class="lifers-auth-accent" aria-hidden="true"></div>
+                <p class="lifers-auth-copy">Confirme ton mot de passe avant de poursuivre cette action sensible.</p>
 
-        <div class="mb-4 text-sm text-gray-600">
-            This is a secure area of the application. Please confirm your password before continuing.
-        </div>
+                <form class="lifers-auth-form" @submit.prevent="submit">
+                    <div class="lifers-auth-field">
+                        <label class="lifers-auth-label" for="password">Mot de passe</label>
+                        <PasswordInput id="password" ref="passwordInput" v-model="form.password" input-class="lifers-auth-input" required autocomplete="current-password" autofocus :aria-invalid="Boolean(form.errors.password)" :aria-describedby="form.errors.password ? 'password-error' : undefined" />
+                        <InputError id="password-error" class="lifers-auth-error" :message="form.errors.password" />
+                    </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="password" value="Password" />
-                <PasswordInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Confirm
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+                    <button type="submit" class="lifers-auth-submit" :disabled="form.processing">Confirmer</button>
+                </form>
+            </section>
+        </main>
+    </div>
 </template>

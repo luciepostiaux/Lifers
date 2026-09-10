@@ -42,6 +42,7 @@ Un compte possède un seul Lifer actif à la fois. Sa vie lui appartient : sa pr
 - salon général, conversations privées et groupes personnalisés ;
 - messages instantanés avec Pusher Channels ;
 - profils publics personnalisables avec texte enrichi et images ;
+- optimisation automatique des images envoyées en WebP afin de limiter le stockage ;
 - commentaires soumis à l’approbation du propriétaire du profil ;
 - demandes d’amitié et identité publique limitée au nom du Lifer ;
 - confidentialité des conversations privées imposée côté serveur.
@@ -178,14 +179,43 @@ vendor/bin/pint --test
 
 ## Déploiement
 
+Le projet contient une préparation spécifique aux hébergements mutualisés OVHcloud sans accès SSH. Le paquet est entièrement fabriqué sur le Mac : Node.js et Composer ne sont donc pas nécessaires sur le serveur.
+
+### Fabriquer le dossier à envoyer
+
+```bash
+bash scripts/build-ovh-package.sh
+```
+
+Un dossier horodaté prêt pour SFTP et une archive de sauvegarde sont créés dans `dist/`. Ils excluent notamment `.env`, Git, la documentation interne, les tests, les sources et outils de compilation front-end, `node_modules` et les dépendances PHP de développement. Les ressources déjà compilées et les dépendances PHP nécessaires à l’application sont incluses.
+
+### Configuration OVHcloud
+
+- utiliser une offre comprenant une base MySQL et suffisamment de stockage ;
+- faire pointer la racine du sous-domaine vers le dossier `public/` de Lifers ;
+- conserver le fichier `.ovhconfig` à la racine de l’hébergement afin d’utiliser PHP 8.5, Stable64 et le mode production ;
+- activer HTTPS et le SFTP ;
+- créer un `.env` privé à partir de `.env.production.example`, puis y renseigner une clé d’application propre à la production, MySQL, SMTP et Pusher ;
+- ne jamais envoyer ce `.env` sur GitHub ni le laisser dans une archive partageable.
+
+### Première initialisation sans SSH
+
+Le lanceur `cron/lifers-bootstrap.php` permet d’exécuter une seule fois les migrations, les catalogues de référence et la création du lien des images publiques depuis une tâche planifiée OVHcloud.
+
+1. Mettre temporairement `LIFERS_HOSTING_BOOTSTRAP_ENABLED=true` dans le `.env` de production.
+2. Créer une tâche OVH pointant vers `cron/lifers-bootstrap.php` et attendre son rapport de réussite.
+3. Remettre immédiatement la valeur à `false` et supprimer cette tâche ponctuelle.
+4. Créer ensuite la tâche horaire permanente pointant vers `cron/lifers-shared-hosting.php`.
+
+Le lanceur ponctuel refuse de fonctionner depuis le Web, hors environnement de production ou lorsque son autorisation explicite est désactivée. Le seeder de production n’ajoute aucun compte de démonstration.
+
+### Contrôles après ouverture
+
 Pour une mise en ligne, il faut notamment :
 
 - faire pointer la racine web du domaine vers `public/` ;
 - utiliser `APP_ENV=production`, `APP_DEBUG=false` et l’URL HTTPS réelle ;
-- générer une clé d’application propre au serveur ;
 - configurer MySQL, Pusher, SMTP et les sauvegardes ;
-- compiler les ressources avec `npm run build` ;
-- mettre en cache la configuration après validation de l’environnement ;
 - activer la tâche planifiée du cycle de jeu ;
 - tester l’inscription, les e-mails et le temps réel avec deux sessions distinctes.
 

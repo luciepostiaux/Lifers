@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadLiferProfileImageRequest;
 use App\Models\LiferImage;
+use App\Services\UploadedImageOptimizer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
 
 class LiferProfileImageController extends Controller
 {
-    public function store(UploadLiferProfileImageRequest $request): JsonResponse
-    {
+    public function store(
+        UploadLiferProfileImageRequest $request,
+        UploadedImageOptimizer $imageOptimizer,
+    ): JsonResponse {
         $lifer = $this->activeLifer();
-        $file = $request->file('image');
-        $extension = strtolower($file->extension() ?: 'jpg');
-        $path = $file->storeAs(
+        $path = $imageOptimizer->store(
+            $request->file('image'),
             "lifer-profiles/{$lifer->id}",
-            Str::uuid().'.'.$extension,
             'public',
         );
 

@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import AccessibleDialog from "@/Components/AccessibleDialog.vue";
 
 const props = defineProps({
     jobs: { type: Array, default: () => [] },
@@ -230,7 +231,7 @@ const confirmApplication = () => {
             @click.self="closeDialog"
             @keydown.esc="closeDialog"
         >
-            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="job-dialog-title">
+            <AccessibleDialog class="path-dialog" labelledby="job-dialog-title" @close="closeDialog">
                 <span class="path-kicker">{{ dialogMode === "details" ? "Détails du métier" : "Confirmation" }}</span>
                 <h2 id="job-dialog-title">
                     {{ dialogMode === "details" ? selectedJob.name : currentJob ? "Changer de métier ?" : "Postuler à ce métier ?" }}
@@ -265,7 +266,7 @@ const confirmApplication = () => {
                         {{ applicationPending ? "Validation…" : "Confirmer" }}
                     </button>
                 </div>
-            </section>
+            </AccessibleDialog>
         </div>
     </AppLayout>
 </template>

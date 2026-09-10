@@ -232,15 +232,27 @@ class LiferProfileTest extends TestCase
         [$user, $lifer] = $this->createUserWithLifer();
         [, $other] = $this->createUserWithLifer();
 
+        $uploadedFile = UploadedFile::fake()->image('presentation.jpg', 2400, 1800);
+        $originalSize = $uploadedFile->getSize();
+
         $response = $this->actingAs($user)
             ->postJson(route('profil.images.store'), [
-                'image' => UploadedFile::fake()->image('presentation.jpg', 1200, 900),
+                'image' => $uploadedFile,
             ])
             ->assertCreated();
 
         $image = LiferImage::findOrFail($response->json('id'));
         $this->assertSame($lifer->id, $image->lifer_id);
+        $this->assertStringEndsWith('.webp', $image->image_path);
         Storage::disk('public')->assertExists($image->image_path);
+
+        $storedPath = Storage::disk('public')->path($image->image_path);
+        $storedDimensions = getimagesize($storedPath);
+
+        $this->assertNotFalse($storedDimensions);
+        $this->assertSame('image/webp', $storedDimensions['mime']);
+        $this->assertSame([1600, 1200], [$storedDimensions[0], $storedDimensions[1]]);
+        $this->assertLessThan($originalSize, Storage::disk('public')->size($image->image_path));
 
         $lifer->profile()->create([
             'content' => ['type' => 'doc', 'content' => []],

@@ -1,0 +1,23 @@
+{
+    "name": "Lifers",
+    "short_name": "Lifers",
+    "description": "Jeu de simulation de vie communautaire",
+    "lang": "fr",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#F4EEE5",
+    "theme_color": "#46324E",
+    "icons": [
+        {
+            "src": "/favicon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

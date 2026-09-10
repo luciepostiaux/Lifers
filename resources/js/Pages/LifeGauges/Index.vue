@@ -11,7 +11,7 @@ defineProps({
 
 <template>
     <AppLayout title="Jauges de vie">
-        <main class="container mx-auto p-4">
+        <div class="container mx-auto p-4">
             <h1 class="text-2xl font-bold mb-4">Jauges de vie</h1>
 
             <p v-if="!lifeGauges">Aucune jauge disponible.</p>
@@ -26,6 +26,6 @@ defineProps({
                     <dd>{{ value }} / 100</dd>
                 </div>
             </dl>
-        </main>
+        </div>
     </AppLayout>
 </template>

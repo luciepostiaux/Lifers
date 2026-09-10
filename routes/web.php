@@ -19,12 +19,12 @@ use App\Http\Controllers\ModerationController;
 use App\Http\Controllers\OrphanageController;
 use App\Http\Controllers\ProfileCommentController;
 use App\Http\Controllers\ProfilPersoController;
+use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\SicknessController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\StudyController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,35 +37,9 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    $title = 'Lifers — Ta seconde vie commence ici';
-    $description = 'Lifers est un jeu de simulation de vie communautaire : crée ton Lifer, développe sa carrière, sa famille et ses relations dans une ville vivante.';
-
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'seo' => [
-            'title' => $title,
-            'description' => $description,
-            'canonicalUrl' => url('/'),
-            'socialImageUrl' => url('/images/landing/hero-lifers.png'),
-        ],
-    ]);
-})->name('home');
-
-Route::get('/sitemap.xml', function () {
-    $homeUrl = htmlspecialchars(url('/'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
-    $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>{$homeUrl}</loc>
-    </url>
-</urlset>
-XML;
-
-    return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
-})->name('sitemap');
+Route::get('/', [PublicSiteController::class, 'home'])->name('home');
+Route::get('/sitemap.xml', [PublicSiteController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [PublicSiteController::class, 'robots'])->name('robots');
 
 Route::post('/session/keep-alive', fn () => response()->noContent())
     ->middleware([

@@ -455,7 +455,7 @@ const formatDate = (date) => {
     border-radius: 16px;
     align-items: center;
     justify-content: center;
-    color: rgb(70 50 78 / 58%);
+    color: rgb(70 50 78 / 78%);
     font-size: 13px;
     text-align: center;
 }
@@ -468,7 +468,7 @@ const formatDate = (date) => {
 .dashboard-hero__eyebrow,
 .dashboard-section-kicker,
 .dashboard-path__label {
-    color: #6f927b;
+    color: #486852;
     font-size: 11px;
     font-weight: 700;
     line-height: 1.2;
@@ -677,7 +677,7 @@ const formatDate = (date) => {
 
 .dashboard-empty-state {
     margin: 26px 0 0;
-    color: rgb(70 50 78 / 68%);
+    color: rgb(70 50 78 / 78%);
     font-size: 14px;
 }
 
@@ -813,7 +813,7 @@ const formatDate = (date) => {
 
 .dashboard-path__item p {
     margin: 4px 0 0;
-    color: rgb(70 50 78 / 66%);
+    color: rgb(70 50 78 / 78%);
     font-size: 12px;
     line-height: 1.4;
 }

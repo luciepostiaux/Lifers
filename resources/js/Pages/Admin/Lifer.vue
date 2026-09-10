@@ -152,7 +152,7 @@ const formatDate = (value) => {
                 Une action n’a pas pu être effectuée. Vérifie les champs concernés.
             </div>
 
-            <main class="control-grid">
+            <div class="control-grid">
                 <section class="control-card" aria-labelledby="money-title">
                     <div class="section-heading">
                         <p class="eyebrow">Économie</p>
@@ -318,7 +318,7 @@ const formatDate = (value) => {
                         </button>
                     </form>
                 </section>
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -329,13 +329,13 @@ const formatDate = (value) => {
 .back-link:hover { text-decoration: underline; }
 .lifer-admin-hero, .control-card { border: 1px solid rgb(70 50 78 / 10%); border-radius: 28px; background: #faf6f0; box-shadow: 0 18px 45px rgb(64 45 70 / 7%); }
 .lifer-admin-hero { display: flex; padding: clamp(28px, 5vw, 56px); align-items: center; justify-content: space-between; gap: 28px; background: radial-gradient(circle at 88% 18%, rgb(214 168 74 / 23%), transparent 32%), #faf6f0; }
-.eyebrow { margin: 0 0 9px; color: #6f927b; font-size: 12px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.eyebrow { margin: 0 0 9px; color: #486852; font-size: 12px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 h1, h2 { margin: 0; color: #46324e; font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; font-weight: 800; letter-spacing: -.04em; }
 h1 { font-size: clamp(42px, 6vw, 74px); line-height: 1; }
 h2 { font-size: clamp(29px, 3vw, 42px); line-height: 1.05; }
 .lifer-admin-hero p:not(.eyebrow), .section-heading > p { color: #847588; line-height: 1.55; }
 .hero-summary { display: grid; min-width: 250px; padding: 22px; border-radius: 20px; gap: 5px; color: #46324e; background: #fffaf3; }
-.hero-summary span { color: #8d7f90; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.hero-summary span { color: #6f6073; font-size: 12px; font-weight: 800; text-transform: uppercase; }
 .hero-summary strong { font-size: 22px; }
 .hero-summary small { color: #806f83; }
 .feedback { padding: 15px 18px; border-radius: 15px; font-weight: 700; }
@@ -357,15 +357,15 @@ label small { color: #9a3e4b; font-weight: 700; }
 .button { display: inline-flex; min-height: 47px; padding: 10px 17px; border: 1px solid transparent; border-radius: 13px; align-items: center; justify-content: center; color: #46324e; font: inherit; font-weight: 800; cursor: pointer; }
 .button.primary { background: #d6a84a; }
 .button.danger { color: #813643; background: #efdadd; }
-.button.compact { min-height: 39px; padding: 7px 12px; }
+.button.compact { min-height: 44px; padding: 7px 12px; }
 .button:disabled { opacity: .48; cursor: not-allowed; }
 .status-list, .simple-list { display: grid; margin: 0; padding: 0; list-style: none; gap: 9px; }
 .status-list li { display: flex; padding: 14px; border: 1px solid rgb(70 50 78 / 8%); border-radius: 14px; align-items: center; justify-content: space-between; gap: 14px; background: #fffaf3; }
 .status-list div { display: grid; gap: 4px; }
 .status-list strong, .simple-list li { color: #46324e; }
-.status-list small { color: #8d7f90; line-height: 1.4; }
+.status-list small { color: #6f6073; line-height: 1.4; }
 .simple-list li { padding: 11px 13px; border-radius: 12px; background: #fffaf3; font-weight: 700; }
-.empty { margin: 0; padding: 18px; border-radius: 14px; color: #8d7f90; background: #f3ede6; text-align: center; }
+.empty { margin: 0; padding: 18px; border-radius: 14px; color: #6f6073; background: #f3ede6; text-align: center; }
 .separated { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgb(70 50 78 / 10%); }
 .inline-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin-top: 14px; align-items: center; gap: 10px; }
 .danger-zone { grid-column: 1 / -1; border-color: rgb(156 60 76 / 22%); background: #fbf2f1; }

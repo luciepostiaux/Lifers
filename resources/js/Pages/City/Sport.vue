@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import AccessibleDialog from "@/Components/AccessibleDialog.vue";
 
 const props = defineProps({
     singleSession: Object,
@@ -217,7 +218,7 @@ const dialogTitle = computed(() => {
             @click.self="closeDialog"
             @keydown.esc="closeDialog"
         >
-            <section class="path-dialog" role="dialog" aria-modal="true" aria-labelledby="sport-dialog-title">
+            <AccessibleDialog class="path-dialog" labelledby="sport-dialog-title" @close="closeDialog">
                 <span class="path-kicker">Confirmation</span>
                 <h2 id="sport-dialog-title">{{ dialogTitle }}</h2>
                 <p v-if="selectedAction.type === 'cancel'">
@@ -243,7 +244,7 @@ const dialogTitle = computed(() => {
                         {{ actionPending ? "Validation…" : "Confirmer" }}
                     </button>
                 </div>
-            </section>
+            </AccessibleDialog>
         </div>
     </AppLayout>
 </template>
